@@ -83,13 +83,13 @@ img,video{max-width:100%;display:block}
 .px-video-badge{position:absolute;top:20px;right:20px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);color:white;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:6px;z-index:3}
 .px-video-badge .ic{width:12px;height:12px;fill:var(--orange);stroke:var(--orange)}
 
-.price-float{position:absolute;right:50px;bottom:-30px;background:white;border-radius:14px;padding:18px 22px;box-shadow:0 20px 48px rgba(0,0,0,.15);z-index:3;border:1px solid var(--border);min-width:180px}
-.pf-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:2px}
-.pf-main{font-size:2rem;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.5px}
-.pf-main .cur{color:var(--orange);font-size:1.2rem}
-.pf-child{font-size:11.5px;color:var(--muted);margin-top:4px;font-weight:400}
+.price-float{position:absolute;right:40px;bottom:32px;background:white;border-radius:14px;padding:16px 22px;box-shadow:0 12px 32px rgba(0,0,0,.25);z-index:3;border:1px solid rgba(255,255,255,.2);min-width:170px}
+.pf-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px}
+.pf-main{font-size:1.9rem;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.5px;display:flex;align-items:baseline;gap:2px}
+.pf-main .cur{color:var(--orange);font-size:1.15rem;font-weight:600}
+.pf-child{font-size:11.5px;color:var(--muted);margin-top:6px;font-weight:500;white-space:nowrap}
 
-.exc-content{padding:60px 50px 40px;max-width:1280px;margin:0 auto}
+.exc-content{padding:40px 50px 40px;max-width:1280px;margin:0 auto}
 
 /* GALLERY */
 .gallery-section{margin-bottom:48px}
@@ -204,8 +204,10 @@ img,video{max-width:100%;display:block}
   .exc-body{grid-template-columns:1fr}
   .exc-aside{position:static}
   .px-content{padding:30px 30px 30px}
-  .price-float{right:20px;bottom:-20px;padding:14px 18px;min-width:140px}
-  .pf-main{font-size:1.6rem}
+  .price-float{right:20px;bottom:20px;padding:12px 16px;min-width:130px}
+  .pf-main{font-size:1.5rem}
+  .pf-main .cur{font-size:1rem}
+  .pf-child{font-size:10.5px}
 }
 @media(max-width:768px){
   :root{--sidebar-w:280px;--header-h:60px}
@@ -217,7 +219,7 @@ img,video{max-width:100%;display:block}
   .info-wrap,.info-title-hero{padding:30px 20px}
   .px-hero{height:320px}
   .px-content{padding:24px 20px 24px}
-  .price-float{position:relative;right:auto;bottom:auto;margin:20px 20px -20px;display:inline-block}
+  .price-float{right:12px;bottom:12px;padding:10px 14px;min-width:110px}
   .carousel-arrow{width:38px;height:38px}
   .carousel-arrow.prev{left:10px}
   .carousel-arrow.next{right:10px}
@@ -364,7 +366,7 @@ function renderWelcome(){
   document.getElementById('content').innerHTML=`
     <div class="welcome">
       <img src="logo.png" alt="Bliss Holiday" class="logo-img">
-      <h1>Welcome to your <span>excursions</span> catalogue</h1>
+      <h1>Explore <span>excursions</span></h1>
       <p>Browse the sidebar on the left to discover our curated selection of land, sea and air experiences across Mauritius.</p>
       <div class="welcome-hint">${ico('i-info')} Select any excursion from the sidebar</div>
     </div>`;
@@ -398,8 +400,6 @@ function renderExcursion(id){
     heroHTML=`<div class="px-bg ${e.bg}"></div>
     <div class="px-ph">
       ${ico(e.icon)}
-      <div class="px-ph-label">No photo yet</div>
-      <a href="/admin/" class="px-ph-add">${ico('i-plus')} Add photo via Admin</a>
     </div>`;
   }
 
