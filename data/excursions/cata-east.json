@@ -1,0 +1,48 @@
+{
+  "id": "cata-east",
+  "cat": "sea",
+  "icon": "i-anchor",
+  "tag": "Full Day · East Only",
+  "name": "Catamaran Île aux Cerfs (East)",
+  "sub": "For East Coast Hotels",
+  "desc": "The same beautiful Île aux Cerfs experience but departing exclusively from the east coast — perfect for east coast hotels. BBQ lunch, unlimited drinks and snorkelling all included.",
+  "startPt": "East Coast Hotel",
+  "endPt": "Île aux Cerfs",
+  "itin": [
+    "East Coast departure",
+    "Sail to Île aux Cerfs",
+    "Snorkelling at coral reef",
+    "BBQ lunch & drinks"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "Full Day"
+    },
+    {
+      "i": "i-map",
+      "t": "East Coast only"
+    },
+    {
+      "i": "i-utensils",
+      "t": "Lunch & drinks incl."
+    }
+  ],
+  "prices": [
+    {
+      "l": "Adult",
+      "v": "€85"
+    },
+    {
+      "l": "Child 3–10",
+      "v": "€60"
+    },
+    {
+      "l": "Under 3",
+      "v": "Free"
+    }
+  ],
+  "notes": "East Coast departure only. Lunch & drinks included. Transport included.",
+  "bg": "bg-sea",
+  "media": []
+}

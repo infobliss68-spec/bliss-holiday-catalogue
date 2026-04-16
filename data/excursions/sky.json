@@ -1,0 +1,41 @@
+{
+  "id": "sky",
+  "cat": "air",
+  "icon": "i-plane",
+  "tag": "Extreme · Adventure",
+  "name": "Skydiving",
+  "sub": "Tandem Jump Over Paradise",
+  "desc": "The ultimate adrenaline rush — tandem skydive above the paradise island of Mauritius. Freefall at 200km/h, then parachute gently over turquoise lagoons and green hills.",
+  "startPt": "Drop Zone",
+  "endPt": "Touchdown",
+  "itin": [
+    "Safety briefing",
+    "Gear up and board",
+    "Climb to altitude",
+    "Tandem freefall at 200km/h",
+    "Parachute descent"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "Half Day"
+    },
+    {
+      "i": "i-award",
+      "t": "No experience needed"
+    },
+    {
+      "i": "i-camera",
+      "t": "Photos & video"
+    }
+  ],
+  "prices": [
+    {
+      "l": "Price",
+      "v": "On Request"
+    }
+  ],
+  "notes": "Contact your Bliss Holiday representative. Minimum age and weight restrictions apply.",
+  "bg": "bg-air",
+  "media": []
+}

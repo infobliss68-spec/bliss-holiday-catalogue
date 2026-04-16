@@ -1,0 +1,45 @@
+{
+  "id": "casela",
+  "cat": "land",
+  "icon": "i-compass",
+  "tag": "Full Day · Adventure",
+  "name": "Casela — World of Adventures",
+  "sub": "Safari, Zip-line, Lions & Quads",
+  "desc": "Africa meets Mauritius! A spectacular day of wildlife and adrenaline. Walk alongside lions in the Predator Kingdom, race through zip-line circuits, take a safari, camel rides or quad biking.",
+  "startPt": "Your Hotel",
+  "endPt": "Casela Park",
+  "itin": [
+    "Predator Kingdom — lion walk",
+    "Zip-line circuits",
+    "Open jeep safari",
+    "Camel rides & feeding",
+    "Quad biking trails"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "Full Day"
+    },
+    {
+      "i": "i-users",
+      "t": "Family friendly"
+    }
+  ],
+  "prices": [
+    {
+      "l": "Camel Ride",
+      "v": "Rs 350"
+    },
+    {
+      "l": "Camel Feeding",
+      "v": "Rs 350"
+    },
+    {
+      "l": "Packages",
+      "v": "Various"
+    }
+  ],
+  "notes": "Multiple activity packages available — contact rep for current prices. Minimum height/age restrictions apply. Transport not included.",
+  "bg": "bg-land",
+  "media": []
+}

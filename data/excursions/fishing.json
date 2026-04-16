@@ -1,0 +1,47 @@
+{
+  "id": "fishing",
+  "cat": "sea",
+  "icon": "i-fish",
+  "tag": "Sport Fishing",
+  "name": "Big Game Fishing",
+  "sub": "Marlin, Tuna & Wahoo",
+  "desc": "Mauritius is one of the world's premier big game fishing destinations. Choose from three professional vessels (42ft, 47ft, 50ft). Target blue marlin, yellowfin tuna, wahoo and dorado. All drinks included.",
+  "startPt": "Marina",
+  "endPt": "Deep Sea",
+  "itin": [
+    "Troll the deep waters",
+    "Target marlin, tuna, wahoo, dorado",
+    "Catch & release or keep"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "4h / 6h / 9h"
+    },
+    {
+      "i": "i-utensils",
+      "t": "Drinks included"
+    },
+    {
+      "i": "i-anchor",
+      "t": "42–50ft boats"
+    }
+  ],
+  "prices": [
+    {
+      "l": "4h · 42ft",
+      "v": "Rs 26,000"
+    },
+    {
+      "l": "4h · 50ft",
+      "v": "Rs 35,000"
+    },
+    {
+      "l": "9h · 50ft",
+      "v": "Rs 53,000"
+    }
+  ],
+  "notes": "Prices per boat, not per person. Season rates 15 Dec–15 Jan add 20%. Transport NOT included.",
+  "bg": "bg-sea",
+  "media": []
+}

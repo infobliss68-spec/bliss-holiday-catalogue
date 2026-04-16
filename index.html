@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bliss Holiday — Excursions Catalogue 2025/2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --orange:#f26a21;--orange-light:#fef0e6;--orange-deep:#d84f0a;
+  --black:#0a0a0a;--ink:#1a1a1a;--text:#2a2a2a;
+  --muted:#7a7a7a;--muted-light:#a0a0a0;
+  --border:#e8e8e8;--bg:#fafafa;--white:#fff;
+  --sidebar-w:300px;--header-h:68px;
+}
+html,body{height:100%;overflow:hidden;font-family:'Poppins',sans-serif;color:var(--text);background:var(--bg);font-weight:400;-webkit-font-smoothing:antialiased}
+img,video{max-width:100%;display:block}
+.app{display:flex;flex-direction:column;height:100vh}
+.ic{width:18px;height:18px;flex-shrink:0;stroke-width:1.8}
+
+/* HEADER */
+.header{height:var(--header-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:20px;padding:0 24px;flex-shrink:0;z-index:40}
+.logo-wrap{display:flex;align-items:center;flex-shrink:0}
+.logo-img{height:36px;width:auto}
+.header-search{flex:1;max-width:420px;position:relative}
+.header-search input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px 10px 40px;font-family:inherit;font-size:13px;color:var(--text);outline:none;transition:all .15s;font-weight:400}
+.header-search input:focus{border-color:var(--orange);background:var(--white)}
+.header-search .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.header-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.menu-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--ink);flex-direction:column;gap:4px}
+.menu-btn span{display:block;width:20px;height:2px;background:currentColor;border-radius:1px}
+
+.body{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sidebar-inner{flex:1;overflow-y:auto;padding:20px 14px}
+.sidebar-inner::-webkit-scrollbar{width:4px}
+.sidebar-inner::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.nav-group{margin-bottom:22px}
+.nav-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;padding:0 12px 10px;display:flex;align-items:center;gap:8px}
+.nav-title .ic{width:14px;height:14px;color:var(--orange)}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;cursor:pointer;transition:all .15s;margin-bottom:2px;position:relative;text-decoration:none;color:var(--text)}
+.nav-item:hover{background:var(--bg)}
+.nav-item.active{background:var(--orange-light);color:var(--orange-deep)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;background:var(--orange);border-radius:0 3px 3px 0}
+.nav-item .ic{width:16px;height:16px;color:var(--muted);flex-shrink:0}
+.nav-item.active .ic{color:var(--orange)}
+.nav-label{font-size:13px;font-weight:500;flex:1;line-height:1.3}
+.nav-meta{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:.2px}
+.nav-item.active .nav-meta{color:var(--orange)}
+.sidebar-footer{border-top:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);flex-shrink:0}
+.sidebar-footer .ic{width:14px;height:14px;color:var(--orange)}
+
+.main{flex:1;overflow-y:auto;background:var(--bg);scroll-behavior:smooth}
+.main::-webkit-scrollbar{width:8px}
+.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* WELCOME */
+.welcome{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 30px}
+.welcome .logo-img{height:72px;margin-bottom:30px;opacity:.9}
+.welcome h1{font-size:1.6rem;font-weight:700;color:var(--ink);margin-bottom:12px;letter-spacing:-.3px}
+.welcome h1 span{color:var(--orange)}
+.welcome p{font-size:14px;color:var(--muted);max-width:440px;line-height:1.7;margin-bottom:24px}
+.welcome-hint{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--orange-light);color:var(--orange-deep);border-radius:20px;font-size:12px;font-weight:500}
+
+/* PARALLAX HERO */
+.px-hero{position:relative;height:clamp(340px,55vh,560px);overflow:hidden;background:#000}
+.px-bg{position:absolute;inset:0;width:100%;height:110%;will-change:transform}
+.px-bg img,.px-bg video{width:100%;height:100%;object-fit:cover;display:block}
+.px-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.95)}
+.px-ph .ic{width:64px;height:64px;stroke-width:1.3;margin-bottom:14px;opacity:.9}
+.px-ph-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;opacity:.75;font-weight:500}
+.px-ph-add{margin-top:18px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.18);border:1px dashed rgba(255,255,255,.45);padding:8px 16px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;backdrop-filter:blur(8px);color:white;text-decoration:none}
+.px-ph-add .ic{width:14px;height:14px;margin:0;opacity:1}
+.px-gradient{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,.25) 70%,rgba(0,0,0,.75) 100%);pointer-events:none}
+.px-content{position:absolute;bottom:0;left:0;right:0;padding:40px 50px 36px;color:white;z-index:2}
+.px-tag{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:white;font-weight:600;margin-bottom:12px;padding:5px 13px;background:var(--orange);border-radius:20px}
+.px-tag .ic{width:12px;height:12px}
+.px-title{font-size:clamp(1.8rem,4.2vw,3.2rem);font-weight:700;letter-spacing:-.8px;line-height:1.08;margin-bottom:8px;text-shadow:0 2px 24px rgba(0,0,0,.5)}
+.px-sub{font-size:clamp(14px,1.5vw,17px);color:rgba(255,255,255,.9);font-weight:400;max-width:600px;text-shadow:0 1px 12px rgba(0,0,0,.5)}
+.px-video-badge{position:absolute;top:20px;right:20px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);color:white;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:6px;z-index:3}
+.px-video-badge .ic{width:12px;height:12px;fill:var(--orange);stroke:var(--orange)}
+
+.price-float{position:absolute;right:50px;bottom:-30px;background:white;border-radius:14px;padding:18px 22px;box-shadow:0 20px 48px rgba(0,0,0,.15);z-index:3;border:1px solid var(--border);min-width:180px}
+.pf-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:2px}
+.pf-main{font-size:2rem;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.5px}
+.pf-main .cur{color:var(--orange);font-size:1.2rem}
+.pf-child{font-size:11.5px;color:var(--muted);margin-top:4px;font-weight:400}
+
+.exc-content{padding:60px 50px 40px;max-width:1280px;margin:0 auto}
+
+/* GALLERY */
+.gallery-section{margin-bottom:48px}
+.sec-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.sec-label .ic{width:13px;height:13px}
+.sec-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}
+.sec-title{font-size:1.4rem;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.sec-count{font-size:12px;color:var(--muted);font-weight:500}
+
+/* CAROUSEL */
+.carousel{position:relative;border-radius:14px;overflow:hidden;background:#0d0d0d;user-select:none}
+.carousel-track{display:flex;transition:transform .7s cubic-bezier(.7,0,.3,1);will-change:transform}
+.carousel-slide{flex:0 0 100%;aspect-ratio:16/9;position:relative;background:#0d0d0d;cursor:pointer}
+.carousel-slide img,.carousel-slide video{width:100%;height:100%;object-fit:cover;display:block}
+.carousel-slide-caption{position:absolute;bottom:18px;left:22px;right:22px;color:white;font-size:13px;font-weight:500;text-shadow:0 2px 12px rgba(0,0,0,.7);display:flex;align-items:center;gap:8px;z-index:2}
+.carousel-slide-caption .ic{width:14px;height:14px;color:var(--orange)}
+.carousel-slide-gradient{position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.6) 100%);pointer-events:none}
+.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;background:rgba(255,255,255,.95);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,.25);color:var(--ink);padding:0;outline:none}
+.carousel-arrow:hover{background:var(--orange);color:white;transform:translateY(-50%) scale(1.1);box-shadow:0 6px 20px rgba(242,106,33,.4)}
+.carousel-arrow:active{transform:translateY(-50%) scale(.95)}
+.carousel-arrow.prev{left:18px}
+.carousel-arrow.next{right:18px}
+.carousel-arrow svg{width:20px;height:20px;stroke-width:2.5;display:block}
+.carousel-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:4;background:rgba(0,0,0,.35);padding:7px 12px;border-radius:20px;backdrop-filter:blur(8px)}
+.carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45);border:none;cursor:pointer;padding:0;transition:all .25s}
+.carousel-dot.active{background:var(--orange);width:22px;border-radius:4px}
+.carousel-progress{position:absolute;top:0;left:0;height:3px;background:var(--orange);z-index:4;transition:width .15s linear;box-shadow:0 0 8px rgba(242,106,33,.5)}
+.carousel-counter{position:absolute;top:16px;left:16px;background:rgba(0,0,0,.55);color:white;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1px;backdrop-filter:blur(8px);z-index:4;display:flex;align-items:center;gap:6px}
+.carousel-counter .ic{width:12px;height:12px;color:var(--orange);fill:var(--orange)}
+.carousel-play-video{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;backdrop-filter:blur(6px);pointer-events:none;z-index:3;border:2px solid rgba(255,255,255,.3)}
+.carousel-play-video .ic{width:24px;height:24px;fill:white;stroke:white;margin-left:3px}
+.carousel-empty{aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.9)}
+.carousel-empty .ic{width:48px;height:48px;stroke-width:1.5;margin-bottom:10px}
+.carousel-empty-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.7}
+.bg-land{background:linear-gradient(135deg,#2d5a3a,#4a8055)}
+.bg-sea{background:linear-gradient(135deg,#1d3f5e,#2a7a95)}
+.bg-air{background:linear-gradient(135deg,#3a2a5a,#6a4a95)}
+
+/* DETAILS */
+.exc-body{display:grid;grid-template-columns:1.65fr 1fr;gap:40px;margin-bottom:32px}
+.exc-desc{font-size:15.5px;line-height:1.85;color:#2a2a2a;margin-bottom:28px;font-weight:400}
+
+/* JOURNEY */
+.journey{position:relative}
+.journey-track{position:absolute;left:13px;top:36px;bottom:36px;width:2px;background:linear-gradient(180deg,var(--orange) 0%,var(--orange) 50%,#e0e0e0 50%,#e0e0e0 100%);background-size:100% 12px;z-index:0}
+.j-step{display:flex;gap:16px;margin-bottom:16px;position:relative;z-index:1}
+.j-step:last-child{margin-bottom:0}
+.j-icon{width:28px;height:28px;border-radius:50%;background:var(--white);border:2px solid #d8d8d8;color:var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
+.j-icon .ic{width:13px;height:13px;stroke-width:2}
+.j-start .j-icon{background:var(--orange);border-color:var(--orange);color:white;box-shadow:0 4px 12px rgba(242,106,33,.3)}
+.j-end .j-icon{background:var(--ink);border-color:var(--ink);color:white;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.j-middle .j-icon{background:white;border-color:var(--orange);color:var(--orange)}
+.j-content{flex:1;padding-top:3px;padding-bottom:6px}
+.j-text{font-size:13.5px;color:#2a2a2a;font-weight:500;line-height:1.5}
+.j-start .j-text,.j-end .j-text{font-size:14.5px;font-weight:600}
+
+/* SIDEBAR CARD */
+.exc-aside{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:22px;position:sticky;top:20px;align-self:start}
+.aside-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.aside-label .ic{width:13px;height:13px}
+.pill-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.pill{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border-radius:8px;font-size:12.5px;color:var(--text);font-weight:500}
+.pill .ic{width:15px;height:15px;color:var(--orange);flex-shrink:0}
+.price-block{border-top:1px solid var(--border);padding-top:16px}
+.pr-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;font-size:12.5px}
+.pr-row span{color:var(--muted);font-weight:400}
+.pr-row strong{font-size:14px;font-weight:700;color:var(--ink)}
+
+/* BIG REMARKS */
+.remarks-section{background:linear-gradient(135deg,var(--orange-light) 0%,#fff5ea 100%);border:1px solid #f5d4b5;border-radius:16px;padding:32px 36px;margin-top:32px;display:flex;gap:22px;align-items:flex-start;position:relative;overflow:hidden}
+.remarks-section::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--orange),var(--orange-deep))}
+.remarks-icon{width:52px;height:52px;border-radius:50%;background:var(--orange);color:white;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(242,106,33,.35)}
+.remarks-icon svg{width:26px;height:26px;stroke-width:2}
+.remarks-content{flex:1}
+.remarks-label{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--orange-deep);font-weight:700;margin-bottom:10px}
+.remarks-text{font-size:15.5px;line-height:1.75;color:var(--ink);font-weight:500}
+
+/* INFO */
+.info-wrap{padding:40px 50px;max-width:1280px;margin:0 auto}
+.info-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px}
+.info-card h3{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:9px}
+.info-card h3 .ic{width:18px;height:18px;color:var(--orange)}
+.info-table{width:100%;border-collapse:collapse}
+.info-table td{padding:8px 0;font-size:12.5px;border-bottom:1px solid var(--border)}
+.info-table tr:last-child td{border-bottom:none}
+.info-table td:first-child{color:var(--muted);width:40%}
+.info-table td:last-child{font-weight:500;color:var(--ink);text-align:right}
+.info-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.info-list li{font-size:13px;color:#333;padding-left:22px;position:relative;line-height:1.6}
+.info-list li::before{content:'';position:absolute;left:0;top:8px;width:12px;height:2px;background:var(--orange);border-radius:1px}
+.info-list li strong{color:var(--ink);font-weight:600}
+.info-title-hero{padding:40px 50px 20px;max-width:1280px;margin:0 auto}
+.info-title-hero h1{font-size:1.8rem;font-weight:700;color:var(--ink);letter-spacing:-.3px;display:flex;align-items:center;gap:12px}
+.info-title-hero h1 .ic{width:24px;height:24px;color:var(--orange)}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:600;align-items:center;justify-content:center;padding:40px}
+.lightbox.open{display:flex}
+.lb-content{max-width:90vw;max-height:85vh}
+.lb-content img,.lb-content video{max-width:100%;max-height:85vh;border-radius:8px}
+.lb-close{position:absolute;top:20px;right:20px;width:40px;height:40px;border:none;background:rgba(255,255,255,.1);border-radius:50%;color:white;cursor:pointer;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center}
+.lb-close .ic{width:18px;height:18px}
+
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px}
+.loading-spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-size:12px;color:var(--muted)}
+
+/* MOBILE */
+@media(max-width:900px){
+  .exc-body{grid-template-columns:1fr}
+  .exc-aside{position:static}
+  .px-content{padding:30px 30px 30px}
+  .price-float{right:20px;bottom:-20px;padding:14px 18px;min-width:140px}
+  .pf-main{font-size:1.6rem}
+}
+@media(max-width:768px){
+  :root{--sidebar-w:280px;--header-h:60px}
+  .sidebar{position:fixed;left:-100%;top:var(--header-h);height:calc(100vh - var(--header-h));z-index:100;transition:left .25s;box-shadow:4px 0 24px rgba(0,0,0,.1)}
+  .sidebar.open{left:0}
+  .menu-btn{display:flex}
+  .header-search{display:none}
+  .exc-content{padding:40px 20px 30px}
+  .info-wrap,.info-title-hero{padding:30px 20px}
+  .px-hero{height:320px}
+  .px-content{padding:24px 20px 24px}
+  .price-float{position:relative;right:auto;bottom:auto;margin:20px 20px -20px;display:inline-block}
+  .carousel-arrow{width:38px;height:38px}
+  .carousel-arrow.prev{left:10px}
+  .carousel-arrow.next{right:10px}
+  .remarks-section{padding:22px;flex-direction:column;gap:14px}
+  .remarks-icon{width:44px;height:44px}
+  .remarks-icon svg{width:22px;height:22px}
+  .remarks-text{font-size:14px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header class="header">
+  <button class="menu-btn" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+  <div class="logo-wrap"><img src="logo.png" alt="Bliss Holiday" class="logo-img"></div>
+  <div class="header-search">
+    <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="srch" placeholder="Search excursion, destination..." oninput="filterList()">
+  </div>
+</header>
+
+<div class="body">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-inner" id="sidebar-nav">
+    <div class="loading"><div class="loading-spin"></div><p>Loading excursions...</p></div>
+  </div>
+  <div class="sidebar-footer">
+    <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 22s8-10 8-14a8 8 0 0 0-16 0c0 4 8 14 8 14z"/><circle cx="12" cy="8" r="2.5"/></svg>
+    Mauritius · 2025/2026 Season
+  </div>
+</aside>
+
+<main class="main" id="main">
+  <div id="content"></div>
+</main>
+
+</div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="if(event.target.id==='lightbox')closeLB()">
+  <button class="lb-close" onclick="closeLB()">
+    <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="lb-content" id="lb-content"></div>
+</div>
+
+<!-- SVG ICONS -->
+<svg style="display:none">
+  <defs>
+    <symbol id="i-mountain" viewBox="0 0 24 24"><path d="M8 3l4 8 5-5 5 15H2L8 3z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 12c2.5-2.5 5-2.5 7.5 0s5 2.5 7.5 0 5-2.5 7.5 0M2 18c2.5-2.5 5-2.5 7.5 0s5 2.5 7.5 0 5-2.5 7.5 0M2 6c2.5-2.5 5-2.5 7.5 0s5 2.5 7.5 0 5-2.5 7.5 0" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5L3 7.4c-.2.4-.1.9.2 1.2l4.8 4.4-1.4 3.4-2.1.8c-.3.1-.5.4-.4.7l.3.7c.1.3.4.5.7.4l3.4-1.4 4.4 4.8c.3.3.8.4 1.2.2l.7-.3c.4-.2.6-.6.5-1.1l-1.8-8.2 2.6 2.6z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-utensils" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 7v2a3 3 0 0 1 0 6v2c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 5v2M13 17v2M13 11v2" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-bus" viewBox="0 0 24 24"><path d="M8 6v6M16 6v6M2 12h20M18 18h2a2 2 0 0 0 2-2V8a6 6 0 0 0-6-6H8a6 6 0 0 0-6 6v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7" cy="18" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="18" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-anchor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="22" x2="12" y2="8" stroke="currentColor" stroke-width="1.8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="1.8"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="1.8"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="1.8"/><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="1.8"/><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="13" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="2" x2="8" y2="18" stroke="currentColor" stroke-width="1.8"/><line x1="16" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="1.8"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="1.8"/><line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-credit-card" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="1" y1="10" x2="23" y2="10" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6zM18 12v.01M2 12c1.5-1 3-1 4 0" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/></symbol>
+    <symbol id="i-pin-start" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="currentColor"/></symbol>
+    <symbol id="i-pin-end" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="currentColor"/><circle cx="12" cy="10" r="3" fill="white"/></symbol>
+    <symbol id="i-pin-middle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<script>
+// Excursion IDs - loaded from /_data/excursions/
+const EXCURSION_IDS=["south1","south2","northhalf","northfull","tea","vallee","casela","cata","cata-east","5islands","gabriel","whale","dolphin","fishing","aigrettes","heli","sky"];
+
+let D=[];
+let activeId=null;
+
+function ico(id){return `<svg class="ic"><use href="#${id}"/></svg>`;}
+
+// Load all excursion data
+async function loadData(){
+  const loaded=[];
+  for(const id of EXCURSION_IDS){
+    try{
+      const r=await fetch(`/data/excursions/${id}.json`);
+      if(r.ok)loaded.push(await r.json());
+    }catch(e){console.warn('Failed to load',id);}
+  }
+  D=loaded;
+  buildSidebar();
+  renderWelcome();
+}
+
+function buildSidebar(){
+  const q=document.getElementById('srch')?.value.toLowerCase()||'';
+  const groups=[
+    {k:'land',lbl:'Land Activities',icon:'i-mountain'},
+    {k:'sea',lbl:'Sea Activities',icon:'i-wave'},
+    {k:'air',lbl:'Air Experiences',icon:'i-plane'},
+    {k:'info',lbl:'Information',icon:'i-info'}
+  ];
+  let html='';
+  groups.forEach(g=>{
+    if(g.k==='info'){
+      html+=`<div class="nav-group">
+        <div class="nav-title">${ico(g.icon)} ${g.lbl}</div>
+        <a class="nav-item ${activeId==='info-holidays'?'active':''}" onclick="selectInfo('holidays')">${ico('i-calendar')}<span class="nav-label">Public Holidays</span></a>
+        <a class="nav-item ${activeId==='info-cancel'?'active':''}" onclick="selectInfo('cancel')">${ico('i-x-circle')}<span class="nav-label">Cancellation Policy</span></a>
+        <a class="nav-item ${activeId==='info-payment'?'active':''}" onclick="selectInfo('payment')">${ico('i-credit-card')}<span class="nav-label">Payment Methods</span></a>
+        <a class="nav-item ${activeId==='info-contact'?'active':''}" onclick="selectInfo('contact')">${ico('i-phone')}<span class="nav-label">Contact & Booking</span></a>
+      </div>`;
+      return;
+    }
+    const items=D.filter(e=>e.cat===g.k&&(!q||e.name.toLowerCase().includes(q)||e.sub.toLowerCase().includes(q)||(e.desc||'').toLowerCase().includes(q)));
+    if(!items.length)return;
+    html+=`<div class="nav-group"><div class="nav-title">${ico(g.icon)} ${g.lbl}</div>`;
+    items.forEach(e=>{
+      const price=e.prices&&e.prices[0]?(e.prices[0].v==='On Request'?'':e.prices[0].v):'';
+      html+=`<a class="nav-item ${activeId===e.id?'active':''}" onclick="selectExc('${e.id}')">
+        ${ico(e.icon)}
+        <div class="nav-label">${e.name}</div>
+        ${price?`<div class="nav-meta">${price}</div>`:''}
+      </a>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('sidebar-nav').innerHTML=html;
+}
+
+function renderWelcome(){
+  document.getElementById('content').innerHTML=`
+    <div class="welcome">
+      <img src="logo.png" alt="Bliss Holiday" class="logo-img">
+      <h1>Welcome to your <span>excursions</span> catalogue</h1>
+      <p>Browse the sidebar on the left to discover our curated selection of land, sea and air experiences across Mauritius.</p>
+      <div class="welcome-hint">${ico('i-info')} Select any excursion from the sidebar</div>
+    </div>`;
+}
+
+function selectExc(id){
+  activeId=id;
+  buildSidebar();
+  renderExcursion(id);
+  document.getElementById('main').scrollTop=0;
+  setTimeout(setupParallax,50);
+  if(window.innerWidth<=768)document.getElementById('sidebar').classList.remove('open');
+}
+
+function renderExcursion(id){
+  const e=D.find(x=>x.id===id);
+  if(!e)return;
+  const images=e.images||[];
+  const heroImg=images.find(m=>m.isHero)||images[0];
+  const galleryItems=images.filter(m=>m!==heroImg);
+
+  // HERO
+  let heroHTML='';
+  if(heroImg&&heroImg.src){
+    const isVid=heroImg.type==='video';
+    heroHTML=`<div class="px-bg">
+      ${isVid?`<video src="${heroImg.src}" autoplay muted loop playsinline></video>`:`<img src="${heroImg.src}" alt="${e.name}">`}
+    </div>`;
+    if(isVid)heroHTML+=`<div class="px-video-badge">${ico('i-play')} Video</div>`;
+  } else {
+    heroHTML=`<div class="px-bg ${e.bg}"></div>
+    <div class="px-ph">
+      ${ico(e.icon)}
+      <div class="px-ph-label">No photo yet</div>
+      <a href="/admin/" class="px-ph-add">${ico('i-plus')} Add photo via Admin</a>
+    </div>`;
+  }
+
+  // GALLERY CAROUSEL
+  let galleryHTML='';
+  if(galleryItems.length>0){
+    const slides=galleryItems.map((m,i)=>{
+      const caption=m.caption||(m.type==='video'?'Video':`Photo ${i+1}`);
+      const mediaEl=m.type==='video'
+        ?`<video src="${m.src}" muted preload="metadata"></video><div class="carousel-play-video">${ico('i-play')}</div>`
+        :`<img src="${m.src}" alt="${caption}">`;
+      const realIdx=images.indexOf(m);
+      return `<div class="carousel-slide" onclick="openLB('${e.id}',${realIdx})">
+        ${mediaEl}
+        <div class="carousel-slide-gradient"></div>
+        <div class="carousel-slide-caption">${ico('i-camera')} ${caption}</div>
+      </div>`;
+    }).join('');
+
+    const dots=galleryItems.map((_,i)=>`<button class="carousel-dot ${i===0?'active':''}" onclick="event.stopPropagation();carouselGoTo(${i})"></button>`).join('');
+    const arrowLeft='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+    const arrowRight='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+
+    galleryHTML=`<div class="gallery-section">
+      <div class="sec-header">
+        <div>
+          <div class="sec-label">${ico('i-camera')} Gallery</div>
+          <div class="sec-title">Experience in pictures</div>
+        </div>
+        <div class="sec-count">${galleryItems.length} ${galleryItems.length===1?'item':'items'}</div>
+      </div>
+      <div class="carousel" id="carousel" onmouseenter="carouselPause()" onmouseleave="carouselResume()">
+        <div class="carousel-progress" id="carouselProgress" style="width:0%"></div>
+        <div class="carousel-counter">${ico('i-camera')} <span id="carouselCount">1 / ${galleryItems.length}</span></div>
+        <div class="carousel-track" id="carouselTrack">${slides}</div>
+        ${galleryItems.length>1?`
+          <button class="carousel-arrow prev" onclick="event.stopPropagation();carouselPrev()">${arrowLeft}</button>
+          <button class="carousel-arrow next" onclick="event.stopPropagation();carouselNext()">${arrowRight}</button>
+          <div class="carousel-dots">${dots}</div>
+        `:''}
+      </div>
+    </div>`;
+  } else if(!heroImg){
+    galleryHTML=`<div class="gallery-section">
+      <div class="sec-header">
+        <div>
+          <div class="sec-label">${ico('i-camera')} Gallery</div>
+          <div class="sec-title">Experience in pictures</div>
+        </div>
+      </div>
+      <div class="carousel">
+        <div class="carousel-empty ${e.bg}" style="cursor:pointer" onclick="window.location.href='/admin/'">
+          ${ico(e.icon)}
+          <div class="carousel-empty-label">No photos yet — Click to add</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // JOURNEY
+  let journeyHTML='';
+  const itin=e.itin||[];
+  if(itin.length||e.startPt){
+    journeyHTML=`
+      <div class="sec-label">${ico('i-map')} Journey</div>
+      <div class="sec-title" style="margin-bottom:24px">The experience, step by step</div>
+      <div class="journey">
+        <div class="journey-track"></div>
+        <div class="j-step j-start">
+          <div class="j-icon">${ico('i-pin-start')}</div>
+          <div class="j-content"><div class="j-text">${e.startPt||'Your Hotel'}</div></div>
+        </div>
+        ${itin.map(s=>{const txt=typeof s==='string'?s:(s.step||s);return `
+          <div class="j-step j-middle">
+            <div class="j-icon">${ico('i-pin-middle')}</div>
+            <div class="j-content"><div class="j-text">${txt}</div></div>
+          </div>
+        `;}).join('')}
+        <div class="j-step j-end">
+          <div class="j-icon">${ico('i-pin-end')}</div>
+          <div class="j-content"><div class="j-text">${e.endPt||'Your Hotel'}</div></div>
+        </div>
+      </div>`;
+  }
+
+  const prices=e.prices||[];
+  const pills=e.pills||[];
+
+  const html=`
+    <div class="px-hero">
+      ${heroHTML}
+      <div class="px-gradient"></div>
+      <div class="px-content">
+        <div class="px-tag">${ico(e.icon)} ${e.tag}</div>
+        <h1 class="px-title">${e.name}</h1>
+        <div class="px-sub">${e.sub||''}</div>
+      </div>
+      ${prices[0]?`<div class="price-float">
+        <div class="pf-label">From</div>
+        <div class="pf-main"><span class="cur">${prices[0].v.charAt(0)==='€'?'€':''}</span>${prices[0].v.replace('€','')}</div>
+        ${prices[1]?`<div class="pf-child">${prices[1].l} · ${prices[1].v}</div>`:''}
+      </div>`:''}
+    </div>
+
+    <div class="exc-content">
+      ${galleryHTML}
+
+      <div class="exc-body">
+        <div>
+          <div class="sec-label">${ico('i-info')} Overview</div>
+          <p class="exc-desc">${e.desc||''}</p>
+          ${journeyHTML}
+        </div>
+        <aside class="exc-aside">
+          <div class="aside-label">${ico('i-star')} At a glance</div>
+          <div class="pill-list">
+            ${pills.map(p=>`<div class="pill">${ico(p.i)}${p.t}</div>`).join('')}
+          </div>
+          <div class="price-block">
+            <div class="aside-label">${ico('i-ticket')} Pricing</div>
+            ${prices.map(p=>`<div class="pr-row"><span>${p.l}</span><strong>${p.v}</strong></div>`).join('')}
+          </div>
+        </aside>
+      </div>
+
+      ${e.notes?`
+      <div class="remarks-section">
+        <div class="remarks-icon">${ico('i-info')}</div>
+        <div class="remarks-content">
+          <div class="remarks-label">Important Information</div>
+          <div class="remarks-text">${e.notes}</div>
+        </div>
+      </div>`:''}
+    </div>`;
+  document.getElementById('content').innerHTML=html;
+  setupCarousel();
+}
+
+// PARALLAX
+function setupParallax(){
+  const bg=document.querySelector('.px-bg');
+  const main=document.getElementById('main');
+  if(!bg||!main)return;
+  const onScroll=()=>{
+    const y=main.scrollTop;
+    if(y<600)bg.style.transform=`translateY(${y*0.35}px)`;
+  };
+  main.removeEventListener('scroll',main._pxHandler);
+  main._pxHandler=onScroll;
+  main.addEventListener('scroll',onScroll,{passive:true});
+}
+
+// CAROUSEL
+let carouselState={idx:0,total:0,timer:null,progressTimer:null,paused:false,duration:4500};
+function setupCarousel(){
+  if(carouselState.timer){clearInterval(carouselState.timer);carouselState.timer=null;}
+  if(carouselState.progressTimer){clearInterval(carouselState.progressTimer);carouselState.progressTimer=null;}
+  const track=document.getElementById('carouselTrack');
+  if(!track)return;
+  const slides=track.querySelectorAll('.carousel-slide');
+  carouselState.idx=0;carouselState.total=slides.length;carouselState.paused=false;
+  if(carouselState.total<=1)return;
+  carouselStart();
+}
+function carouselStart(){
+  if(carouselState.progressTimer)clearInterval(carouselState.progressTimer);
+  let progress=0;const tick=50;
+  carouselState.progressTimer=setInterval(()=>{
+    if(carouselState.paused)return;
+    progress+=tick;
+    const pct=Math.min(100,(progress/carouselState.duration)*100);
+    const bar=document.getElementById('carouselProgress');
+    if(bar)bar.style.width=pct+'%';
+    if(progress>=carouselState.duration){progress=0;carouselNext();}
+  },tick);
+}
+function carouselGoTo(i){
+  const track=document.getElementById('carouselTrack');
+  if(!track)return;
+  carouselState.idx=i;
+  track.style.transform=`translateX(-${i*100}%)`;
+  document.querySelectorAll('.carousel-dot').forEach((d,di)=>d.classList.toggle('active',di===i));
+  const bar=document.getElementById('carouselProgress');if(bar)bar.style.width='0%';
+  const cnt=document.getElementById('carouselCount');if(cnt)cnt.textContent=`${i+1} / ${carouselState.total}`;
+  track.querySelectorAll('video').forEach((v,vi)=>{if(vi===i){v.play().catch(()=>{});}else{v.pause();v.currentTime=0;}});
+  carouselStart();
+}
+function carouselNext(){carouselGoTo((carouselState.idx+1)%carouselState.total);}
+function carouselPrev(){carouselGoTo((carouselState.idx-1+carouselState.total)%carouselState.total);}
+function carouselPause(){carouselState.paused=true;}
+function carouselResume(){carouselState.paused=false;}
+
+// INFO PAGES
+function selectInfo(type){
+  activeId='info-'+type;
+  buildSidebar();
+  let html='',title='',iconId='';
+  if(type==='holidays'){
+    title='Public Holidays 2025/2026';iconId='i-calendar';
+    html=`<div class="info-card"><table class="info-table">
+      <tr><td>20 October 2025</td><td>Divali</td></tr>
+      <tr><td>02 November 2025</td><td>Arrival of Indentured Labourers</td></tr>
+      <tr><td>25 December 2025</td><td>Christmas Day</td></tr>
+      <tr><td>01 January 2026</td><td>New Year's Day</td></tr>
+      <tr><td>02 January 2026</td><td>New Year Holiday</td></tr>
+      <tr><td>01 February 2026</td><td>Abolition of Slavery</td></tr>
+      <tr><td>11 February 2026</td><td>Thaiposam Cavadee</td></tr>
+      <tr><td>15 February 2026</td><td>Mahashivratree</td></tr>
+      <tr><td>17 February 2026</td><td>Chinese New Year</td></tr>
+      <tr><td>12 March 2026</td><td>National Day</td></tr>
+      <tr><td>21 March 2026</td><td>Eid-Al-Fitr</td></tr>
+      <tr><td>01 May 2026</td><td>Labour Day</td></tr>
+      <tr><td>15 September 2026</td><td>Ganesh Chaturthi</td></tr>
+      <tr><td>08 November 2026</td><td>Divali</td></tr>
+    </table></div>`;
+  } else if(type==='cancel'){
+    title='Cancellation Policy';iconId='i-x-circle';
+    html=`<div class="info-card"><h3>General Terms</h3><ul class="info-list">
+      <li>No show (confirmed client doesn't appear): <strong>100% cancellation fee</strong></li>
+      <li>Cancellation less than 24 hours before departure: <strong>100% fee</strong></li>
+      <li>Cancellation less than 48 hours before departure: <strong>50% fee</strong></li>
+      <li>Private tours: minimum 2 adults required</li>
+    </ul></div>
+    <div class="info-card"><h3>${ico('i-sparkles')} Île aux Aigrettes — Special Terms</h3><ul class="info-list">
+      <li>Cancelled 1 day before: <strong>100%</strong> (except cyclone/bad sea)</li>
+      <li>Cancelled 1 week before: <strong>50% fee</strong></li>
+      <li>Cancelled 2 weeks before: <strong>25% fee</strong></li>
+    </ul></div>`;
+  } else if(type==='payment'){
+    title='Payment Methods';iconId='i-credit-card';
+    html=`<div class="info-card"><h3>Accepted Cards & Surcharges</h3><table class="info-table">
+      <tr><td>Visa / Mastercard</td><td>+4% surcharge</td></tr>
+      <tr><td>American Express</td><td>+6% surcharge</td></tr>
+      <tr><td>Diners Club</td><td>+4% surcharge</td></tr>
+      <tr><td>Maestro / Visa Electron</td><td>Standard</td></tr>
+      <tr><td>PayPal</td><td>+4% surcharge</td></tr>
+    </table></div>`;
+  } else if(type==='contact'){
+    title='Contact & Booking';iconId='i-phone';
+    html=`<div class="info-card"><h3>Key Contacts</h3><ul class="info-list">
+      <li>Car Rentals bookings: <strong>(+230) 59427344</strong></li>
+      <li>Credit Card Terminal: <strong>202 6060</strong></li>
+      <li>Airport & Hotel delivery: <strong>€45 each way</strong></li>
+    </ul></div>`;
+  }
+  document.getElementById('content').innerHTML=`
+    <div class="info-title-hero"><h1>${ico(iconId)} ${title}</h1></div>
+    <div class="info-wrap">${html}</div>`;
+  document.getElementById('main').scrollTop=0;
+  if(window.innerWidth<=768)document.getElementById('sidebar').classList.remove('open');
+}
+
+function filterList(){buildSidebar();}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+
+// LIGHTBOX
+function openLB(id,idx){
+  const e=D.find(x=>x.id===id);if(!e)return;
+  const m=e.images[idx];if(!m||!m.src)return;
+  const c=document.getElementById('lb-content');
+  c.innerHTML=m.type==='video'?`<video src="${m.src}" controls autoplay></video>`:`<img src="${m.src}">`;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLB(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lb-content').innerHTML='';
+}
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeLB();});
+
+// INIT
+loadData();
+</script>
+</body>
+</html>
