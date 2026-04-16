@@ -1,0 +1,43 @@
+{
+  "id": "northfull",
+  "cat": "land",
+  "icon": "i-map",
+  "tag": "Full Day · North",
+  "name": "Full Day North Tour",
+  "sub": "Pamplemousses, Port Louis & Cap Malheureux",
+  "desc": "A full day exploring the lush north. Walk through Pamplemousses Botanical Garden, dive into Port Louis at the Caudan Waterfront, and end at the picturesque fishing village of Cap Malheureux with its iconic red-roofed church.",
+  "startPt": "Your Hotel",
+  "endPt": "Cap Malheureux",
+  "itin": [
+    "Pamplemousses Botanical Garden",
+    "Port Louis Caudan Waterfront",
+    "Free lunch time in Port Louis"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "Full Day"
+    },
+    {
+      "i": "i-users",
+      "t": "Min 6 pax"
+    }
+  ],
+  "prices": [
+    {
+      "l": "Adult",
+      "v": "€155"
+    },
+    {
+      "l": "Child 3–10",
+      "v": "€80"
+    },
+    {
+      "l": "Under 3",
+      "v": "Free"
+    }
+  ],
+  "notes": "Seat in air-conditioned coach. Lunch & drinks NOT included. Route varies by hotel location.",
+  "bg": "bg-land",
+  "media": []
+}

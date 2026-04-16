@@ -1,0 +1,16 @@
+# Bliss Holiday — Netlify Configuration
+
+[build]
+  publish = "."
+
+# Enable Netlify Identity for /admin
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+
+# Fallback: admin route
+[[redirects]]
+  from = "/admin"
+  to = "/admin/index.html"
+  status = 200

@@ -1,0 +1,49 @@
+{
+  "id": "heli",
+  "cat": "air",
+  "icon": "i-plane",
+  "tag": "Luxury · Helicopter",
+  "name": "Helicopter Services (MHL)",
+  "sub": "Sightseeing, Transfers & Underwater Waterfall",
+  "desc": "Mauritius Helicopter Ltd operating since 1984 with a perfect safety record. Sightseeing tours, airport transfers, the iconic Underwater Waterfall illusion, Heli-Lunch, Heli-Golf, and customised private experiences.",
+  "startPt": "Airport / Hotel Helipad",
+  "endPt": "Scenic Flight Route",
+  "itin": [
+    "Helipad departure",
+    "Aerial views over the island",
+    "Turquoise lagoons & coastline",
+    "Heli-Lunch option",
+    "Underwater Waterfall option"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "15 min – 1h"
+    },
+    {
+      "i": "i-award",
+      "t": "Since 1984"
+    },
+    {
+      "i": "i-sun",
+      "t": "Weather dependent"
+    }
+  ],
+  "prices": [
+    {
+      "l": "Airport Transfer (2 pax)",
+      "v": "€1,000"
+    },
+    {
+      "l": "Sightseeing / pax",
+      "v": "€300+"
+    },
+    {
+      "l": "Underwater Waterfall",
+      "v": "€300/pax"
+    }
+  ],
+  "notes": "Rates include 15% VAT. Valid Nov 2025 – Oct 2026. All services subject to weather.",
+  "bg": "bg-air",
+  "media": []
+}

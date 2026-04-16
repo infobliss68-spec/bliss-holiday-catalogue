@@ -1,0 +1,53 @@
+{
+  "id": "south2",
+  "cat": "land",
+  "icon": "i-mountain",
+  "tag": "Full Day · Budget",
+  "name": "South Tour with Chez Ruben",
+  "sub": "Same Scenery, Local Lunch",
+  "desc": "The same iconic southern route — Pride of the Islands, Trou aux Cerfs, Grand Bassin, Black River Gorges and Chamarel Coloured Earth — with lunch at the beloved local restaurant Chez Ruben.",
+  "startPt": "Your Hotel",
+  "endPt": "Chamarel",
+  "itin": [
+    "Pride of the Islands",
+    "Trou aux Cerfs volcanic crater",
+    "Grand Bassin sacred lake",
+    "Black River Gorges",
+    "Lunch at Chez Ruben"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "Full Day"
+    },
+    {
+      "i": "i-users",
+      "t": "Min 6 pax"
+    },
+    {
+      "i": "i-utensils",
+      "t": "Lunch included"
+    },
+    {
+      "i": "i-ticket",
+      "t": "Entrance included"
+    }
+  ],
+  "prices": [
+    {
+      "l": "Adult",
+      "v": "€105"
+    },
+    {
+      "l": "Child 3–10",
+      "v": "€55"
+    },
+    {
+      "l": "Under 3",
+      "v": "Free"
+    }
+  ],
+  "notes": "Seat in air-conditioned coach. Entrance to Chamarel included. Lunch at Chez Ruben. Minimum 6 pax.",
+  "bg": "bg-land",
+  "media": []
+}

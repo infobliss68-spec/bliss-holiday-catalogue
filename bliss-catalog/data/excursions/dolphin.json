@@ -1,0 +1,48 @@
+{
+  "id": "dolphin",
+  "cat": "sea",
+  "icon": "i-wave",
+  "tag": "Full Day · Adventure",
+  "name": "Full Day Swim with Dolphins",
+  "sub": "West Coast Speed Boat",
+  "desc": "Full day speed boat adventure along the west coast. Encounter the resident spinner dolphins at Tamarin Bay, snorkel over reefs, and enjoy a BBQ lunch with unlimited refreshments on board.",
+  "startPt": "Tamarin Bay",
+  "endPt": "West Coast",
+  "itin": [
+    "Early dolphins at Tamarin Bay",
+    "Swimming with wild dolphins",
+    "Snorkelling at coral reef",
+    "BBQ lunch on board"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "Full Day"
+    },
+    {
+      "i": "i-utensils",
+      "t": "Lunch & drinks"
+    },
+    {
+      "i": "i-heart",
+      "t": "Wild dolphins"
+    }
+  ],
+  "prices": [
+    {
+      "l": "Adult",
+      "v": "€98"
+    },
+    {
+      "l": "Child 3–10",
+      "v": "€78"
+    },
+    {
+      "l": "Under 3",
+      "v": "Free"
+    }
+  ],
+  "notes": "Lunch & drinks included. Transport included. Wild dolphin encounters subject to nature.",
+  "bg": "bg-sea",
+  "media": []
+}

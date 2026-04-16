@@ -1,0 +1,53 @@
+{
+  "id": "tea",
+  "cat": "land",
+  "icon": "i-award",
+  "tag": "Full Day · Premium",
+  "name": "The Tea Route",
+  "sub": "Colonial Estates, Tasting & Gris-Gris Cliffs",
+  "desc": "Follow the historic tea trail through the lush highlands. Visit Domaine des Aubineaux, enjoy a tea tasting at Bois Chéri, discover rum and vanilla at Saint Aubin, then conclude at the dramatic black cliffs of Gris-Gris.",
+  "startPt": "Your Hotel",
+  "endPt": "Gris-Gris Cliffs",
+  "itin": [
+    "Domaine des Aubineaux — colonial mansion",
+    "Domaine de Bois Chéri — tea tasting",
+    "Domaine de Saint Aubin — rum & vanilla",
+    "Crocodile Park",
+    "Lunch included"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "Full Day"
+    },
+    {
+      "i": "i-users",
+      "t": "Min 2 pax"
+    },
+    {
+      "i": "i-utensils",
+      "t": "Lunch included"
+    },
+    {
+      "i": "i-ticket",
+      "t": "All entrances incl."
+    }
+  ],
+  "prices": [
+    {
+      "l": "Adult",
+      "v": "€190"
+    },
+    {
+      "l": "Child 3–10",
+      "v": "€160"
+    },
+    {
+      "l": "Under 3",
+      "v": "Free"
+    }
+  ],
+  "notes": "Private guided tour in air-conditioned vehicle. All entrances and lunch included. Minimum 2 pax.",
+  "bg": "bg-land",
+  "media": []
+}
