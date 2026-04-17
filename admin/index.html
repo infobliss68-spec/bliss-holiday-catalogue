@@ -742,7 +742,7 @@ async function saveExcursion(){
     delete data._originalId;
     delete data._isNew;
 
-    const path = `bliss-catalog/data/excursions/${data.id}.json`;
+    const path = `data/excursions/${data.id}.json`;
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
 
     let sha = null;
@@ -756,7 +756,7 @@ async function saveExcursion(){
     }
 
     if(!currentExc._isNew && currentExc._originalId !== data.id){
-      await deleteFromGitHub(`bliss-catalog/data/excursions/${currentExc._originalId}.json`);
+      await deleteFromGitHub(`data/excursions/${currentExc._originalId}.json`);
     }
 
     const body = {
@@ -808,7 +808,7 @@ function deleteExcursion(){
     const badge = document.getElementById('savingBadge');
     badge.classList.add('show');
     try {
-      await deleteFromGitHub(`bliss-catalog/data/excursions/${currentExc._originalId}.json`);
+      await deleteFromGitHub(`data/excursions/${currentExc._originalId}.json`);
       toast('Excursion deleted');
       await loadExcursions();
       backToDashboard();
