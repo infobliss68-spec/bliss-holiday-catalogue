@@ -314,8 +314,23 @@ function ico(id){return `<svg class="ic"><use href="#${id}"/></svg>`;}
 
 // Load all excursion data
 async function loadData(){
+  // Try to load dynamic index first
+  let idsToLoad = null;
+  try {
+    const idxR = await fetch(`/data/excursions/index.json?t=${Date.now()}`);
+    if(idxR.ok){
+      const idx = await idxR.json();
+      if(Array.isArray(idx.ids) && idx.ids.length){
+        idsToLoad = idx.ids;
+      }
+    }
+  } catch(e){}
+
+  // Fallback to hardcoded list
+  if(!idsToLoad) idsToLoad = EXCURSION_IDS;
+
   const loaded=[];
-  for(const id of EXCURSION_IDS){
+  for(const id of idsToLoad){
     try{
       const r=await fetch(`/data/excursions/${id}.json`);
       if(r.ok)loaded.push(await r.json());
