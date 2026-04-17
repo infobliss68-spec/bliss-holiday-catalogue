@@ -362,54 +362,44 @@ function loadCreds(){
   githubRepo = localStorage.getItem('bliss_gh_repo') || '';
 }
 
-// ========== LOAD DATA ==========
+// ========== LOAD DATA (single-file architecture) ==========
+let dataFileSha = null; // SHA of excursions.json for updates
+
 async function loadExcursions(){
   const grid = document.getElementById('excGrid');
   grid.innerHTML = '<div class="loading"><div class="spin"></div>Loading excursions...</div>';
   excursions = [];
+  dataFileSha = null;
 
-  // STEP 1: Try to list all JSON files dynamically from GitHub
-  let fileNames = null;
+  // Load from GitHub if we have credentials (gets latest + SHA)
   if(githubToken && githubRepo){
     try {
-      const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions?t=${Date.now()}`, {
+      const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions.json?t=${Date.now()}`, {
         headers: {'Authorization':'Bearer '+githubToken, 'Accept':'application/vnd.github+json', 'Cache-Control':'no-cache'}
       });
       if(r.ok){
-        const files = await r.json();
-        fileNames = files
-          .filter(f => f.name.endsWith('.json'))
-          .map(f => f.name.replace('.json',''));
-        console.log('[Bliss Admin] Found', fileNames.length, 'excursions on GitHub:', fileNames);
+        const meta = await r.json();
+        dataFileSha = meta.sha;
+        const content = decodeURIComponent(escape(atob(meta.content.replace(/\s/g,''))));
+        const parsed = JSON.parse(content);
+        excursions = parsed.excursions || [];
+        console.log('[Bliss Admin] Loaded', excursions.length, 'excursions from GitHub (SHA:', dataFileSha.substring(0,8)+')');
+        renderDashboard();
+        return;
       }
-    } catch(e){ console.warn('[Bliss Admin] Could not list from GitHub:', e); }
+    } catch(e){ console.warn('[Bliss Admin] GitHub load failed:', e); }
   }
 
-  // STEP 2: Fallback to hardcoded list if GitHub listing failed
-  const idsToLoad = fileNames || EXCURSION_IDS;
+  // Fallback: load from live site
+  try {
+    const r = await fetch(`/data/excursions.json?t=${Date.now()}`);
+    if(r.ok){
+      const parsed = await r.json();
+      excursions = parsed.excursions || [];
+      console.log('[Bliss Admin] Loaded', excursions.length, 'excursions from live site');
+    }
+  } catch(e){ console.warn('[Bliss Admin] Live site load failed:', e); }
 
-  // STEP 3: Load each file (from the live site, with cache bust)
-  for(const id of idsToLoad){
-    try {
-      const r = await fetch(`/data/excursions/${id}.json?t=${Date.now()}`);
-      if(r.ok){
-        const data = await r.json();
-        excursions.push(data);
-      } else if(githubToken && githubRepo){
-        // If not on live site yet (just created), fetch from GitHub directly
-        const r2 = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions/${id}.json`, {
-          headers: {'Authorization':'Bearer '+githubToken, 'Accept':'application/vnd.github+json'}
-        });
-        if(r2.ok){
-          const meta = await r2.json();
-          const content = decodeURIComponent(escape(atob(meta.content.replace(/\s/g,''))));
-          excursions.push(JSON.parse(content));
-        }
-      }
-    } catch(e){ console.warn('[Bliss Admin] Failed to load', id, e); }
-  }
-
-  console.log('[Bliss Admin] Loaded', excursions.length, 'excursions');
   renderDashboard();
 }
 
@@ -803,79 +793,25 @@ async function saveExcursion(){
     delete data._originalId;
     delete data._isNew;
 
-    const path = `data/excursions/${data.id}.json`;
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
-
-    console.log('[Bliss Admin] Saving to:', `https://api.github.com/repos/${githubRepo}/contents/${path}`);
-    console.log('[Bliss Admin] Repo:', githubRepo, '| Token prefix:', githubToken.substring(0,10)+'...');
-
-    let sha = null;
-    if(!currentExc._isNew){
-      try {
-        const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
-          headers:{'Authorization':'Bearer '+githubToken,'Accept':'application/vnd.github+json'}
-        });
-        console.log('[Bliss Admin] GET existing file status:', r.status);
-        if(r.ok){
-          const existing = await r.json();
-          sha = existing.sha;
-          console.log('[Bliss Admin] Got SHA:', sha);
-        } else if(r.status === 404){
-          console.log('[Bliss Admin] File does not exist yet, will create new');
-        } else {
-          const errData = await r.json();
-          throw new Error(`GitHub check failed (${r.status}): ${errData.message||'Unknown'}`);
-        }
-      } catch(e){
-        console.error('[Bliss Admin] Error checking existing file:', e);
-        throw e;
+    // Build updated excursions array
+    let updatedList = [...excursions];
+    if(currentExc._isNew){
+      // Adding new excursion
+      updatedList.push(data);
+    } else {
+      // Update existing — find by original ID
+      const originalId = currentExc._originalId || data.id;
+      const idx = updatedList.findIndex(e => e.id === originalId);
+      if(idx >= 0){
+        updatedList[idx] = data;
+      } else {
+        updatedList.push(data);
       }
     }
 
-    if(!currentExc._isNew && currentExc._originalId && currentExc._originalId !== data.id){
-      await deleteFromGitHub(`data/excursions/${currentExc._originalId}.json`);
-    }
-
-    const body = {
-      message: `Update excursion: ${data.name}`,
-      content: content
-    };
-    if(sha) body.sha = sha;
-
-    console.log('[Bliss Admin] Sending PUT with body:', {message:body.message, hasSha: !!sha});
-
-    const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
-      method:'PUT',
-      headers:{'Authorization':'Bearer '+githubToken,'Content-Type':'application/json','Accept':'application/vnd.github+json'},
-      body:JSON.stringify(body)
-    });
-
-    const respData = await r.json();
-    console.log('[Bliss Admin] PUT response status:', r.status, respData);
-
-    if(!r.ok){
-      throw new Error(`GitHub rejected save (${r.status}): ${respData.message||'Unknown error'}`);
-    }
-
-    // VERIFICATION: re-read the file from GitHub to confirm the save worked
-    console.log('[Bliss Admin] Verifying save by re-reading file...');
-    try {
-      const verifyUrl = `https://raw.githubusercontent.com/${githubRepo}/${respData.content.path ? 'main' : 'main'}/${path}?t=${Date.now()}`;
-      const vr = await fetch(verifyUrl);
-      if(vr.ok){
-        const savedData = await vr.json();
-        console.log('[Bliss Admin] ✓ Verified — GitHub now has:', {name: savedData.name, id: savedData.id});
-        if(savedData.name !== data.name || savedData.id !== data.id){
-          console.warn('[Bliss Admin] ⚠️ Saved data mismatch!');
-        }
-      }
-    } catch(e){ console.log('[Bliss Admin] Verification skipped:', e.message); }
+    await saveExcursionsFile(updatedList, `Update excursion: ${data.name}`);
 
     toast('Saved! Site rebuilding (~1 min)...');
-
-    // Update the dynamic index of all excursion IDs for the public site
-    await updateExcursionIndex();
-
     await loadExcursions();
     setTimeout(()=>backToDashboard(),1200);
   } catch(e){
@@ -886,63 +822,47 @@ async function saveExcursion(){
   }
 }
 
-async function updateExcursionIndex(){
-  // Build list of current excursion IDs from GitHub, then write to index.json
-  if(!githubToken || !githubRepo) return;
+async function saveExcursionsFile(excursionsArray, commitMessage){
+  // Save the full excursions.json file to GitHub
+  const fileContent = {
+    version: "2.0",
+    updated: new Date().toISOString().split('T')[0],
+    excursions: excursionsArray
+  };
+  const contentB64 = btoa(unescape(encodeURIComponent(JSON.stringify(fileContent, null, 2))));
+
+  // Get latest SHA (re-fetch to handle concurrent edits)
+  let sha = null;
   try {
-    console.log('[Bliss Admin] Updating index.json...');
-    const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions?t=${Date.now()}`, {
+    const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions.json?t=${Date.now()}`, {
       headers: {'Authorization':'Bearer '+githubToken, 'Accept':'application/vnd.github+json'}
     });
-    if(!r.ok) return;
-    const files = await r.json();
-    const ids = files
-      .filter(f => f.name.endsWith('.json') && f.name !== 'index.json')
-      .map(f => f.name.replace('.json',''));
-
-    const indexContent = JSON.stringify({ids: ids, updated: new Date().toISOString()}, null, 2);
-    const contentB64 = btoa(unescape(encodeURIComponent(indexContent)));
-
-    // Check if index.json already exists
-    let sha = null;
-    try {
-      const existR = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions/index.json`, {
-        headers: {'Authorization':'Bearer '+githubToken, 'Accept':'application/vnd.github+json'}
-      });
-      if(existR.ok){ sha = (await existR.json()).sha; }
-    } catch(e){}
-
-    const body = {
-      message: 'Update excursion index',
-      content: contentB64
-    };
-    if(sha) body.sha = sha;
-
-    await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions/index.json`, {
-      method: 'PUT',
-      headers: {'Authorization':'Bearer '+githubToken, 'Content-Type':'application/json', 'Accept':'application/vnd.github+json'},
-      body: JSON.stringify(body)
-    });
-    console.log('[Bliss Admin] Index updated with', ids.length, 'excursions');
-  } catch(e){
-    console.warn('[Bliss Admin] Could not update index:', e);
-  }
-}
-
-async function deleteFromGitHub(path){
-  try {
-    const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
-      headers:{Authorization:'Bearer '+githubToken}
-    });
     if(r.ok){
-      const data = await r.json();
-      await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
-        method:'DELETE',
-        headers:{'Authorization':'Bearer '+githubToken,'Content-Type':'application/json'},
-        body:JSON.stringify({message:`Delete ${path}`, sha:data.sha})
-      });
+      const existing = await r.json();
+      sha = existing.sha;
     }
-  } catch(e){console.error(e);}
+  } catch(e){ console.warn('Could not fetch existing SHA:', e); }
+
+  const body = { message: commitMessage, content: contentB64 };
+  if(sha) body.sha = sha;
+
+  console.log('[Bliss Admin] Saving excursions.json with', excursionsArray.length, 'excursions');
+
+  const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions.json`, {
+    method: 'PUT',
+    headers: {'Authorization':'Bearer '+githubToken, 'Content-Type':'application/json', 'Accept':'application/vnd.github+json'},
+    body: JSON.stringify(body)
+  });
+
+  const respData = await r.json();
+  console.log('[Bliss Admin] PUT response:', r.status);
+
+  if(!r.ok){
+    throw new Error(`GitHub save failed (${r.status}): ${respData.message||'Unknown error'}`);
+  }
+
+  dataFileSha = respData.content.sha;
+  return respData;
 }
 
 function deleteExcursion(){
@@ -950,8 +870,9 @@ function deleteExcursion(){
     const badge = document.getElementById('savingBadge');
     badge.classList.add('show');
     try {
-      await deleteFromGitHub(`data/excursions/${currentExc._originalId}.json`);
-      await updateExcursionIndex();
+      const originalId = currentExc._originalId || currentExc.id;
+      const updatedList = excursions.filter(e => e.id !== originalId);
+      await saveExcursionsFile(updatedList, `Delete excursion: ${currentExc.name}`);
       toast('Excursion deleted');
       await loadExcursions();
       backToDashboard();
@@ -988,19 +909,6 @@ function renderSettingsPanel(){
         Run full diagnostic
       </button>
       <div id="diagnosticResult" style="margin-top:16px"></div>
-    </div>
-
-    <div class="settings-card" style="border-left:4px solid #d33">
-      <h3 style="display:flex;align-items:center;gap:8px;color:#d33">
-        <svg fill="none" stroke="#d33" viewBox="0 0 24 24" stroke-width="1.8" style="width:20px;height:20px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-        Cleanup Duplicates
-      </h3>
-      <p>Lists all excursions on GitHub and lets you delete unwanted ones (e.g., duplicated "new-exc-..." files).</p>
-      <button class="btn btn-ghost" onclick="loadCleanupList()">
-        <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        Load excursion list
-      </button>
-      <div id="cleanupList" style="margin-top:16px"></div>
     </div>
 
     <div class="settings-card">
@@ -1081,56 +989,6 @@ function saveSettings(){
   loadCreds();
   renderSettingsPanel();
   toast('Settings saved');
-}
-
-async function loadCleanupList(){
-  const container = document.getElementById('cleanupList');
-  if(!githubToken || !githubRepo){
-    container.innerHTML = '<div style="padding:10px;background:#fee;border-radius:6px;color:var(--danger);font-size:12px">Configure GitHub first</div>';
-    return;
-  }
-  container.innerHTML = '<div style="padding:10px;color:var(--muted);font-size:12px">Loading...</div>';
-  try {
-    const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions?t=${Date.now()}`, {
-      headers: {'Authorization':'Bearer '+githubToken, 'Accept':'application/vnd.github+json'}
-    });
-    const files = await r.json();
-    const jsonFiles = files.filter(f => f.name.endsWith('.json') && f.name !== 'index.json');
-
-    container.innerHTML = `
-      <div style="background:white;border:1px solid var(--border);border-radius:8px;max-height:400px;overflow-y:auto">
-        ${jsonFiles.map(f => {
-          const isNew = f.name.startsWith('new-exc-');
-          return `<div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
-            <svg width="14" height="14" fill="none" stroke="${isNew?'#d33':'var(--muted)'}" viewBox="0 0 24 24" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span style="flex:1;font-size:12px;color:var(--ink);${isNew?'font-weight:600':''}">${f.name}${isNew?' <span style="color:#d33">(duplicate)</span>':''}</span>
-            <button class="btn btn-danger" style="padding:5px 10px;font-size:11px" onclick="confirmCleanupDelete('${f.name}','${f.sha}')">Delete</button>
-          </div>`;
-        }).join('')}
-      </div>
-      <div style="margin-top:10px;font-size:11px;color:var(--muted)">${jsonFiles.length} files found · Red = duplicates from earlier bug</div>
-    `;
-  } catch(e){
-    container.innerHTML = `<div style="padding:10px;background:#fee;border-radius:6px;color:var(--danger);font-size:12px">Error: ${e.message}</div>`;
-  }
-}
-
-function confirmCleanupDelete(name, sha){
-  pendingAction = async ()=>{
-    try {
-      await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions/${name}`, {
-        method: 'DELETE',
-        headers: {'Authorization':'Bearer '+githubToken, 'Content-Type':'application/json', 'Accept':'application/vnd.github+json'},
-        body: JSON.stringify({message: `Delete duplicate ${name}`, sha: sha})
-      });
-      await updateExcursionIndex();
-      toast('Deleted '+name);
-      loadCleanupList();
-    } catch(e){
-      toast('Delete failed: '+e.message, 'error');
-    }
-  };
-  openModal('Delete this file?', `"${name}" will be permanently removed from GitHub.`, 'Delete');
 }
 
 async function runFullDiagnostic(){
@@ -1219,35 +1077,39 @@ async function runFullDiagnostic(){
     }
   }
 
-  // Test data/excursions folder access
+  // Test data/excursions.json file access
   if(repo && token && critical === 0){
     try {
-      const r = await fetch(`https://api.github.com/repos/${repo}/contents/data/excursions`,{
+      const r = await fetch(`https://api.github.com/repos/${repo}/contents/data/excursions.json`,{
         headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'}
       });
       if(r.ok){
-        const files = await r.json();
-        const jsonFiles = files.filter(f=>f.name.endsWith('.json'));
-        tests.push({status:'ok',label:'data/excursions folder',detail:`Found ${files.length} items (${jsonFiles.length} JSON files)`});
+        const meta = await r.json();
+        const sizeKB = (meta.size / 1024).toFixed(1);
+        tests.push({status:'ok',label:'data/excursions.json found',detail:`Size: ${sizeKB} KB`});
 
-        // Read a sample file to verify
-        if(jsonFiles.length > 0){
-          const sample = jsonFiles[0];
-          const r2 = await fetch(sample.download_url);
+        // Fetch and parse content
+        try {
+          const r2 = await fetch(meta.download_url);
           if(r2.ok){
-            const json = await r2.json();
-            tests.push({status:'ok',label:'Read sample file',detail:`${sample.name}: "${json.name}" — ${json.prices?.[0]?.v||'no price'}`});
+            const data = await r2.json();
+            const count = (data.excursions||[]).length;
+            const sample = data.excursions?.[0];
+            tests.push({status:'ok',label:'Parsed excursions',detail:`${count} excursions in file. First: "${sample?.name||'N/A'}"`});
           }
+        } catch(e){
+          tests.push({status:'warn',label:'Parse JSON',detail:'Could not parse file contents'});
+          warnings++;
         }
       } else if(r.status === 404){
-        tests.push({status:'fail',label:'data/excursions folder',detail:'Folder not found at /data/excursions. Check your repo structure.',critical:true});
+        tests.push({status:'fail',label:'data/excursions.json',detail:'File not found. Upload excursions.json to /data/ folder on GitHub.',critical:true});
         critical++;
       } else {
-        tests.push({status:'warn',label:'data/excursions folder',detail:`Status ${r.status}`});
+        tests.push({status:'warn',label:'data/excursions.json',detail:`Status ${r.status}`});
         warnings++;
       }
     } catch(e){
-      tests.push({status:'warn',label:'data/excursions check',detail:e.message});
+      tests.push({status:'warn',label:'excursions.json check',detail:e.message});
       warnings++;
     }
   }
