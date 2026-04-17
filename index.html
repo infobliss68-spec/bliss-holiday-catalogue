@@ -304,39 +304,25 @@ img,video{max-width:100%;display:block}
 </svg>
 
 <script>
-// Excursion IDs - loaded from /_data/excursions/
-const EXCURSION_IDS=["south1","south2","northhalf","northfull","tea","vallee","casela","cata","cata-east","5islands","gabriel","whale","dolphin","fishing","aigrettes","heli","sky"];
-
 let D=[];
 let activeId=null;
 
 function ico(id){return `<svg class="ic"><use href="#${id}"/></svg>`;}
 
-// Load all excursion data
+// Load all excursion data from single file
 async function loadData(){
-  // Try to load dynamic index first
-  let idsToLoad = null;
   try {
-    const idxR = await fetch(`/data/excursions/index.json?t=${Date.now()}`);
-    if(idxR.ok){
-      const idx = await idxR.json();
-      if(Array.isArray(idx.ids) && idx.ids.length){
-        idsToLoad = idx.ids;
-      }
+    const r = await fetch(`/data/excursions.json?t=${Date.now()}`);
+    if(r.ok){
+      const parsed = await r.json();
+      D = parsed.excursions || [];
+      console.log('Loaded', D.length, 'excursions');
+    } else {
+      console.warn('Could not load excursions.json, status:', r.status);
     }
-  } catch(e){}
-
-  // Fallback to hardcoded list
-  if(!idsToLoad) idsToLoad = EXCURSION_IDS;
-
-  const loaded=[];
-  for(const id of idsToLoad){
-    try{
-      const r=await fetch(`/data/excursions/${id}.json`);
-      if(r.ok)loaded.push(await r.json());
-    }catch(e){console.warn('Failed to load',id);}
+  } catch(e){
+    console.error('Failed to load excursions:', e);
   }
-  D=loaded;
   buildSidebar();
   renderWelcome();
 }
