@@ -384,7 +384,7 @@ function selectExc(id){
 function renderExcursion(id){
   const e=D.find(x=>x.id===id);
   if(!e)return;
-  const images=e.images||[];
+  const images=e.media||e.images||[];
   const heroImg=images.find(m=>m.isHero)||images[0];
   const galleryItems=images.filter(m=>m!==heroImg);
 
@@ -658,7 +658,7 @@ function toggleSidebar(){document.getElementById('sidebar').classList.toggle('op
 // LIGHTBOX
 function openLB(id,idx){
   const e=D.find(x=>x.id===id);if(!e)return;
-  const m=e.images[idx];if(!m||!m.src)return;
+  const m=(e.media||e.images||[])[idx];if(!m||!m.src)return;
   const c=document.getElementById('lb-content');
   c.innerHTML=m.type==='video'?`<video src="${m.src}" controls autoplay></video>`:`<img src="${m.src}">`;
   document.getElementById('lightbox').classList.add('open');
