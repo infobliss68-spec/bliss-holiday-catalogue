@@ -790,23 +790,16 @@ function ensurePdfStylesInjected(){
 
     /* COVER */
     .pdf-cover {
-      background: linear-gradient(135deg, #1a0d0a 0%, #2d1810 50%, #1a0d0a 100%);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(242,106,33,0.45) 0%, transparent 35%),
+        radial-gradient(circle at 0% 100%, rgba(6,166,164,0.32) 0%, transparent 40%),
+        linear-gradient(135deg, #1a0d0a 0%, #2d1810 50%, #1a0d0a 100%);
       color: white;
       position: relative;
       overflow: hidden;
     }
-    .pdf-cover-blob1 {
-      position: absolute; top: -100px; right: -100px;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, #f26a21 0%, transparent 60%);
-      opacity: 0.5; filter: blur(60px);
-    }
-    .pdf-cover-blob2 {
-      position: absolute; bottom: -200px; left: -100px;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, #06a6a4 0%, transparent 60%);
-      opacity: 0.35; filter: blur(80px);
-    }
+    .pdf-cover-blob1 { display: none; }
+    .pdf-cover-blob2 { display: none; }
     .pdf-cover-content {
       position: relative; z-index: 2;
       height: 100%; padding: 50px;
@@ -818,11 +811,11 @@ function ensurePdfStylesInjected(){
     .pdf-cover-middle { flex: 1; display: flex; flex-direction: column; justify-content: center; margin-top: 40px; }
     .pdf-cover-year { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 300; color: #ffaa6e; letter-spacing: 12px; margin-bottom: 16px; }
     .pdf-cover-title { font-family: 'Fraunces', serif; font-size: 100px; font-weight: 300; line-height: 0.92; letter-spacing: -4px; margin: 0 0 8px; }
-    .pdf-cover-title .accent { font-style: italic; background: linear-gradient(135deg, #f26a21 0%, #ff7e5f 50%, #feb47b 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 400; }
+    .pdf-cover-title .accent { font-style: italic; color: #f26a21; font-weight: 400; }
     .pdf-cover-subtitle { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.85); margin-top: 28px; max-width: 420px; line-height: 1.7; }
     .pdf-cover-divider { width: 60px; height: 3px; background: linear-gradient(90deg, #f26a21, #ff7e5f); margin: 30px 0; border-radius: 2px; }
     .pdf-cover-stats { display: flex; gap: 50px; margin-top: 24px; }
-    .pdf-cover-stat-num { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 500; color: white; line-height: 1; background: linear-gradient(135deg, white, #ffaa6e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .pdf-cover-stat-num { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 500; color: #ffaa6e; line-height: 1; }
     .pdf-cover-stat-lbl { font-size: 9px; color: rgba(255,255,255,0.6); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 6px; font-weight: 600; }
     .pdf-cover-bottom { border-top: 1px solid rgba(255,255,255,0.15); padding-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
     .pdf-cover-contact .label { color: #f26a21; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
@@ -876,10 +869,7 @@ function ensurePdfStylesInjected(){
     .pdf-hero-title .italic { font-style: italic; font-weight: 300; color: #feb47b; }
     .pdf-hero-sub { font-size: 11px; color: rgba(255,255,255,0.95); font-weight: 500; letter-spacing: 0.3px; }
 
-    .pdf-wave { position: relative; height: 28px; margin-top: -1px; z-index: 5; }
-    .pdf-wave svg { display: block; width: 100%; height: 100%; }
-
-    .pdf-content { flex: 1; padding: 24px 32px 16px; display: flex; flex-direction: column; background: #fff8f0; }
+    .pdf-content { flex: 1; padding: 22px 32px 16px; display: flex; flex-direction: column; background: #fff8f0; }
     .pdf-section-label { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
     .pdf-section-label .num { font-family: 'Fraunces', serif; font-style: italic; font-size: 16px; color: #f26a21; font-weight: 500; }
     .pdf-section-label .title { font-size: 10px; font-weight: 700; color: #1a0d0a; letter-spacing: 3px; text-transform: uppercase; }
@@ -924,6 +914,32 @@ function ensurePdfStylesInjected(){
     .pdf-footer-page { font-family: 'Fraunces', serif; font-size: 22px; color: white; display: flex; align-items: baseline; gap: 4px; background: linear-gradient(135deg, #f26a21, #ff7e5f); padding: 8px 16px; border-radius: 6px; box-shadow: 0 4px 12px rgba(242,106,33,0.4); }
     .pdf-footer-page .num { font-weight: 700; color: white; }
     .pdf-footer-page .total { font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; }
+
+    /* INFO PAGE */
+    .pdf-info-page { flex: 1; padding: 50px 50px 30px; display: flex; flex-direction: column; background: #fff8f0; }
+    .pdf-info-header { margin-bottom: 30px; }
+    .pdf-info-tag { color: #f26a21; font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
+    .pdf-info-title { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 400; color: #1a0d0a; line-height: 1; margin: 0 0 8px; letter-spacing: -2px; }
+    .pdf-info-sub { font-family: 'Fraunces', serif; font-style: italic; font-size: 16px; color: #8a7e74; font-weight: 400; }
+    .pdf-info-divider { width: 60px; height: 3px; background: #f26a21; margin-top: 24px; border-radius: 2px; }
+    .pdf-info-body { flex: 1; }
+
+    .pdf-info-table { width: 100%; border-collapse: collapse; }
+    .pdf-info-table tr { border-bottom: 0.5px dashed #d8d2c8; }
+    .pdf-info-table td { padding: 11px 8px; font-size: 13px; color: #2a1f1a; vertical-align: middle; }
+    .pdf-info-table td.date { font-family: 'Fraunces', serif; font-style: italic; color: #f26a21; font-weight: 500; width: 180px; }
+    .pdf-info-table td.amount { text-align: right; font-family: 'Fraunces', serif; font-weight: 600; color: #d84f0a; }
+    .pdf-info-table td.amount.free { color: #06a6a4; font-style: italic; }
+
+    .pdf-info-block { background: linear-gradient(135deg, #fff, #fff5ee); border-left: 4px solid #f26a21; border-radius: 4px; padding: 18px 22px; margin-bottom: 18px; }
+    .pdf-info-h { font-size: 11px; font-weight: 700; color: #d84f0a; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+    .pdf-info-list { list-style: none; padding: 0; margin: 0; }
+    .pdf-info-list li { font-size: 13px; color: #2a1f1a; padding: 6px 0 6px 18px; position: relative; line-height: 1.5; }
+    .pdf-info-list li::before { content: ''; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; background: #f26a21; border-radius: 50%; }
+    .pdf-info-list li b { font-weight: 700; color: #1a0d0a; }
+    .pdf-info-list li .hl { color: #d84f0a; font-weight: 600; }
+
+    .pdf-info-note { font-family: 'Fraunces', serif; font-style: italic; font-size: 12px; color: #8a7e74; padding: 14px 18px; border-left: 2px solid #06a6a4; background: #f0fafa; border-radius: 4px; margin-top: 16px; line-height: 1.6; }
   `;
   document.head.appendChild(css);
 }
@@ -1012,6 +1028,32 @@ function buildTOCHTML(excursions){
         ${renderSection('Land excursions', cats.land)}
         ${renderSection('Sea excursions', cats.sea)}
         ${renderSection('Air excursions', cats.air)}
+        <div class="pdf-toc-section">
+          <div class="pdf-toc-section-title">
+            <span class="label">Information</span>
+            <span class="count">4 sections</span>
+          </div>
+          <div class="pdf-toc-item">
+            <span class="num">i</span>
+            <span class="name">Public Holidays 2025 / 2026</span>
+            <span class="pageno">${excursions.length + 3}</span>
+          </div>
+          <div class="pdf-toc-item">
+            <span class="num">i</span>
+            <span class="name">Cancellation Policy</span>
+            <span class="pageno">${excursions.length + 4}</span>
+          </div>
+          <div class="pdf-toc-item">
+            <span class="num">i</span>
+            <span class="name">Payment Methods</span>
+            <span class="pageno">${excursions.length + 5}</span>
+          </div>
+          <div class="pdf-toc-item">
+            <span class="num">i</span>
+            <span class="name">Contact &amp; Booking</span>
+            <span class="pageno">${excursions.length + 6}</span>
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -1023,7 +1065,7 @@ function buildExcursionHTML(exc, index, totalPages){
   const heroImg = media[0];
   const thumbs = media.slice(1, 3);
 
-  const heroBgStyle = heroImg ? `style="background-image: url('${heroImg.src}')"` : '';
+  const heroBgImage = heroImg ? `background-image: url('${heroImg.src}');` : '';
   const heroFallbackClass = heroImg ? '' : ('fallback-' + cat);
 
   let thumbsHtml = '';
@@ -1088,7 +1130,7 @@ function buildExcursionHTML(exc, index, totalPages){
     <div class="pdf-page">
       <div class="pdf-cat-stripe ${cat}"></div>
       <div class="pdf-hero">
-        <div class="pdf-hero-image ${heroFallbackClass}" ${heroBgStyle} style="flex: ${heroFlex}; ${heroBgStyle ? heroBgStyle.replace('style="', '').replace('"', '') : ''}">
+        <div class="pdf-hero-image ${heroFallbackClass}" style="flex: ${heroFlex}; ${heroBgImage}">
           <div class="pdf-hero-topbar">
             <img src="${BLISS_LOGO_DATAURL}" alt="Bliss" class="pdf-hero-logo">
             <div class="pdf-hero-cattag ${cat}">${cat.toUpperCase()}</div>
@@ -1107,13 +1149,6 @@ function buildExcursionHTML(exc, index, totalPages){
         <div class="pdf-hero-thumbs" style="display: ${thumbsDisplay}; flex: ${thumbsFlex};">
           ${thumbsHtml}
         </div>
-      </div>
-      <div class="pdf-wave">
-        <svg viewBox="0 0 595 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0,28 L0,14 Q148,0 297,14 T595,14 L595,28 Z" fill="#fff8f0"/>
-          <path d="M0,20 Q148,8 297,20 T595,20" stroke="#f26a21" stroke-width="1" fill="none" opacity="0.6"/>
-          <path d="M0,24 Q148,14 297,24 T595,24" stroke="#ff7e5f" stroke-width="0.5" fill="none" opacity="0.4"/>
-        </svg>
       </div>
       <div class="pdf-content">
         <div class="pdf-section-label">
@@ -1154,7 +1189,119 @@ function buildExcursionHTML(exc, index, totalPages){
   `;
 }
 
-// Render an HTML string into a canvas via html2canvas
+// Build an info page (Holidays, Cancellation, Payment, Contact)
+function buildInfoPageHTML(infoType, pageNum, totalPages){
+  let title = '';
+  let subtitle = '';
+  let bodyHtml = '';
+
+  if(infoType === 'holidays'){
+    title = 'Public Holidays';
+    subtitle = 'Mauritius 2025 / 2026';
+    bodyHtml = `
+      <table class="pdf-info-table">
+        <tr><td class="date">20 October 2025</td><td>Divali</td></tr>
+        <tr><td class="date">02 November 2025</td><td>Arrival of Indentured Labourers</td></tr>
+        <tr><td class="date">25 December 2025</td><td>Christmas Day</td></tr>
+        <tr><td class="date">01 January 2026</td><td>New Year's Day</td></tr>
+        <tr><td class="date">02 January 2026</td><td>New Year Holiday</td></tr>
+        <tr><td class="date">01 February 2026</td><td>Abolition of Slavery</td></tr>
+        <tr><td class="date">11 February 2026</td><td>Thaipoosam Cavadee</td></tr>
+        <tr><td class="date">15 February 2026</td><td>Mahashivratree</td></tr>
+        <tr><td class="date">17 February 2026</td><td>Chinese New Year</td></tr>
+        <tr><td class="date">12 March 2026</td><td>National Day</td></tr>
+        <tr><td class="date">21 March 2026</td><td>Eid-Al-Fitr</td></tr>
+        <tr><td class="date">01 May 2026</td><td>Labour Day</td></tr>
+        <tr><td class="date">15 September 2026</td><td>Ganesh Chaturthi</td></tr>
+        <tr><td class="date">08 November 2026</td><td>Divali</td></tr>
+      </table>
+    `;
+  } else if(infoType === 'cancel'){
+    title = 'Cancellation Policy';
+    subtitle = 'Terms & Conditions';
+    bodyHtml = `
+      <div class="pdf-info-block">
+        <div class="pdf-info-h">General Terms</div>
+        <ul class="pdf-info-list">
+          <li><span class="hl">No show</span> (confirmed client doesn't appear): <b>100% cancellation fee</b></li>
+          <li>Cancellation <span class="hl">less than 24 hours</span> before departure: <b>100% fee</b></li>
+          <li>Cancellation <span class="hl">less than 48 hours</span> before departure: <b>50% fee</b></li>
+          <li>Private tours: minimum <b>2 adults</b> required</li>
+        </ul>
+      </div>
+      <div class="pdf-info-block">
+        <div class="pdf-info-h">Île aux Aigrettes — Special Terms</div>
+        <ul class="pdf-info-list">
+          <li>Cancelled <span class="hl">1 day</span> before: <b>100%</b> (except cyclone / bad sea conditions)</li>
+          <li>Cancelled <span class="hl">1 week</span> before: <b>50% fee</b></li>
+          <li>Cancelled <span class="hl">2 weeks</span> before: <b>25% fee</b></li>
+        </ul>
+      </div>
+    `;
+  } else if(infoType === 'payment'){
+    title = 'Payment Methods';
+    subtitle = 'Accepted Cards & Surcharges';
+    bodyHtml = `
+      <table class="pdf-info-table">
+        <tr><td>Visa / Mastercard</td><td class="amount">+4% surcharge</td></tr>
+        <tr><td>American Express</td><td class="amount">+6% surcharge</td></tr>
+        <tr><td>Diners Club</td><td class="amount">+4% surcharge</td></tr>
+        <tr><td>Maestro / Visa Electron</td><td class="amount free">Standard</td></tr>
+        <tr><td>PayPal</td><td class="amount">+4% surcharge</td></tr>
+      </table>
+      <div class="pdf-info-note">All surcharges are applied at the time of payment processing. Cash payments accepted in EUR, USD, GBP and MUR.</div>
+    `;
+  } else if(infoType === 'contact'){
+    title = 'Contact & Booking';
+    subtitle = 'Get in touch with our team';
+    bodyHtml = `
+      <div class="pdf-info-block">
+        <div class="pdf-info-h">Reservations</div>
+        <ul class="pdf-info-list">
+          <li>Phone: <b>${BLISS_CONTACT.phone}</b></li>
+          <li>Email: <b>${BLISS_CONTACT.email}</b></li>
+          <li>Website: <b>${BLISS_CONTACT.website}</b></li>
+        </ul>
+      </div>
+      <div class="pdf-info-block">
+        <div class="pdf-info-h">Key Services</div>
+        <ul class="pdf-info-list">
+          <li>Car Rentals bookings: <b>(+230) 5942 7344</b></li>
+          <li>Credit Card Terminal: <b>202 6060</b></li>
+          <li>Airport &amp; Hotel delivery: <b>€45</b> each way</li>
+        </ul>
+      </div>
+      <div class="pdf-info-note">Our team is available to help you plan your perfect Mauritius experience. Bookings can be made up to 24 hours before your tour date.</div>
+    `;
+  }
+
+  return `
+    <div class="pdf-page">
+      <div class="pdf-cat-stripe" style="background: linear-gradient(90deg, #f26a21 0%, #ff7e5f 50%, #feb47b 100%);"></div>
+      <div class="pdf-info-page">
+        <div class="pdf-info-header">
+          <div class="pdf-info-tag">Information</div>
+          <h1 class="pdf-info-title">${title}</h1>
+          <div class="pdf-info-sub">${subtitle}</div>
+          <div class="pdf-info-divider"></div>
+        </div>
+        <div class="pdf-info-body">
+          ${bodyHtml}
+        </div>
+      </div>
+      <div class="pdf-footer">
+        <div class="pdf-footer-contact">
+          <div class="item"><span class="icon">☎</span>${BLISS_CONTACT.phone}</div>
+          <div class="item email"><span class="icon">✉</span>${BLISS_CONTACT.email}</div>
+        </div>
+        <div class="pdf-footer-page">
+          <span class="num">${pageNum}</span>
+          <span class="total">/ ${totalPages}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
 async function htmlToCanvas(html){
   const host = pdfRenderHost();
   host.innerHTML = html;
@@ -1199,7 +1346,9 @@ async function downloadCatalogPDF(){
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
-    const totalPages = D.length + 2;
+
+    const INFO_PAGES = ['holidays', 'cancel', 'payment', 'contact'];
+    const totalPages = D.length + 2 + INFO_PAGES.length; // cover + TOC + excursions + info
 
     // PAGE 1: Cover
     updatePdfProgress(8, 'Creating cover page...');
@@ -1215,13 +1364,30 @@ async function downloadCatalogPDF(){
     // PAGES 3+: Excursions
     for(let i = 0; i < D.length; i++){
       doc.addPage();
-      const percent = 20 + Math.round(((i + 1) / D.length) * 75);
+      const percent = 20 + Math.round(((i + 1) / D.length) * 65);
       updatePdfProgress(percent, `Page ${i + 1} of ${D.length}: ${D[i].name}`);
       const excCanvas = await htmlToCanvas(buildExcursionHTML(D[i], i + 1, totalPages));
       doc.addImage(excCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pageW, pageH);
     }
 
-    updatePdfProgress(98, 'Finalizing...');
+    // INFO PAGES (Holidays, Cancellation, Payment, Contact)
+    const infoLabels = {
+      holidays: 'Public Holidays',
+      cancel: 'Cancellation Policy',
+      payment: 'Payment Methods',
+      contact: 'Contact & Booking'
+    };
+    for(let i = 0; i < INFO_PAGES.length; i++){
+      doc.addPage();
+      const infoType = INFO_PAGES[i];
+      const pageNum = D.length + 3 + i;
+      const percent = 88 + Math.round(((i + 1) / INFO_PAGES.length) * 10);
+      updatePdfProgress(percent, `Adding ${infoLabels[infoType]}...`);
+      const infoCanvas = await htmlToCanvas(buildInfoPageHTML(infoType, pageNum, totalPages));
+      doc.addImage(infoCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pageW, pageH);
+    }
+
+    updatePdfProgress(99, 'Finalizing...');
     await new Promise(r => setTimeout(r, 200));
 
     const filename = `Bliss-Holiday-Catalogue-${BLISS_CONTACT.season}.pdf`;
