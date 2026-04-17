@@ -3,202 +3,329 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bliss Holiday — Admin</title>
+<title>Bliss Holiday — Admin Panel</title>
 <link rel="icon" href="/logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --orange:#f26a21;--orange-light:#fef0e6;--orange-deep:#d84f0a;
-  --ink:#1a1a1a;--text:#2a2a2a;--muted:#7a7a7a;--border:#e8e8e8;--bg:#fafafa;
+  --ink:#1a1a1a;--text:#2a2a2a;--muted:#7a7a7a;--border:#e8e8e8;
+  --bg:#fafafa;--success:#1aa555;--danger:#d33;
 }
-body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.ic{width:18px;height:18px;stroke-width:1.8}
+html,body{height:100%;font-family:'Poppins',sans-serif;color:var(--text);background:var(--bg);font-weight:400;-webkit-font-smoothing:antialiased}
+img,video{max-width:100%;display:block}
+.ic{width:18px;height:18px;stroke-width:1.8;flex-shrink:0}
 
 /* LOGIN SCREEN */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-box{background:white;border-radius:16px;box-shadow:0 20px 48px rgba(0,0,0,.08);padding:40px;max-width:420px;width:100%;border:1px solid var(--border)}
-.login-box img{height:48px;display:block;margin:0 auto 24px}
-.login-title{font-size:1.2rem;font-weight:700;color:var(--ink);text-align:center;margin-bottom:6px;letter-spacing:-.3px}
-.login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+.login-box>img{height:48px;display:block;margin:0 auto 24px}
 .lock-icon{width:60px;height:60px;border-radius:50%;background:var(--orange-light);color:var(--orange);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
 .lock-icon svg{width:28px;height:28px}
-.pw-field{margin-bottom:14px}
-.pw-field label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;display:block;margin-bottom:7px}
-.pw-field input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;background:var(--bg);outline:none;transition:all .15s;color:var(--ink)}
-.pw-field input:focus{border-color:var(--orange);background:white}
-.pw-btn{width:100%;background:var(--orange);color:white;border:none;padding:13px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
-.pw-btn:hover{background:var(--orange-deep)}
-.pw-btn .ic{width:14px;height:14px}
-.pw-error{display:none;background:#fee;border-left:3px solid #c00;padding:10px 13px;border-radius:6px;margin-top:14px;font-size:12px;color:#c00;font-weight:500;align-items:center;gap:7px}
+.login-title{font-size:1.2rem;font-weight:700;color:var(--ink);text-align:center;margin-bottom:6px;letter-spacing:-.3px}
+.login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+.field{margin-bottom:14px}
+.field label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;display:block;margin-bottom:7px}
+.field input,.field textarea,.field select{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--bg);outline:none;transition:all .15s;color:var(--ink);font-weight:400}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--orange);background:white}
+.field textarea{resize:vertical;min-height:80px;font-family:inherit;line-height:1.5}
+.pw-error{display:none;background:#fee;border-left:3px solid var(--danger);padding:10px 13px;border-radius:6px;margin-top:8px;font-size:12px;color:var(--danger);font-weight:500;align-items:center;gap:7px}
 .pw-error.show{display:flex}
-.pw-error svg{width:14px;height:14px;flex-shrink:0}
-.pw-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.6}
-
-/* ADMIN PANEL */
-.admin-wrap{display:none;width:100%;max-width:900px}
-.admin-wrap.show{display:block}
-.admin-header{background:white;border-radius:14px 14px 0 0;padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.admin-header img{height:32px}
-.admin-header h1{font-size:1.1rem;font-weight:700;color:var(--ink);letter-spacing:-.3px}
-.admin-header .spacer{flex:1}
-.btn-ghost{background:transparent;border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;text-decoration:none}
-.btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
-.btn-primary{background:var(--orange);color:white;border:none;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn{border:none;padding:10px 16px;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .15s;text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--orange);color:white}
 .btn-primary:hover{background:var(--orange-deep)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid var(--border)}
+.btn-danger:hover{background:var(--danger);color:white;border-color:var(--danger)}
+.btn-success{background:var(--success);color:white}
+.btn-lg{padding:13px 24px;font-size:13px;font-weight:600;letter-spacing:.5px;width:100%;justify-content:center}
+.btn .ic{width:14px;height:14px}
+.help-text{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:6px}
+.help-text a{color:var(--orange);text-decoration:none}
+.help-text a:hover{text-decoration:underline}
 
-.admin-body{background:white;border-radius:0 0 14px 14px;padding:30px 24px;box-shadow:0 20px 48px rgba(0,0,0,.06)}
+/* MAIN LAYOUT */
+.app{display:none;min-height:100vh;flex-direction:column}
+.app.show{display:flex}
+.header{background:white;border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+.header img{height:32px}
+.header h1{font-size:1rem;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.header .spacer{flex:1}
+.saving-badge{display:none;background:var(--orange-light);color:var(--orange-deep);padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;align-items:center;gap:6px}
+.saving-badge.show{display:flex}
+.saving-badge .spin{width:12px;height:12px;border:2px solid var(--orange);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.notice{background:var(--orange-light);border-left:3px solid var(--orange);padding:14px 18px;border-radius:10px;margin-bottom:24px;font-size:12.5px;color:var(--orange-deep);line-height:1.6}
-.notice strong{font-weight:600}
+.tabs{background:white;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:0;overflow-x:auto}
+.tab{background:none;border:none;padding:14px 18px;font-family:inherit;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--orange);border-color:var(--orange)}
+.tab .ic{width:15px;height:15px}
 
-.section-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.section-title svg{width:13px;height:13px}
+.main{padding:28px;max-width:1280px;width:100%;margin:0 auto;flex:1}
+.panel{display:none}
+.panel.active{display:block}
 
-.exc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:30px}
-.exc-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
-.exc-item:hover{border-color:var(--orange);background:white}
-.exc-icon{width:36px;height:36px;border-radius:8px;background:var(--orange-light);color:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.exc-icon svg{width:18px;height:18px}
-.exc-meta{flex:1;min-width:0}
-.exc-cat{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600}
-.exc-name{font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.exc-price{font-size:11px;color:var(--orange);font-weight:600;margin-top:2px}
+/* DASHBOARD */
+.dash-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:14px;flex-wrap:wrap}
+.dash-top h2{font-size:1.3rem;font-weight:700;color:var(--ink)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filter-chip{padding:6px 13px;border:1px solid var(--border);background:white;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--text)}
+.filter-chip:hover{border-color:var(--orange)}
+.filter-chip.active{background:var(--orange);color:white;border-color:var(--orange)}
 
-.steps-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
-.steps-card h3{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.steps-card h3 svg{width:18px;height:18px;color:var(--orange)}
-.step-list{list-style:none;counter-reset:step}
-.step-list li{counter-increment:step;font-size:13px;color:var(--text);padding:10px 0 10px 42px;position:relative;line-height:1.55;border-bottom:1px solid var(--border)}
-.step-list li:last-child{border-bottom:none}
-.step-list li::before{content:counter(step);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;background:var(--orange);color:white;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
-.step-list li strong{color:var(--ink);font-weight:600}
-.step-list li code{background:white;padding:2px 8px;border-radius:4px;font-family:'Monaco','Menlo',monospace;font-size:11.5px;border:1px solid var(--border);color:var(--orange-deep)}
+.exc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.exc-card{background:white;border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.exc-card:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.05)}
+.exc-card-top{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+.exc-card-icon{width:42px;height:42px;border-radius:10px;background:var(--orange-light);color:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.exc-card-icon svg{width:20px;height:20px}
+.exc-card-meta{flex:1;min-width:0}
+.exc-card-cat{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:2px}
+.exc-card-name{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.exc-card-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border);font-size:12px}
+.exc-card-price{color:var(--orange);font-weight:600}
+.exc-card-photos{color:var(--muted);display:flex;align-items:center;gap:4px}
+.exc-card-photos .ic{width:12px;height:12px}
 
-.pw-change-section{background:#fff8ef;border:1px solid #f5d4b5;border-radius:12px;padding:20px;margin-top:20px}
-.pw-change-section h3{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.pw-change-section p{font-size:12px;color:var(--text);line-height:1.6;margin-bottom:10px}
-.pw-change-section code{background:white;padding:3px 9px;border-radius:4px;font-family:'Monaco','Menlo',monospace;font-size:11.5px;border:1px solid var(--border);color:var(--orange-deep)}
+.add-card{background:transparent;border:2px dashed var(--border);color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;min-height:140px;text-align:center;transition:all .15s;cursor:pointer}
+.add-card:hover{border-color:var(--orange);color:var(--orange)}
+.add-card .ic{width:28px;height:28px;margin-bottom:8px}
+.add-card-text{font-size:12.5px;font-weight:500}
 
-@media(max-width:600px){
-  .admin-header{padding:14px 16px}
-  .admin-body{padding:20px 16px}
-}
+/* EDITOR */
+.editor-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:14px;flex-wrap:wrap}
+.editor-top-left{display:flex;align-items:center;gap:14px}
+.back-btn{background:none;border:none;color:var(--muted);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:6px}
+.back-btn:hover{background:white;color:var(--orange)}
+.editor-title{font-size:1.2rem;font-weight:700;color:var(--ink)}
+
+.editor-grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+@media(max-width:1000px){.editor-grid{grid-template-columns:1fr}}
+
+.edit-card{background:white;border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:16px}
+.edit-card h3{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.edit-card h3 .ic{width:13px;height:13px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* List widget (itinerary, pills, prices) */
+.list-widget{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.list-item{display:flex;gap:8px;align-items:center}
+.list-item input,.list-item select{flex:1}
+.list-item .btn-danger{padding:8px}
+.list-item .btn-danger .ic{width:14px;height:14px;margin:0}
+.list-item .drag-handle{color:var(--muted);cursor:grab;padding:4px;width:24px;display:flex;justify-content:center}
+.add-item-btn{background:var(--bg);border:1px dashed var(--border);color:var(--orange);font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;padding:9px 14px;border-radius:8px;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.add-item-btn:hover{border-color:var(--orange);background:var(--orange-light)}
+.add-item-btn .ic{width:13px;height:13px}
+
+/* MEDIA UPLOAD */
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:28px;text-align:center;cursor:pointer;position:relative;transition:all .2s;background:var(--bg);margin-bottom:12px}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--orange);background:var(--orange-light)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-zone .ic{width:32px;height:32px;color:var(--orange);margin-bottom:8px;stroke-width:1.5}
+.upload-zone p{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.upload-zone small{font-size:11px;color:var(--muted)}
+.upload-zone.uploading{pointer-events:none;opacity:.7}
+.upload-progress{margin-top:14px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;display:none}
+.upload-progress.show{display:block}
+.upload-progress .bar{height:100%;background:var(--orange);border-radius:3px;transition:width .3s;width:0}
+.upload-hint{background:#fff8ef;border:1px solid #f5d4b5;padding:10px 13px;border-radius:8px;margin-bottom:12px;font-size:12px;color:var(--orange-deep);line-height:1.5}
+
+.media-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.media-item{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:2px solid transparent;background:#222;cursor:pointer}
+.media-item.is-hero{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange-light)}
+.media-item img,.media-item video{width:100%;height:100%;object-fit:cover}
+.media-hero-badge{position:absolute;top:4px;left:4px;background:var(--orange);color:white;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.media-actions{position:absolute;top:4px;right:4px;display:flex;gap:4px}
+.media-btn{width:22px;height:22px;background:rgba(0,0,0,.7);border:none;border-radius:5px;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.media-btn:hover{background:var(--orange)}
+.media-btn .ic{width:11px;height:11px;stroke-width:2.5}
+.media-order{position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,.7);color:white;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600}
+.media-empty{grid-column:1/-1;text-align:center;padding:30px 10px;color:var(--muted);font-size:12px}
+
+/* SIDEBAR SETTINGS */
+.sidebar-settings{position:sticky;top:100px;align-self:start}
+.danger-zone{background:#fef5f5;border:1px solid #fcc;border-radius:12px;padding:18px}
+.danger-zone h3{color:var(--danger);font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.danger-zone p{font-size:12px;color:#833;line-height:1.5;margin-bottom:12px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--success);color:white;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.15);display:flex;align-items:center;gap:8px;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:var(--danger)}
+.toast .ic{width:15px;height:15px}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal-box{background:white;border-radius:14px;max-width:460px;width:100%;padding:28px;box-shadow:0 20px 48px rgba(0,0,0,.2)}
+.modal-box h3{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:8px}
+.modal-box p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+/* SETTINGS PANEL */
+.settings-card{background:white;border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px;max-width:680px}
+.settings-card h3{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px}
+.settings-card>p{font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.cred-status{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:12.5px;font-weight:500}
+.cred-status.ok{background:#e8f7ee;color:var(--success)}
+.cred-status.missing{background:#fef5f5;color:var(--danger)}
+.cred-status .ic{width:15px;height:15px}
+
+/* LOADING */
+.loading{text-align:center;padding:60px 20px;color:var(--muted)}
+.loading .spin{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
 </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
-<div class="login-box" id="loginBox">
-  <img src="/logo.png" alt="Bliss Holiday">
-  <div class="lock-icon">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <img src="/logo.png" alt="Bliss Holiday">
+    <div class="lock-icon">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h1 class="login-title">Admin Access</h1>
+    <p class="login-sub">Enter your password to manage the catalogue</p>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="pwInput" placeholder="Password" autofocus onkeydown="if(event.key==='Enter')tryLogin()">
+    </div>
+    <button class="btn btn-primary btn-lg" onclick="tryLogin()">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Log in
+    </button>
+    <div class="pw-error" id="pwError">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Incorrect password
+    </div>
   </div>
-  <h1 class="login-title">Admin Access</h1>
-  <p class="login-sub">This area is restricted to Bliss Holiday staff only</p>
-  <div class="pw-field">
-    <label>Password</label>
-    <input type="password" id="pwInput" placeholder="Enter password" autofocus onkeydown="if(event.key==='Enter')tryLogin()">
-  </div>
-  <button class="pw-btn" onclick="tryLogin()">
-    <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-    Log in
-  </button>
-  <div class="pw-error" id="pwError">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    Incorrect password. Please try again.
-  </div>
-  <p class="pw-hint">Forgot password? Contact your Bliss Holiday representative.</p>
 </div>
 
-<!-- ADMIN PANEL -->
-<div class="admin-wrap" id="adminWrap">
-  <div class="admin-header">
+<div class="app" id="app">
+  <header class="header">
     <img src="/logo.png" alt="Bliss">
     <h1>Admin Panel</h1>
     <div class="spacer"></div>
-    <a href="/" class="btn-ghost">
+    <div class="saving-badge" id="savingBadge"><div class="spin"></div>Saving...</div>
+    <a href="/" class="btn btn-ghost">
       <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
       View site
     </a>
-    <button class="btn-ghost" onclick="logout()">
+    <button class="btn btn-ghost" onclick="logout()">
       <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       Logout
     </button>
-  </div>
+  </header>
 
-  <div class="admin-body">
-    <div class="notice">
-      <strong>📝 Note:</strong> This admin panel shows you all your excursions. To <strong>edit content</strong> (prices, photos, descriptions), you need to modify the JSON files on GitHub. Follow the steps below.
-    </div>
+  <nav class="tabs">
+    <button class="tab active" onclick="showPanel('dashboard',this)">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Excursions
+    </button>
+    <button class="tab" onclick="showPanel('settings',this)">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+  </nav>
 
-    <div class="section-title">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-      Your Excursions
-    </div>
-    <div class="exc-list" id="excList">Loading...</div>
-
-    <div class="steps-card">
-      <h3>
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        How to edit prices, descriptions, or add photos
-      </h3>
-      <ol class="step-list">
-        <li>Go to your <strong>GitHub repository</strong> (bliss-holiday-catalogue)</li>
-        <li>Navigate to the folder <code>data/excursions/</code></li>
-        <li>Click on the JSON file you want to edit (e.g., <code>south1.json</code> for South Tour)</li>
-        <li>Click the <strong>pencil icon (Edit)</strong> at the top right</li>
-        <li>Modify the fields you want (prices, description, etc.)</li>
-        <li>For <strong>photos/videos</strong>: upload to <code>assets/excursions/</code> folder, then reference the path in the media field like: <code>"/assets/excursions/photo1.jpg"</code></li>
-        <li>Click <strong>Commit changes</strong> → Netlify rebuilds automatically in 1 minute ✨</li>
-      </ol>
-    </div>
-
-    <div class="pw-change-section">
-      <h3>
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" style="color:var(--orange)"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Change your password
-      </h3>
-      <p>Enter a new password below. A secure SHA-256 hash will be generated that you can copy into the admin file.</p>
-      <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">
-        <input type="text" id="newPwInput" placeholder="Enter new password" style="flex:1;min-width:180px;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
-        <button class="btn-primary" onclick="generateHash()" style="padding:10px 16px">
-          <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          Generate hash
-        </button>
+  <main class="main">
+    <div class="panel active" id="p-dashboard">
+      <div class="dash-top">
+        <h2>Excursions</h2>
+        <div class="filters" id="filters">
+          <button class="filter-chip active" onclick="filterCat('all',this)">All</button>
+          <button class="filter-chip" onclick="filterCat('land',this)">Land</button>
+          <button class="filter-chip" onclick="filterCat('sea',this)">Sea</button>
+          <button class="filter-chip" onclick="filterCat('air',this)">Air</button>
+        </div>
       </div>
-      <div id="hashResult" style="display:none;background:white;border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:10px">
-        <p style="font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Your new hash</p>
-        <code id="hashValue" style="font-size:11px;word-break:break-all;display:block;background:var(--bg);padding:10px;border-radius:6px;border:1px solid var(--border);color:var(--orange-deep);margin-bottom:10px"></code>
-        <button class="btn-ghost" onclick="copyHash()" style="font-size:11px">
-          <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          <span id="copyLabel">Copy hash</span>
-        </button>
-      </div>
-      <p style="margin-top:14px">Then edit <code>admin/index.html</code> on GitHub, find this line near the top of the script:</p>
-      <p><code>const ADMIN_PASSWORD_HASH = '...';</code></p>
-      <p>Paste your new hash between the quotes and commit. The new password will be active in 1 minute.</p>
+      <div id="excGrid" class="exc-grid"></div>
+    </div>
+
+    <div class="panel" id="p-editor"></div>
+    <div class="panel" id="p-settings"></div>
+  </main>
+</div>
+
+<div class="modal" id="confirmModal" onclick="if(event.target.id==='confirmModal')closeModal()">
+  <div class="modal-box">
+    <h3 id="modalTitle">Are you sure?</h3>
+    <p id="modalText">This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" id="modalConfirmBtn" onclick="confirmAction()">Delete</button>
     </div>
   </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastText">Saved</span>
 </div>
 
 <script>
 // ============================================
-// HASHED PASSWORD (SHA-256)
-// Current password: Bliss2026!
-// To change: generate a new SHA-256 hash of your password
-// and replace the value below. See the instructions in the admin panel.
+// CONFIG — Your credentials (stored hashed/in localStorage)
 const ADMIN_PASSWORD_HASH = '7bed90e9cbd3118685109ffc5c8b3d927b5271b64e6dbd72d5bdc2ad22f2875a';
+// Current: Bliss2026!
 // ============================================
 
 const EXCURSION_IDS = ["south1","south2","northhalf","northfull","tea","vallee","casela","cata","cata-east","5islands","gabriel","whale","dolphin","fishing","aigrettes","heli","sky"];
 
-// SHA-256 hash function using Web Crypto API (browser native)
+const ICON_OPTIONS = [
+  ['i-mountain','Mountain'],['i-wave','Wave'],['i-plane','Plane'],['i-map','Map'],
+  ['i-compass','Compass'],['i-anchor','Anchor'],['i-award','Award'],['i-sun','Sun'],
+  ['i-fish','Fish'],['i-heart','Heart'],['i-sparkles','Sparkles']
+];
+
+const PILL_ICONS = [
+  ['i-clock','Clock (duration)'],['i-users','Users'],['i-utensils','Food'],
+  ['i-ticket','Ticket'],['i-bus','Transport'],['i-wave','Snorkelling'],
+  ['i-heart','Wildlife'],['i-calendar','Calendar'],['i-award','Premium'],
+  ['i-sun','Weather'],['i-camera','Photos'],['i-map','Location'],['i-anchor','Boat']
+];
+
+const ICON_SVGS = {
+  'i-mountain':'<path d="M8 3l4 8 5-5 5 15H2L8 3z"/>',
+  'i-wave':'<path d="M2 12c2.5-2.5 5-2.5 7.5 0s5 2.5 7.5 0 5-2.5 7.5 0"/>',
+  'i-plane':'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5L3 7.4c-.2.4-.1.9.2 1.2l4.8 4.4-1.4 3.4-2.1.8c-.3.1-.5.4-.4.7l.3.7c.1.3.4.5.7.4l3.4-1.4 4.4 4.8c.3.3.8.4 1.2.2l.7-.3c.4-.2.6-.6.5-1.1l-1.8-8.2 2.6 2.6z"/>',
+  'i-map':'<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>',
+  'i-compass':'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88"/>',
+  'i-anchor':'<circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/>',
+  'i-award':'<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>',
+  'i-sun':'<circle cx="12" cy="12" r="5"/>',
+  'i-fish':'<path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6z"/>',
+  'i-heart':'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+  'i-sparkles':'<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z"/>',
+  'i-clock':'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  'i-users':'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',
+  'i-utensils':'<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>',
+  'i-ticket':'<path d="M3 7v2a3 3 0 0 1 0 6v2c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>',
+  'i-bus':'<path d="M8 6v6M16 6v6M2 12h20M18 18h2a2 2 0 0 0 2-2V8a6 6 0 0 0-6-6H8a6 6 0 0 0-6 6v8a2 2 0 0 0 2 2h2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  'i-calendar':'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  'i-camera':'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>'
+};
+
+let excursions = [];
+let currentExc = null;
+let currentFilter = 'all';
+let hasUnsavedChanges = false;
+let pendingAction = null;
+let githubToken = '';
+let cloudinaryCloud = '';
+let cloudinaryPreset = '';
+let githubRepo = '';
+
+// ========== AUTH ==========
 async function sha256(text){
   const buf = new TextEncoder().encode(text);
   const hashBuf = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hashBuf))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
 async function tryLogin(){
@@ -206,13 +333,13 @@ async function tryLogin(){
   const err = document.getElementById('pwError');
   const hash = await sha256(input.value);
   if(hash === ADMIN_PASSWORD_HASH){
-    sessionStorage.setItem('bliss_admin', '1');
-    showAdmin();
+    sessionStorage.setItem('bliss_admin','1');
+    showApp();
   } else {
     err.classList.add('show');
     input.value = '';
     input.focus();
-    setTimeout(()=>err.classList.remove('show'), 3000);
+    setTimeout(()=>err.classList.remove('show'),3000);
   }
 }
 
@@ -221,80 +348,625 @@ function logout(){
   location.reload();
 }
 
-function showAdmin(){
-  document.getElementById('loginBox').style.display = 'none';
-  document.getElementById('adminWrap').classList.add('show');
-  loadExcursions();
+async function showApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').classList.add('show');
+  loadCreds();
+  await loadExcursions();
 }
 
+function loadCreds(){
+  githubToken = localStorage.getItem('bliss_gh_token') || '';
+  cloudinaryCloud = localStorage.getItem('bliss_cl_cloud') || '';
+  cloudinaryPreset = localStorage.getItem('bliss_cl_preset') || '';
+  githubRepo = localStorage.getItem('bliss_gh_repo') || '';
+}
+
+// ========== LOAD DATA ==========
 async function loadExcursions(){
-  const list = document.getElementById('excList');
-  const items = [];
+  const grid = document.getElementById('excGrid');
+  grid.innerHTML = '<div class="loading"><div class="spin"></div>Loading excursions...</div>';
+  excursions = [];
   for(const id of EXCURSION_IDS){
     try {
-      const r = await fetch(`/data/excursions/${id}.json`);
-      if(r.ok) items.push(await r.json());
+      const r = await fetch(`/data/excursions/${id}.json?t=${Date.now()}`);
+      if(r.ok) excursions.push(await r.json());
     } catch(e){}
   }
+  renderDashboard();
+}
 
-  const icons = {
-    'i-mountain':'<path d="M8 3l4 8 5-5 5 15H2L8 3z"/>',
-    'i-wave':'<path d="M2 12c2.5-2.5 5-2.5 7.5 0s5 2.5 7.5 0 5-2.5 7.5 0"/>',
-    'i-plane':'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5L3 7.4c-.2.4-.1.9.2 1.2l4.8 4.4-1.4 3.4-2.1.8c-.3.1-.5.4-.4.7l.3.7c.1.3.4.5.7.4l3.4-1.4 4.4 4.8c.3.3.8.4 1.2.2l.7-.3c.4-.2.6-.6.5-1.1l-1.8-8.2 2.6 2.6z"/>',
-    'i-map':'<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>',
-    'i-compass':'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88"/>',
-    'i-anchor':'<circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/>',
-    'i-award':'<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>',
-    'i-sun':'<circle cx="12" cy="12" r="5"/>',
-    'i-fish':'<path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6z"/>',
-    'i-heart':'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
-    'i-sparkles':'<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z"/>'
-  };
-
-  list.innerHTML = items.map(e => `
-    <div class="exc-item" onclick="window.open('https://github.com/', '_blank')">
-      <div class="exc-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${icons[e.icon]||icons['i-mountain']}</svg>
+function renderDashboard(){
+  const grid = document.getElementById('excGrid');
+  const filtered = currentFilter==='all' ? excursions : excursions.filter(e=>e.cat===currentFilter);
+  let html = filtered.map(e=>{
+    const iconSvg = ICON_SVGS[e.icon] || ICON_SVGS['i-mountain'];
+    const photos = (e.media||[]).length;
+    return `<div class="exc-card" onclick="editExc('${e.id}')">
+      <div class="exc-card-top">
+        <div class="exc-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${iconSvg}</svg>
+        </div>
+        <div class="exc-card-meta">
+          <div class="exc-card-cat">${e.cat}</div>
+          <div class="exc-card-name">${e.name}</div>
+        </div>
       </div>
-      <div class="exc-meta">
-        <div class="exc-cat">${e.cat}</div>
-        <div class="exc-name">${e.name}</div>
-        <div class="exc-price">${e.prices&&e.prices[0]?e.prices[0].v:''}</div>
+      <div class="exc-card-bottom">
+        <div class="exc-card-price">${e.prices&&e.prices[0]?e.prices[0].v:'—'}</div>
+        <div class="exc-card-photos">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          ${photos} ${photos===1?'photo':'photos'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  html += `<div class="add-card exc-card" onclick="createNewExc()">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span class="add-card-text">Add new excursion</span>
+  </div>`;
+  grid.innerHTML = html;
+}
+
+function filterCat(cat, btn){
+  currentFilter = cat;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  renderDashboard();
+}
+
+// ========== EDITOR ==========
+function editExc(id){
+  const e = excursions.find(x=>x.id===id);
+  if(!e) return;
+  currentExc = JSON.parse(JSON.stringify(e));
+  currentExc._originalId = id;
+  renderEditor();
+  showPanel('editor');
+}
+
+function createNewExc(){
+  currentExc = {
+    id:'new-exc-'+Date.now(),
+    cat:'land',icon:'i-mountain',tag:'Full Day',name:'New Excursion',sub:'',desc:'',
+    startPt:'Your Hotel',endPt:'',itin:[],pills:[],
+    prices:[{l:'Adult',v:'€100'}],notes:'',bg:'bg-land',media:[],
+    _isNew:true
+  };
+  renderEditor();
+  showPanel('editor');
+}
+
+function renderEditor(){
+  const e = currentExc;
+  const panel = document.getElementById('p-editor');
+  panel.innerHTML = `
+    <div class="editor-top">
+      <div class="editor-top-left">
+        <button class="back-btn" onclick="backToDashboard()">
+          <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <h2 class="editor-title">${e._isNew?'New excursion':'Edit: '+e.name}</h2>
+      </div>
+      <button class="btn btn-primary" onclick="saveExcursion()">
+        <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+        Save & Publish
+      </button>
+    </div>
+    <div class="editor-grid">
+      <div>
+        ${renderBasicCard(e)}
+        ${renderMediaCard(e)}
+        ${renderItineraryCard(e)}
+        ${renderPricingCard(e)}
+        ${renderPillsCard(e)}
+        ${renderNotesCard(e)}
+      </div>
+      <div class="sidebar-settings">
+        ${renderSettingsCard(e)}
+        ${!e._isNew?renderDangerCard(e):''}
+      </div>
+    </div>`;
+  attachEditorEvents();
+}
+
+function renderBasicCard(e){
+  return `<div class="edit-card">
+    <h3>${iconSvg('i-info')} Basic Information</h3>
+    <div class="two-col">
+      <div class="field"><label>ID (URL slug)</label><input id="f-id" value="${escAttr(e.id)}"></div>
+      <div class="field"><label>Category</label>
+        <select id="f-cat">
+          <option value="land"${e.cat==='land'?' selected':''}>Land</option>
+          <option value="sea"${e.cat==='sea'?' selected':''}>Sea</option>
+          <option value="air"${e.cat==='air'?' selected':''}>Air</option>
+        </select>
       </div>
     </div>
-  `).join('');
+    <div class="field"><label>Name</label><input id="f-name" value="${escAttr(e.name)}"></div>
+    <div class="field"><label>Subtitle</label><input id="f-sub" value="${escAttr(e.sub||'')}"></div>
+    <div class="field"><label>Tag / Badge</label><input id="f-tag" value="${escAttr(e.tag||'')}" placeholder="Full Day · Iconic"></div>
+    <div class="field"><label>Description</label><textarea id="f-desc" rows="5">${escHTML(e.desc||'')}</textarea></div>
+    <div class="two-col">
+      <div class="field"><label>Departure point</label><input id="f-startpt" value="${escAttr(e.startPt||'')}"></div>
+      <div class="field"><label>Arrival point</label><input id="f-endpt" value="${escAttr(e.endPt||'')}"></div>
+    </div>
+  </div>`;
+}
+
+function renderMediaCard(e){
+  const media = e.media||[];
+  const cloud = cloudinaryCloud;
+  const hasCloudinary = cloud && cloudinaryPreset;
+  return `<div class="edit-card">
+    <h3>${iconSvg('i-camera')} Photos & Videos</h3>
+    ${!hasCloudinary?`<div class="upload-hint">⚠️ Configure Cloudinary in <a href="#" onclick="showPanel('settings');return false" style="color:var(--orange-deep);font-weight:600">Settings</a> to enable photo uploads.</div>`:`
+    <div class="upload-hint">Click any photo to set it as the <strong>Hero banner</strong>. Drag to reorder. First photo = Hero.</div>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" accept="image/*,video/*" multiple id="fileInput" onchange="handleFileUpload(event)">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <p>Drop photos & videos here</p>
+      <small>Or click to browse · Multiple files supported</small>
+      <div class="upload-progress" id="uploadProgress"><div class="bar" id="uploadBar"></div></div>
+    </div>`}
+    <div class="media-list" id="mediaList">
+      ${media.length?media.map((m,i)=>renderMediaItem(m,i)).join(''):'<div class="media-empty">No photos yet — upload some above</div>'}
+    </div>
+  </div>`;
+}
+
+function renderMediaItem(m,i){
+  const isVid = m.type==='video' || (m.src||'').match(/\.(mp4|mov|webm)$/i);
+  const preview = isVid?`<video src="${m.src}" muted preload="metadata"></video>`:`<img src="${m.src}" alt="">`;
+  return `<div class="media-item ${i===0?'is-hero':''}" onclick="setHero(${i})">
+    ${preview}
+    ${i===0?'<div class="media-hero-badge">Hero</div>':''}
+    <div class="media-order">#${i+1}</div>
+    <div class="media-actions">
+      ${i>0?`<button class="media-btn" onclick="event.stopPropagation();moveMediaUp(${i})" title="Move up"><svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>`:''}
+      <button class="media-btn" onclick="event.stopPropagation();removeMedia(${i})" title="Delete"><svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+  </div>`;
+}
+
+function renderItineraryCard(e){
+  const items = e.itin||[];
+  return `<div class="edit-card">
+    <h3>${iconSvg('i-map')} Itinerary / Journey</h3>
+    <div class="list-widget" id="itinList">
+      ${items.map((s,i)=>`<div class="list-item">
+        <input value="${escAttr(s)}" oninput="currentExc.itin[${i}]=this.value">
+        <button class="btn btn-danger" onclick="currentExc.itin.splice(${i},1);renderEditor()"><svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>`).join('')}
+    </div>
+    <button class="add-item-btn" onclick="currentExc.itin=currentExc.itin||[];currentExc.itin.push('New step');renderEditor()">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add step
+    </button>
+  </div>`;
+}
+
+function renderPricingCard(e){
+  const prices = e.prices||[];
+  return `<div class="edit-card">
+    <h3>${iconSvg('i-ticket')} Pricing</h3>
+    <div class="list-widget">
+      ${prices.map((p,i)=>`<div class="list-item">
+        <input placeholder="Label" value="${escAttr(p.l||'')}" oninput="currentExc.prices[${i}].l=this.value" style="flex:1.2">
+        <input placeholder="Price" value="${escAttr(p.v||'')}" oninput="currentExc.prices[${i}].v=this.value" style="flex:1">
+        <button class="btn btn-danger" onclick="currentExc.prices.splice(${i},1);renderEditor()"><svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>`).join('')}
+    </div>
+    <button class="add-item-btn" onclick="currentExc.prices=currentExc.prices||[];currentExc.prices.push({l:'New',v:'€0'});renderEditor()">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add price row
+    </button>
+  </div>`;
+}
+
+function renderPillsCard(e){
+  const pills = e.pills||[];
+  return `<div class="edit-card">
+    <h3>${iconSvg('i-star')} Info Pills (quick info tags)</h3>
+    <div class="list-widget">
+      ${pills.map((p,i)=>`<div class="list-item">
+        <select onchange="currentExc.pills[${i}].i=this.value" style="flex:1.2">
+          ${PILL_ICONS.map(([v,l])=>`<option value="${v}"${p.i===v?' selected':''}>${l}</option>`).join('')}
+        </select>
+        <input placeholder="Text" value="${escAttr(p.t||'')}" oninput="currentExc.pills[${i}].t=this.value" style="flex:2">
+        <button class="btn btn-danger" onclick="currentExc.pills.splice(${i},1);renderEditor()"><svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>`).join('')}
+    </div>
+    <button class="add-item-btn" onclick="currentExc.pills=currentExc.pills||[];currentExc.pills.push({i:'i-clock',t:'New pill'});renderEditor()">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add pill
+    </button>
+  </div>`;
+}
+
+function renderNotesCard(e){
+  return `<div class="edit-card">
+    <h3>${iconSvg('i-info')} Important Information / Notes</h3>
+    <div class="field"><textarea id="f-notes" rows="4">${escHTML(e.notes||'')}</textarea></div>
+  </div>`;
+}
+
+function renderSettingsCard(e){
+  return `<div class="edit-card">
+    <h3>${iconSvg('i-sun')} Icon & Style</h3>
+    <div class="field"><label>Main Icon</label>
+      <select id="f-icon">
+        ${ICON_OPTIONS.map(([v,l])=>`<option value="${v}"${e.icon===v?' selected':''}>${l}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>Background Color</label>
+      <select id="f-bg">
+        <option value="bg-land"${e.bg==='bg-land'?' selected':''}>Land (green)</option>
+        <option value="bg-sea"${e.bg==='bg-sea'?' selected':''}>Sea (blue)</option>
+        <option value="bg-air"${e.bg==='bg-air'?' selected':''}>Air (purple)</option>
+      </select>
+    </div>
+  </div>`;
+}
+
+function renderDangerCard(e){
+  return `<div class="danger-zone">
+    <h3>Danger Zone</h3>
+    <p>Permanently delete this excursion. This cannot be undone.</p>
+    <button class="btn btn-danger" onclick="deleteExcursion()">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      Delete excursion
+    </button>
+  </div>`;
+}
+
+function attachEditorEvents(){
+  ['f-id','f-name','f-sub','f-tag','f-cat','f-icon','f-bg','f-startpt','f-endpt'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('input',()=>{
+      const key=id.replace('f-','').replace('id','id').replace('cat','cat').replace('startpt','startPt').replace('endpt','endPt');
+      const actualKey = {'id':'id','name':'name','sub':'sub','tag':'tag','cat':'cat','icon':'icon','bg':'bg','startpt':'startPt','endpt':'endPt'}[id.replace('f-','')];
+      currentExc[actualKey] = el.value;
+    });
+  });
+  const desc=document.getElementById('f-desc');
+  if(desc)desc.addEventListener('input',()=>currentExc.desc=desc.value);
+  const notes=document.getElementById('f-notes');
+  if(notes)notes.addEventListener('input',()=>currentExc.notes=notes.value);
+}
+
+// Helpers
+function escAttr(s){return (s||'').replace(/"/g,'&quot;')}
+function escHTML(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function iconSvg(id){return `<svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">${ICON_SVGS[id]||''}</svg>`}
+
+// ========== MEDIA ==========
+async function handleFileUpload(ev){
+  if(!cloudinaryCloud || !cloudinaryPreset){
+    toast('Configure Cloudinary in Settings first','error');
+    return;
+  }
+  const files = Array.from(ev.target.files);
+  if(!files.length)return;
+
+  const zone = document.getElementById('uploadZone');
+  const progress = document.getElementById('uploadProgress');
+  const bar = document.getElementById('uploadBar');
+  zone.classList.add('uploading');
+  progress.classList.add('show');
+
+  let done = 0;
+  for(const f of files){
+    try {
+      const url = await uploadToCloudinary(f, p=>{
+        const tot = (done + p/100) / files.length * 100;
+        bar.style.width = tot + '%';
+      });
+      if(!currentExc.media) currentExc.media = [];
+      const isVid = f.type.startsWith('video');
+      currentExc.media.push({type:isVid?'video':'image', src:url});
+      done++;
+    } catch(e){
+      console.error(e);
+      toast('Upload failed: '+e.message,'error');
+    }
+  }
+
+  bar.style.width = '100%';
+  setTimeout(()=>{
+    zone.classList.remove('uploading');
+    progress.classList.remove('show');
+    bar.style.width = '0';
+    renderEditor();
+    toast(`${done} file${done!==1?'s':''} uploaded`);
+  }, 300);
+  ev.target.value = '';
+}
+
+function uploadToCloudinary(file, onProgress){
+  return new Promise((resolve,reject)=>{
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', cloudinaryPreset);
+
+    const xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = e=>{
+      if(e.lengthComputable && onProgress) onProgress(e.loaded/e.total*100);
+    };
+    xhr.onload = ()=>{
+      if(xhr.status===200){
+        const data = JSON.parse(xhr.responseText);
+        resolve(data.secure_url);
+      } else {
+        reject(new Error('Upload failed: '+xhr.status));
+      }
+    };
+    xhr.onerror = ()=>reject(new Error('Network error'));
+    const isVid = file.type.startsWith('video');
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloudinaryCloud}/${isVid?'video':'image'}/upload`);
+    xhr.send(fd);
+  });
+}
+
+function setHero(i){
+  if(i===0) return;
+  const m = currentExc.media.splice(i,1)[0];
+  currentExc.media.unshift(m);
+  renderEditor();
+}
+
+function moveMediaUp(i){
+  if(i===0) return;
+  const m = currentExc.media.splice(i,1)[0];
+  currentExc.media.splice(i-1,0,m);
+  renderEditor();
+}
+
+function removeMedia(i){
+  currentExc.media.splice(i,1);
+  renderEditor();
+}
+
+// ========== GITHUB SAVE ==========
+async function saveExcursion(){
+  if(!githubToken || !githubRepo){
+    toast('Configure GitHub token & repo in Settings first','error');
+    showPanel('settings');
+    return;
+  }
+  const badge = document.getElementById('savingBadge');
+  badge.classList.add('show');
+  try {
+    const data = {...currentExc};
+    delete data._originalId;
+    delete data._isNew;
+
+    const path = `bliss-catalog/data/excursions/${data.id}.json`;
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
+
+    let sha = null;
+    if(!currentExc._isNew && currentExc._originalId === data.id){
+      try {
+        const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
+          headers:{Authorization:'Bearer '+githubToken}
+        });
+        if(r.ok){ sha = (await r.json()).sha; }
+      } catch(e){}
+    }
+
+    if(!currentExc._isNew && currentExc._originalId !== data.id){
+      await deleteFromGitHub(`bliss-catalog/data/excursions/${currentExc._originalId}.json`);
+    }
+
+    const body = {
+      message: `Update excursion: ${data.name}`,
+      content: content
+    };
+    if(sha) body.sha = sha;
+
+    const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
+      method:'PUT',
+      headers:{'Authorization':'Bearer '+githubToken,'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+
+    if(!r.ok){
+      const err = await r.json();
+      throw new Error(err.message || 'Save failed');
+    }
+
+    toast('Saved! Site rebuilding (~1 min)...');
+    await loadExcursions();
+    setTimeout(()=>backToDashboard(),1200);
+  } catch(e){
+    console.error(e);
+    toast('Save failed: '+e.message,'error');
+  } finally {
+    badge.classList.remove('show');
+  }
+}
+
+async function deleteFromGitHub(path){
+  try {
+    const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
+      headers:{Authorization:'Bearer '+githubToken}
+    });
+    if(r.ok){
+      const data = await r.json();
+      await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
+        method:'DELETE',
+        headers:{'Authorization':'Bearer '+githubToken,'Content-Type':'application/json'},
+        body:JSON.stringify({message:`Delete ${path}`, sha:data.sha})
+      });
+    }
+  } catch(e){console.error(e);}
+}
+
+function deleteExcursion(){
+  pendingAction = async ()=>{
+    const badge = document.getElementById('savingBadge');
+    badge.classList.add('show');
+    try {
+      await deleteFromGitHub(`bliss-catalog/data/excursions/${currentExc._originalId}.json`);
+      toast('Excursion deleted');
+      await loadExcursions();
+      backToDashboard();
+    } catch(e){
+      toast('Delete failed: '+e.message,'error');
+    } finally {
+      badge.classList.remove('show');
+    }
+  };
+  openModal('Delete this excursion?',`"${currentExc.name}" will be permanently removed. This cannot be undone.`,'Delete');
+}
+
+function backToDashboard(){
+  currentExc = null;
+  showPanel('dashboard');
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+}
+
+// ========== SETTINGS PANEL ==========
+function renderSettingsPanel(){
+  const ghOk = githubToken && githubRepo;
+  const clOk = cloudinaryCloud && cloudinaryPreset;
+  document.getElementById('p-settings').innerHTML = `
+    <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:20px;color:var(--ink)">Settings</h2>
+
+    <div class="settings-card">
+      <h3>🐙 GitHub Integration</h3>
+      <p>Required to save your changes. Your token is stored only in your browser, never sent anywhere except GitHub.</p>
+      <div class="cred-status ${ghOk?'ok':'missing'}">
+        <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          ${ghOk?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+        </svg>
+        ${ghOk?'GitHub configured ✓':'GitHub not configured'}
+      </div>
+      <div class="field">
+        <label>Repository (username/repo-name)</label>
+        <input id="s-repo" value="${escAttr(githubRepo)}" placeholder="infobliss68/bliss-holiday-catalogue">
+        <p class="help-text">Example: <code>infobliss68/bliss-holiday-catalogue</code></p>
+      </div>
+      <div class="field">
+        <label>Personal Access Token</label>
+        <input type="password" id="s-token" value="${escAttr(githubToken)}" placeholder="ghp_...">
+        <p class="help-text">Create at <a href="https://github.com/settings/tokens/new?scopes=repo&description=Bliss%20Admin" target="_blank">github.com/settings/tokens/new</a> — select "repo" scope only. Copy the token and paste here.</p>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">
+        <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Save GitHub settings
+      </button>
+    </div>
+
+    <div class="settings-card">
+      <h3>☁️ Cloudinary Integration</h3>
+      <p>Required to upload photos & videos. Cloudinary auto-optimizes and serves via CDN.</p>
+      <div class="cred-status ${clOk?'ok':'missing'}">
+        <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          ${clOk?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>'}
+        </svg>
+        ${clOk?'Cloudinary configured ✓':'Cloudinary not configured'}
+      </div>
+      <div class="field">
+        <label>Cloud Name</label>
+        <input id="s-cloud" value="${escAttr(cloudinaryCloud)}" placeholder="bliss-holiday">
+        <p class="help-text">Find it at <a href="https://console.cloudinary.com/console" target="_blank">console.cloudinary.com</a> (Dashboard → Cloud Name)</p>
+      </div>
+      <div class="field">
+        <label>Unsigned Upload Preset</label>
+        <input id="s-preset" value="${escAttr(cloudinaryPreset)}" placeholder="bliss_uploads">
+        <p class="help-text">Create at Settings → Upload → Upload presets → Add Upload Preset → <strong>Signing mode: Unsigned</strong></p>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">
+        <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Save Cloudinary settings
+      </button>
+    </div>
+
+    <div class="settings-card">
+      <h3>🔐 Change Password</h3>
+      <p>Enter a new password to generate its secure hash. Paste the hash in <code>admin/index.html</code> on GitHub.</p>
+      <div class="field" style="display:flex;gap:8px">
+        <input type="text" id="s-newpw" placeholder="New password (min 6 chars)" style="flex:1">
+        <button class="btn btn-primary" onclick="generateNewHash()">Generate hash</button>
+      </div>
+      <div id="newHashResult" style="display:none;background:var(--bg);border:1px solid var(--border);padding:12px;border-radius:8px;margin-top:10px">
+        <p style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase">New hash</p>
+        <code id="newHashValue" style="font-size:11px;word-break:break-all;display:block;margin-bottom:10px;color:var(--orange-deep)"></code>
+        <button class="btn btn-ghost" onclick="copyHashToClipboard()">Copy</button>
+      </div>
+    </div>
+  `;
+}
+
+function saveSettings(){
+  const repo = document.getElementById('s-repo')?.value.trim();
+  const token = document.getElementById('s-token')?.value.trim();
+  const cloud = document.getElementById('s-cloud')?.value.trim();
+  const preset = document.getElementById('s-preset')?.value.trim();
+  if(repo!==undefined) localStorage.setItem('bliss_gh_repo',repo);
+  if(token!==undefined) localStorage.setItem('bliss_gh_token',token);
+  if(cloud!==undefined) localStorage.setItem('bliss_cl_cloud',cloud);
+  if(preset!==undefined) localStorage.setItem('bliss_cl_preset',preset);
+  loadCreds();
+  renderSettingsPanel();
+  toast('Settings saved');
+}
+
+async function generateNewHash(){
+  const v = document.getElementById('s-newpw').value.trim();
+  if(!v || v.length<6){ toast('Password must be at least 6 characters','error'); return; }
+  const h = await sha256(v);
+  document.getElementById('newHashValue').textContent = h;
+  document.getElementById('newHashResult').style.display = 'block';
+  document.getElementById('s-newpw').value = '';
+}
+
+function copyHashToClipboard(){
+  const h = document.getElementById('newHashValue').textContent;
+  navigator.clipboard.writeText(h).then(()=>toast('Hash copied — paste it in admin/index.html'));
+}
+
+// ========== UI HELPERS ==========
+function showPanel(name, tabBtn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('p-'+name).classList.add('active');
+  if(tabBtn){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tabBtn.classList.add('active');
+  }
+  if(name==='settings') renderSettingsPanel();
+  if(name==='dashboard') renderDashboard();
+}
+
+function toast(msg, type){
+  const t = document.getElementById('toast');
+  const txt = document.getElementById('toastText');
+  txt.textContent = msg;
+  t.classList.toggle('error', type==='error');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+function openModal(title, text, confirmLabel){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalText').textContent = text;
+  document.getElementById('modalConfirmBtn').textContent = confirmLabel || 'Confirm';
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('confirmModal').classList.remove('open');
+  pendingAction = null;
+}
+function confirmAction(){
+  if(pendingAction) pendingAction();
+  closeModal();
 }
 
 // Auto-login if session exists
-if(sessionStorage.getItem('bliss_admin') === '1'){
-  showAdmin();
-}
-
-// Hash generator for changing password
-async function generateHash(){
-  const input = document.getElementById('newPwInput');
-  const val = input.value.trim();
-  if(!val){
-    alert('Please enter a password first');
-    return;
-  }
-  if(val.length < 6){
-    alert('Password should be at least 6 characters');
-    return;
-  }
-  const hash = await sha256(val);
-  document.getElementById('hashValue').textContent = hash;
-  document.getElementById('hashResult').style.display = 'block';
-  input.value = '';
-}
-
-function copyHash(){
-  const hash = document.getElementById('hashValue').textContent;
-  navigator.clipboard.writeText(hash).then(()=>{
-    const lbl = document.getElementById('copyLabel');
-    lbl.textContent = '✓ Copied!';
-    setTimeout(()=>{ lbl.textContent = 'Copy hash'; }, 2000);
-  });
+if(sessionStorage.getItem('bliss_admin')==='1'){
+  showApp();
 }
 </script>
 
