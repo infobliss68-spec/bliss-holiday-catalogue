@@ -745,17 +745,33 @@ async function saveExcursion(){
     const path = `data/excursions/${data.id}.json`;
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
 
+    console.log('[Bliss Admin] Saving to:', `https://api.github.com/repos/${githubRepo}/contents/${path}`);
+    console.log('[Bliss Admin] Repo:', githubRepo, '| Token prefix:', githubToken.substring(0,10)+'...');
+
     let sha = null;
-    if(!currentExc._isNew && currentExc._originalId === data.id){
+    if(!currentExc._isNew){
       try {
         const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
-          headers:{Authorization:'Bearer '+githubToken}
+          headers:{'Authorization':'Bearer '+githubToken,'Accept':'application/vnd.github+json'}
         });
-        if(r.ok){ sha = (await r.json()).sha; }
-      } catch(e){}
+        console.log('[Bliss Admin] GET existing file status:', r.status);
+        if(r.ok){
+          const existing = await r.json();
+          sha = existing.sha;
+          console.log('[Bliss Admin] Got SHA:', sha);
+        } else if(r.status === 404){
+          console.log('[Bliss Admin] File does not exist yet, will create new');
+        } else {
+          const errData = await r.json();
+          throw new Error(`GitHub check failed (${r.status}): ${errData.message||'Unknown'}`);
+        }
+      } catch(e){
+        console.error('[Bliss Admin] Error checking existing file:', e);
+        throw e;
+      }
     }
 
-    if(!currentExc._isNew && currentExc._originalId !== data.id){
+    if(!currentExc._isNew && currentExc._originalId && currentExc._originalId !== data.id){
       await deleteFromGitHub(`data/excursions/${currentExc._originalId}.json`);
     }
 
@@ -765,22 +781,26 @@ async function saveExcursion(){
     };
     if(sha) body.sha = sha;
 
+    console.log('[Bliss Admin] Sending PUT with body:', {message:body.message, hasSha: !!sha});
+
     const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${path}`,{
       method:'PUT',
-      headers:{'Authorization':'Bearer '+githubToken,'Content-Type':'application/json'},
+      headers:{'Authorization':'Bearer '+githubToken,'Content-Type':'application/json','Accept':'application/vnd.github+json'},
       body:JSON.stringify(body)
     });
 
+    const respData = await r.json();
+    console.log('[Bliss Admin] PUT response status:', r.status, respData);
+
     if(!r.ok){
-      const err = await r.json();
-      throw new Error(err.message || 'Save failed');
+      throw new Error(`GitHub rejected save (${r.status}): ${respData.message||'Unknown error'}`);
     }
 
     toast('Saved! Site rebuilding (~1 min)...');
     await loadExcursions();
     setTimeout(()=>backToDashboard(),1200);
   } catch(e){
-    console.error(e);
+    console.error('[Bliss Admin] Save error:', e);
     toast('Save failed: '+e.message,'error');
   } finally {
     badge.classList.remove('show');
@@ -833,6 +853,19 @@ function renderSettingsPanel(){
   const clOk = cloudinaryCloud && cloudinaryPreset;
   document.getElementById('p-settings').innerHTML = `
     <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:20px;color:var(--ink)">Settings</h2>
+
+    <div class="settings-card" style="border-left:4px solid var(--orange);background:linear-gradient(135deg,#fff8ef 0%,white 100%)">
+      <h3 style="display:flex;align-items:center;gap:8px">
+        <svg fill="none" stroke="var(--orange)" viewBox="0 0 24 24" stroke-width="1.8" style="width:20px;height:20px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Full Diagnostic
+      </h3>
+      <p>Run this to test both GitHub and Cloudinary connections. This will tell you exactly what's working and what's not.</p>
+      <button class="btn btn-primary" onclick="runFullDiagnostic()" style="padding:13px 24px;font-size:13px;font-weight:600">
+        <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Run full diagnostic
+      </button>
+      <div id="diagnosticResult" style="margin-top:16px"></div>
+    </div>
 
     <div class="settings-card">
       <h3>🐙 GitHub Integration</h3>
@@ -912,6 +945,283 @@ function saveSettings(){
   loadCreds();
   renderSettingsPanel();
   toast('Settings saved');
+}
+
+async function runFullDiagnostic(){
+  const result = document.getElementById('diagnosticResult');
+  const repo = document.getElementById('s-repo')?.value.trim();
+  const token = document.getElementById('s-token')?.value.trim();
+  const cloud = document.getElementById('s-cloud')?.value.trim();
+  const preset = document.getElementById('s-preset')?.value.trim();
+
+  const tests = [];
+  let critical = 0;
+  let warnings = 0;
+
+  result.innerHTML = `<div style="color:var(--muted);padding:16px;background:var(--bg);border-radius:10px;display:flex;align-items:center;gap:10px">
+    <div style="width:16px;height:16px;border:2px solid var(--orange);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite"></div>
+    Running diagnostic tests... this takes a few seconds
+  </div>`;
+
+  // ========== GITHUB TESTS ==========
+  tests.push({section:'github', title:'🐙 GITHUB'});
+
+  if(!repo){
+    tests.push({status:'fail',label:'Repository configured',detail:'Empty — enter your repo below',critical:true});
+    critical++;
+  } else if(!/^[\w-]+\/[\w.-]+$/.test(repo)){
+    tests.push({status:'fail',label:'Repository format',detail:`"${repo}" is not valid. Expected format: "username/repo-name" (e.g., infobliss68-spec/bliss-holiday-catalogue)`,critical:true});
+    critical++;
+  } else {
+    tests.push({status:'ok',label:'Repository format',detail:repo});
+  }
+
+  if(!token){
+    tests.push({status:'fail',label:'Token configured',detail:'Empty — enter your GitHub token below',critical:true});
+    critical++;
+  } else if(!token.match(/^(ghp_|github_pat_|gho_)/)){
+    tests.push({status:'warn',label:'Token format',detail:`Token should start with "ghp_" or "github_pat_". Yours starts with "${token.substring(0,6)}..."`});
+    warnings++;
+  } else {
+    tests.push({status:'ok',label:'Token format',detail:`${token.substring(0,10)}... (${token.length} chars)`});
+  }
+
+  // Test GitHub API access
+  let defaultBranch = null;
+  if(repo && token && critical === 0){
+    try {
+      const r = await fetch(`https://api.github.com/repos/${repo}`,{
+        headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'}
+      });
+      if(r.status === 401){
+        tests.push({status:'fail',label:'GitHub authentication',detail:'Token is invalid or expired. Create a new token at github.com/settings/tokens',critical:true});
+        critical++;
+      } else if(r.status === 404){
+        tests.push({status:'fail',label:'Repository access',detail:`Repo "${repo}" not found OR your token doesn't have access to it. Verify the repo name is correct.`,critical:true});
+        critical++;
+      } else if(!r.ok){
+        const err = await r.json();
+        tests.push({status:'fail',label:'GitHub API',detail:`Error ${r.status}: ${err.message||'Unknown'}`,critical:true});
+        critical++;
+      } else {
+        const data = await r.json();
+        defaultBranch = data.default_branch;
+        tests.push({status:'ok',label:'GitHub authentication',detail:`Authenticated as owner of "${data.full_name}"`});
+        tests.push({status:'ok',label:'Default branch',detail:defaultBranch});
+
+        // Check token scopes
+        const scopes = r.headers.get('X-OAuth-Scopes') || r.headers.get('x-oauth-scopes') || '';
+        if(scopes){
+          if(scopes.includes('repo')){
+            tests.push({status:'ok',label:'Token scopes',detail:scopes});
+          } else {
+            tests.push({status:'fail',label:'Token scopes',detail:`Missing "repo" scope. Current: "${scopes}". Re-create token with "repo" checked.`,critical:true});
+            critical++;
+          }
+        } else {
+          tests.push({status:'warn',label:'Token scopes',detail:'Could not verify scopes (fine-grained tokens don\'t expose this)'});
+        }
+
+        if(defaultBranch && defaultBranch !== 'main'){
+          tests.push({status:'warn',label:'Branch mismatch',detail:`Repo branch is "${defaultBranch}" but admin commits to "main". Netlify might not rebuild.`});
+          warnings++;
+        }
+      }
+    } catch(e){
+      tests.push({status:'fail',label:'GitHub network',detail:e.message,critical:true});
+      critical++;
+    }
+  }
+
+  // Test data/excursions folder access
+  if(repo && token && critical === 0){
+    try {
+      const r = await fetch(`https://api.github.com/repos/${repo}/contents/data/excursions`,{
+        headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'}
+      });
+      if(r.ok){
+        const files = await r.json();
+        const jsonFiles = files.filter(f=>f.name.endsWith('.json'));
+        tests.push({status:'ok',label:'data/excursions folder',detail:`Found ${files.length} items (${jsonFiles.length} JSON files)`});
+
+        // Read a sample file to verify
+        if(jsonFiles.length > 0){
+          const sample = jsonFiles[0];
+          const r2 = await fetch(sample.download_url);
+          if(r2.ok){
+            const json = await r2.json();
+            tests.push({status:'ok',label:'Read sample file',detail:`${sample.name}: "${json.name}" — ${json.prices?.[0]?.v||'no price'}`});
+          }
+        }
+      } else if(r.status === 404){
+        tests.push({status:'fail',label:'data/excursions folder',detail:'Folder not found at /data/excursions. Check your repo structure.',critical:true});
+        critical++;
+      } else {
+        tests.push({status:'warn',label:'data/excursions folder',detail:`Status ${r.status}`});
+        warnings++;
+      }
+    } catch(e){
+      tests.push({status:'warn',label:'data/excursions check',detail:e.message});
+      warnings++;
+    }
+  }
+
+  // Test WRITE permission (actual save test — create then delete a test file)
+  if(repo && token && critical === 0){
+    try {
+      const testPath = `.bliss-admin-test-${Date.now()}.txt`;
+      const testContent = btoa('Bliss Admin Connection Test');
+
+      const r = await fetch(`https://api.github.com/repos/${repo}/contents/${testPath}`,{
+        method:'PUT',
+        headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json','Accept':'application/vnd.github+json'},
+        body:JSON.stringify({message:'Bliss Admin: connection test (safe to ignore)',content:testContent})
+      });
+
+      if(r.ok){
+        const created = await r.json();
+        tests.push({status:'ok',label:'Write permission',detail:'Successfully created test file'});
+
+        // Clean up the test file
+        try {
+          await fetch(`https://api.github.com/repos/${repo}/contents/${testPath}`,{
+            method:'DELETE',
+            headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json','Accept':'application/vnd.github+json'},
+            body:JSON.stringify({message:'Bliss Admin: cleanup test file',sha:created.content.sha})
+          });
+          tests.push({status:'ok',label:'Delete permission',detail:'Successfully deleted test file'});
+        } catch(e){
+          tests.push({status:'warn',label:'Delete permission',detail:'Could not cleanup test file (not critical)'});
+        }
+      } else {
+        const err = await r.json();
+        tests.push({status:'fail',label:'Write permission',detail:`Cannot write: ${err.message||'Error '+r.status}`,critical:true});
+        critical++;
+      }
+    } catch(e){
+      tests.push({status:'fail',label:'Write permission',detail:e.message,critical:true});
+      critical++;
+    }
+  }
+
+  // ========== CLOUDINARY TESTS ==========
+  tests.push({section:'cloudinary', title:'☁️ CLOUDINARY'});
+
+  if(!cloud){
+    tests.push({status:'warn',label:'Cloud name configured',detail:'Empty — photo uploads will not work'});
+    warnings++;
+  } else if(!/^[\w-]+$/.test(cloud)){
+    tests.push({status:'warn',label:'Cloud name format',detail:`"${cloud}" contains invalid characters`});
+    warnings++;
+  } else {
+    tests.push({status:'ok',label:'Cloud name',detail:cloud});
+  }
+
+  if(!preset){
+    tests.push({status:'warn',label:'Upload preset configured',detail:'Empty — photo uploads will not work'});
+    warnings++;
+  } else {
+    tests.push({status:'ok',label:'Upload preset',detail:preset});
+  }
+
+  // Test Cloudinary with a real tiny upload
+  if(cloud && preset){
+    try {
+      // Create a 1x1 pixel test PNG
+      const pngBlob = await (async()=>{
+        const canvas = document.createElement('canvas');
+        canvas.width = 1; canvas.height = 1;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#f26a21';
+        ctx.fillRect(0,0,1,1);
+        return new Promise(r=>canvas.toBlob(r,'image/png'));
+      })();
+
+      const fd = new FormData();
+      fd.append('file', pngBlob, 'bliss-test.png');
+      fd.append('upload_preset', preset);
+
+      const r = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/upload`,{
+        method:'POST',
+        body: fd
+      });
+
+      if(r.ok){
+        const data = await r.json();
+        tests.push({status:'ok',label:'Cloudinary upload',detail:`Uploaded successfully. URL: ${data.secure_url.substring(0,50)}...`});
+      } else {
+        const err = await r.json().catch(()=>({error:{message:'Unknown'}}));
+        const msg = err.error?.message || `Status ${r.status}`;
+        if(msg.toLowerCase().includes('unsigned') || msg.toLowerCase().includes('preset')){
+          tests.push({status:'fail',label:'Cloudinary upload',detail:`${msg}. Go to Cloudinary → Settings → Upload → Upload presets → Edit "${preset}" → Set "Signing mode" to UNSIGNED.`,critical:true});
+        } else if(r.status === 401){
+          tests.push({status:'fail',label:'Cloudinary auth',detail:`Cloud name "${cloud}" or preset "${preset}" is incorrect.`,critical:true});
+        } else {
+          tests.push({status:'fail',label:'Cloudinary upload',detail:msg,critical:true});
+        }
+        critical++;
+      }
+    } catch(e){
+      tests.push({status:'fail',label:'Cloudinary upload',detail:e.message,critical:true});
+      critical++;
+    }
+  }
+
+  // ========== RENDER RESULTS ==========
+  const statusIcons = {
+    ok: '<span style="color:var(--success);font-weight:700">✓</span>',
+    fail: '<span style="color:var(--danger);font-weight:700">✗</span>',
+    warn: '<span style="color:var(--orange);font-weight:700">⚠</span>'
+  };
+  const statusColors = {
+    ok: '#e8f7ee',
+    fail: '#fee',
+    warn: '#fff8ef'
+  };
+  const statusBorders = {
+    ok: 'var(--success)',
+    fail: 'var(--danger)',
+    warn: 'var(--orange)'
+  };
+
+  let html = '';
+
+  // Summary banner
+  if(critical > 0){
+    html += `<div style="padding:16px 20px;background:#fee;border-left:4px solid var(--danger);border-radius:8px;margin-bottom:16px">
+      <div style="font-weight:700;color:var(--danger);font-size:14px;margin-bottom:4px">❌ ${critical} critical issue${critical>1?'s':''} — saves will fail</div>
+      <div style="font-size:12.5px;color:#833;line-height:1.6">Fix the red items below, then run the diagnostic again.</div>
+    </div>`;
+  } else if(warnings > 0){
+    html += `<div style="padding:16px 20px;background:#fff8ef;border-left:4px solid var(--orange);border-radius:8px;margin-bottom:16px">
+      <div style="font-weight:700;color:var(--orange-deep);font-size:14px;margin-bottom:4px">⚠️ ${warnings} warning${warnings>1?'s':''} — some features may not work perfectly</div>
+      <div style="font-size:12.5px;color:var(--orange-deep);line-height:1.6">Critical features work, but review the warnings below.</div>
+    </div>`;
+  } else {
+    html += `<div style="padding:16px 20px;background:#e8f7ee;border-left:4px solid var(--success);border-radius:8px;margin-bottom:16px">
+      <div style="font-weight:700;color:var(--success);font-size:14px;margin-bottom:4px">✅ All systems working!</div>
+      <div style="font-size:12.5px;color:#155;line-height:1.6">You can now save excursions and upload photos.</div>
+    </div>`;
+  }
+
+  // Test details
+  html += '<div style="background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden">';
+  tests.forEach(t=>{
+    if(t.section){
+      html += `<div style="background:var(--bg);padding:10px 16px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border)">${t.title}</div>`;
+    } else {
+      html += `<div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start">
+        <div style="width:20px;text-align:center;padding-top:2px">${statusIcons[t.status]}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px">${t.label}</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;word-break:break-word">${t.detail}</div>
+        </div>
+      </div>`;
+    }
+  });
+  html += '</div>';
+
+  result.innerHTML = html;
 }
 
 async function generateNewHash(){
