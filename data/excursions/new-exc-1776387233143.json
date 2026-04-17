@@ -1,0 +1,22 @@
+{
+  "id": "new-exc-1776387233143",
+  "cat": "land",
+  "icon": "i-mountain",
+  "tag": "Full Day",
+  "name": "New Excursion",
+  "sub": "",
+  "desc": "",
+  "startPt": "Your Hotel",
+  "endPt": "",
+  "itin": [],
+  "pills": [],
+  "prices": [
+    {
+      "l": "Adult",
+      "v": "€100"
+    }
+  ],
+  "notes": "",
+  "bg": "bg-land",
+  "media": []
+}
