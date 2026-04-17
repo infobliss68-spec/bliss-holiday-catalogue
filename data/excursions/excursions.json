@@ -1,1 +1,829 @@
-
+{
+  "version": "2.0",
+  "updated": "2026-04-17",
+  "excursions": [
+    {
+      "id": "south1",
+      "cat": "land",
+      "icon": "i-mountain",
+      "tag": "Full Day · Iconic",
+      "name": "South Tour with La Rhumerie",
+      "sub": "Chamarel, Grand Bassin & Rum Tasting",
+      "desc": "Discover the highlights of southern Mauritius on this iconic full day tour. Visit the volcanic crater lake of Trou aux Cerfs, the sacred Hindu lake of Grand Bassin, and the world-famous seven-coloured earth at Chamarel. End with a rum tasting and gourmet lunch at La Rhumerie de Chamarel.",
+      "startPt": "Your Hotel",
+      "endPt": "Chamarel Coloured Earth",
+      "itin": [
+        "Pride of the Islands — miniature ship models",
+        "Trou aux Cerfs volcanic crater",
+        "Grand Bassin sacred Hindu lake",
+        "Black River Gorges viewpoint",
+        "Lunch at La Rhumerie de Chamarel"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Full Day"
+        },
+        {
+          "i": "i-users",
+          "t": "Min 6 pax"
+        },
+        {
+          "i": "i-utensils",
+          "t": "Lunch included"
+        },
+        {
+          "i": "i-ticket",
+          "t": "Entrance included"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€133"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€80"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Seat in air-conditioned coach. Entrance to Chamarel Coloured Earth included. Lunch at La Rhumerie de Chamarel included. Minimum 6 pax.",
+      "bg": "bg-land",
+      "media": []
+    },
+    {
+      "id": "south2",
+      "cat": "land",
+      "icon": "i-mountain",
+      "tag": "Full Day · Budget",
+      "name": "South Tour with Chez Ruben",
+      "sub": "Same Scenery, Local Lunch",
+      "desc": "The same iconic southern route — Pride of the Islands, Trou aux Cerfs, Grand Bassin, Black River Gorges and Chamarel Coloured Earth — with lunch at the beloved local restaurant Chez Ruben.",
+      "startPt": "Your Hotel",
+      "endPt": "Chamarel",
+      "itin": [
+        "Pride of the Islands",
+        "Trou aux Cerfs volcanic crater",
+        "Grand Bassin sacred lake",
+        "Black River Gorges",
+        "Lunch at Chez Ruben"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Full Day"
+        },
+        {
+          "i": "i-users",
+          "t": "Min 6 pax"
+        },
+        {
+          "i": "i-utensils",
+          "t": "Lunch included"
+        },
+        {
+          "i": "i-ticket",
+          "t": "Entrance included"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€105"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€55"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Seat in air-conditioned coach. Entrance to Chamarel included. Lunch at Chez Ruben. Minimum 6 pax.",
+      "bg": "bg-land",
+      "media": []
+    },
+    {
+      "id": "northhalf",
+      "cat": "land",
+      "icon": "i-map",
+      "tag": "Half Day · Capital",
+      "name": "Half Day City North",
+      "sub": "Port Louis, Caudan & Botanical Garden",
+      "desc": "Explore the vibrant capital and one of the world's most beautiful botanical gardens. Stroll through Port Louis Central Market, visit the Caudan Waterfront, and admire century-old giant tortoises at Pamplemousses Botanical Garden.",
+      "startPt": "Your Hotel",
+      "endPt": "Pamplemousses Garden",
+      "itin": [
+        "Port Louis Central Market",
+        "Caudan Waterfront"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Half Day"
+        },
+        {
+          "i": "i-users",
+          "t": "Min 6 pax"
+        },
+        {
+          "i": "i-ticket",
+          "t": "Garden entrance incl."
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€66"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€40"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Seat in air-conditioned coach. Entrance to Botanical Garden included. Lunch not included.",
+      "bg": "bg-land",
+      "media": []
+    },
+    {
+      "id": "northfull",
+      "cat": "land",
+      "icon": "i-map",
+      "tag": "Full Day · North",
+      "name": "Full Day North Tour",
+      "sub": "Pamplemousses, Port Louis & Cap Malheureux",
+      "desc": "A full day exploring the lush north. Walk through Pamplemousses Botanical Garden, dive into Port Louis at the Caudan Waterfront, and end at the picturesque fishing village of Cap Malheureux with its iconic red-roofed church.",
+      "startPt": "Your Hotel",
+      "endPt": "Cap Malheureux",
+      "itin": [
+        "Pamplemousses Botanical Garden",
+        "Port Louis Caudan Waterfront",
+        "Free lunch time in Port Louis"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Full Day"
+        },
+        {
+          "i": "i-users",
+          "t": "Min 6 pax"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€155"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€80"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Seat in air-conditioned coach. Lunch & drinks NOT included. Route varies by hotel location.",
+      "bg": "bg-land",
+      "media": []
+    },
+    {
+      "id": "tea",
+      "cat": "land",
+      "icon": "i-award",
+      "tag": "Full Day · Premium",
+      "name": "The Tea Route",
+      "sub": "Colonial Estates, Tasting & Gris-Gris Cliffs",
+      "desc": "Follow the historic tea trail through the lush highlands. Visit Domaine des Aubineaux, enjoy a tea tasting at Bois Chéri, discover rum and vanilla at Saint Aubin, then conclude at the dramatic black cliffs of Gris-Gris.",
+      "startPt": "Your Hotel",
+      "endPt": "Gris-Gris Cliffs",
+      "itin": [
+        "Domaine des Aubineaux — colonial mansion",
+        "Domaine de Bois Chéri — tea tasting",
+        "Domaine de Saint Aubin — rum & vanilla",
+        "Crocodile Park",
+        "Lunch included"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Full Day"
+        },
+        {
+          "i": "i-users",
+          "t": "Min 2 pax"
+        },
+        {
+          "i": "i-utensils",
+          "t": "Lunch included"
+        },
+        {
+          "i": "i-ticket",
+          "t": "All entrances incl."
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€190"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€160"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Private guided tour in air-conditioned vehicle. All entrances and lunch included. Minimum 2 pax.",
+      "bg": "bg-land",
+      "media": []
+    },
+    {
+      "id": "vallee",
+      "cat": "land",
+      "icon": "i-sun",
+      "tag": "Half Day · Nature",
+      "name": "Vallée des Couleurs",
+      "sub": "23 Shades of Volcanic Earth",
+      "desc": "Discover over 23 shades of volcanic earth and minerals at this unique geological site. Vallée des Couleurs Nature Park features spectacular waterfalls, zip-lines and panoramic viewpoints.",
+      "startPt": "Your Hotel",
+      "endPt": "Vallée des Couleurs",
+      "itin": [
+        "Multi-coloured earth viewpoints",
+        "Waterfalls and natural pools",
+        "Optional zip-line activities"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Half Day"
+        },
+        {
+          "i": "i-users",
+          "t": "Min 4 pax"
+        },
+        {
+          "i": "i-calendar",
+          "t": "Sundays"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Transport Adult",
+          "v": "€35"
+        },
+        {
+          "l": "Transport Child",
+          "v": "€20"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Transport only. Entrance fees payable separately on site. Available Sundays. Minimum 4 pax.",
+      "bg": "bg-land",
+      "media": []
+    },
+    {
+      "id": "casela",
+      "cat": "land",
+      "icon": "i-compass",
+      "tag": "Full Day · Adventure",
+      "name": "Casela — World of Adventures",
+      "sub": "Safari, Zip-line, Lions & Quads",
+      "desc": "Africa meets Mauritius! A spectacular day of wildlife and adrenaline. Walk alongside lions in the Predator Kingdom, race through zip-line circuits, take a safari, camel rides or quad biking.",
+      "startPt": "Your Hotel",
+      "endPt": "Casela Park",
+      "itin": [
+        "Predator Kingdom — lion walk",
+        "Zip-line circuits",
+        "Open jeep safari",
+        "Camel rides & feeding",
+        "Quad biking trails"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Full Day"
+        },
+        {
+          "i": "i-users",
+          "t": "Family friendly"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Camel Ride",
+          "v": "Rs 350"
+        },
+        {
+          "l": "Camel Feeding",
+          "v": "Rs 350"
+        },
+        {
+          "l": "Packages",
+          "v": "Various"
+        }
+      ],
+      "notes": "Multiple activity packages available — contact rep for current prices. Minimum height/age restrictions apply. Transport not included.",
+      "bg": "bg-land",
+      "media": []
+    },
+    {
+      "id": "cata",
+      "cat": "sea",
+      "icon": "i-anchor",
+      "tag": "Full Day Cruise · Iconic",
+      "name": "Catamaran Île aux Cerfs",
+      "sub": "East Coast Cruise with BBQ Lunch",
+      "desc": "Sail in style aboard a comfortable catamaran to the stunning Île aux Cerfs. Departing from Trou d'Eau Douce at 9:30am, cruise across the lagoon, visit the Grand River SE waterfall, snorkel over coral reefs, then enjoy BBQ lunch on board.",
+      "startPt": "Trou d'Eau Douce Jetty",
+      "endPt": "Île aux Cerfs",
+      "itin": [
+        "Depart jetty at 9:30am",
+        "Sail across south-east lagoon",
+        "Grand River SE Waterfall",
+        "Snorkelling with crew",
+        "BBQ lunch & unlimited drinks",
+        "Free time on Île aux Cerfs"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "6 Hours"
+        },
+        {
+          "i": "i-utensils",
+          "t": "BBQ & drinks"
+        },
+        {
+          "i": "i-wave",
+          "t": "Snorkelling"
+        },
+        {
+          "i": "i-bus",
+          "t": "Transport incl."
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€98"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€63"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Price includes transport & BBQ lunch with unlimited drinks. Sharing catamaran.",
+      "bg": "bg-sea",
+      "media": []
+    },
+    {
+      "id": "cata-east",
+      "cat": "sea",
+      "icon": "i-anchor",
+      "tag": "Full Day · East Only",
+      "name": "Catamaran Île aux Cerfs (East)",
+      "sub": "For East Coast Hotels",
+      "desc": "The same beautiful Île aux Cerfs experience but departing exclusively from the east coast — perfect for east coast hotels. BBQ lunch, unlimited drinks and snorkelling all included.",
+      "startPt": "East Coast Hotel",
+      "endPt": "Île aux Cerfs",
+      "itin": [
+        "East Coast departure",
+        "Sail to Île aux Cerfs",
+        "Snorkelling at coral reef",
+        "BBQ lunch & drinks"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Full Day"
+        },
+        {
+          "i": "i-map",
+          "t": "East Coast only"
+        },
+        {
+          "i": "i-utensils",
+          "t": "Lunch & drinks incl."
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€85"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€60"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "East Coast departure only. Lunch & drinks included. Transport included.",
+      "bg": "bg-sea",
+      "media": []
+    },
+    {
+      "id": "5islands",
+      "cat": "sea",
+      "icon": "i-wave",
+      "tag": "Full Day · Adventure",
+      "name": "Speed Boat — 5 Islands",
+      "sub": "Waterfalls, Dolphins & Snorkelling",
+      "desc": "The ultimate Mauritian island-hopping adventure. Depart from Trou d'Eau Douce at 9am, visit 5 unique islands, the GRSE waterfalls, spot dolphins, visit lighthouse islands, and lunch on Île aux Cerfs.",
+      "startPt": "Trou d'Eau Douce",
+      "endPt": "Trou d'Eau Douce",
+      "itin": [
+        "Stop at Île aux Cerfs",
+        "GRSE waterfalls",
+        "Snorkelling over coral",
+        "Spot wild dolphins",
+        "Lighthouse islands",
+        "Apéritif at Île aux Aigrettes",
+        "Lunch on Île aux Cerfs"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "7 Hours"
+        },
+        {
+          "i": "i-utensils",
+          "t": "Lunch included"
+        },
+        {
+          "i": "i-wave",
+          "t": "Snorkelling"
+        },
+        {
+          "i": "i-heart",
+          "t": "Dolphins"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€135"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€88"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Price includes transport & lunch. Sharing speedboat. Departs 9am, returns 4pm.",
+      "bg": "bg-sea",
+      "media": []
+    },
+    {
+      "id": "gabriel",
+      "cat": "sea",
+      "icon": "i-anchor",
+      "tag": "Full Day · Premium",
+      "name": "North Cruise — Ilot Gabriel",
+      "sub": "Mini Lobster Lunch on Pristine Island",
+      "desc": "Cruise to breathtaking Ilot Gabriel in the turquoise north — an uninhabited paradise with crystal clear waters. Premium catamaran with spectacular snorkelling and a gourmet mini lobster lunch on board.",
+      "startPt": "North Coast Jetty",
+      "endPt": "Ilot Gabriel",
+      "itin": [
+        "Cruise to Ilot Gabriel",
+        "Snorkelling at pristine reef",
+        "Mini lobster gourmet lunch",
+        "Leisure on the island"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Full Day"
+        },
+        {
+          "i": "i-utensils",
+          "t": "Mini Lobster"
+        },
+        {
+          "i": "i-wave",
+          "t": "Snorkelling"
+        },
+        {
+          "i": "i-bus",
+          "t": "Transport incl."
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€145"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€115"
+        },
+        {
+          "l": "Under 3",
+          "v": "€40"
+        }
+      ],
+      "notes": "Lunch & drinks included. Transport included. Premium cruise.",
+      "bg": "bg-sea",
+      "media": []
+    },
+    {
+      "id": "whale",
+      "cat": "sea",
+      "icon": "i-heart",
+      "tag": "Half Day · Wildlife",
+      "name": "Whale Watching & Swim with Dolphins",
+      "sub": "West Coast Wildlife Encounter",
+      "desc": "An unforgettable encounter off the west coast. Search for majestic sperm whales in deep ocean and swim with wild spinner dolphins at Tamarin Bay — home to one of the world's largest resident populations.",
+      "startPt": "West Coast Marina",
+      "endPt": "Deep Ocean",
+      "itin": [
+        "Spinner dolphins at Tamarin Bay",
+        "Swim with wild dolphins",
+        "Deep water whale watching",
+        "Observe sperm whales"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Half Day"
+        },
+        {
+          "i": "i-heart",
+          "t": "Whale watching"
+        },
+        {
+          "i": "i-wave",
+          "t": "Swim with dolphins"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€125"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€98"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Lunch & drinks NOT included. Wildlife sightings subject to nature & weather.",
+      "bg": "bg-sea",
+      "media": []
+    },
+    {
+      "id": "dolphin",
+      "cat": "sea",
+      "icon": "i-wave",
+      "tag": "Full Day · Adventure",
+      "name": "Full Day Swim with Dolphins",
+      "sub": "West Coast Speed Boat",
+      "desc": "Full day speed boat adventure along the west coast. Encounter the resident spinner dolphins at Tamarin Bay, snorkel over reefs, and enjoy a BBQ lunch with unlimited refreshments on board.",
+      "startPt": "Tamarin Bay",
+      "endPt": "West Coast",
+      "itin": [
+        "Early dolphins at Tamarin Bay",
+        "Swimming with wild dolphins",
+        "Snorkelling at coral reef",
+        "BBQ lunch on board"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Full Day"
+        },
+        {
+          "i": "i-utensils",
+          "t": "Lunch & drinks"
+        },
+        {
+          "i": "i-heart",
+          "t": "Wild dolphins"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€98"
+        },
+        {
+          "l": "Child 3–10",
+          "v": "€78"
+        },
+        {
+          "l": "Under 3",
+          "v": "Free"
+        }
+      ],
+      "notes": "Lunch & drinks included. Transport included. Wild dolphin encounters subject to nature.",
+      "bg": "bg-sea",
+      "media": []
+    },
+    {
+      "id": "fishing",
+      "cat": "sea",
+      "icon": "i-fish",
+      "tag": "Sport Fishing",
+      "name": "Big Game Fishing",
+      "sub": "Marlin, Tuna & Wahoo",
+      "desc": "Mauritius is one of the world's premier big game fishing destinations. Choose from three professional vessels (42ft, 47ft, 50ft). Target blue marlin, yellowfin tuna, wahoo and dorado. All drinks included.",
+      "startPt": "Marina",
+      "endPt": "Deep Sea",
+      "itin": [
+        "Troll the deep waters",
+        "Target marlin, tuna, wahoo, dorado",
+        "Catch & release or keep"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "4h / 6h / 9h"
+        },
+        {
+          "i": "i-utensils",
+          "t": "Drinks included"
+        },
+        {
+          "i": "i-anchor",
+          "t": "42–50ft boats"
+        }
+      ],
+      "prices": [
+        {
+          "l": "4h · 42ft",
+          "v": "Rs 26,000"
+        },
+        {
+          "l": "4h · 50ft",
+          "v": "Rs 35,000"
+        },
+        {
+          "l": "9h · 50ft",
+          "v": "Rs 53,000"
+        }
+      ],
+      "notes": "Prices per boat, not per person. Season rates 15 Dec–15 Jan add 20%. Transport NOT included.",
+      "bg": "bg-sea",
+      "media": []
+    },
+    {
+      "id": "aigrettes",
+      "cat": "sea",
+      "icon": "i-sparkles",
+      "tag": "Nature Reserve",
+      "name": "Île aux Aigrettes",
+      "sub": "Hydrofoil Trip to Conservation Island",
+      "desc": "Hydrofoil speedboat to Île aux Aigrettes — a tiny coral island painstakingly restored to its pre-human state. See giant Aldabra tortoises, the rare pink pigeon, and walk through endemic forest.",
+      "startPt": "Pointe Jérôme",
+      "endPt": "Île aux Aigrettes",
+      "itin": [
+        "Hydrofoil speedboat",
+        "1-hour guided tour",
+        "Giant Aldabra tortoises",
+        "Endemic pink pigeon",
+        "Endemic forest walk"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "1 Hour tour"
+        },
+        {
+          "i": "i-calendar",
+          "t": "Valid May 25–26"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€22"
+        },
+        {
+          "l": "Child 4–11",
+          "v": "€12"
+        }
+      ],
+      "notes": "Transport & lunch NOT included. 100% cancellation fee if cancelled less than 1 day before (except cyclone).",
+      "bg": "bg-sea",
+      "media": []
+    },
+    {
+      "id": "heli",
+      "cat": "air",
+      "icon": "i-plane",
+      "tag": "Luxury · Helicopter",
+      "name": "Helicopter Services (MHL)",
+      "sub": "Sightseeing, Transfers & Underwater Waterfall",
+      "desc": "Mauritius Helicopter Ltd operating since 1984 with a perfect safety record. Sightseeing tours, airport transfers, the iconic Underwater Waterfall illusion, Heli-Lunch, Heli-Golf, and customised private experiences.",
+      "startPt": "Airport / Hotel Helipad",
+      "endPt": "Scenic Flight Route",
+      "itin": [
+        "Helipad departure",
+        "Aerial views over the island",
+        "Turquoise lagoons & coastline",
+        "Heli-Lunch option",
+        "Underwater Waterfall option"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "15 min – 1h"
+        },
+        {
+          "i": "i-award",
+          "t": "Since 1984"
+        },
+        {
+          "i": "i-sun",
+          "t": "Weather dependent"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Airport Transfer (2 pax)",
+          "v": "€1,000"
+        },
+        {
+          "l": "Sightseeing / pax",
+          "v": "€300+"
+        },
+        {
+          "l": "Underwater Waterfall",
+          "v": "€300/pax"
+        }
+      ],
+      "notes": "Rates include 15% VAT. Valid Nov 2025 – Oct 2026. All services subject to weather.",
+      "bg": "bg-air",
+      "media": []
+    },
+    {
+      "id": "sky",
+      "cat": "air",
+      "icon": "i-plane",
+      "tag": "Extreme · Adventure",
+      "name": "Skydiving",
+      "sub": "Tandem Jump Over Paradise",
+      "desc": "The ultimate adrenaline rush — tandem skydive above the paradise island of Mauritius. Freefall at 200km/h, then parachute gently over turquoise lagoons and green hills.",
+      "startPt": "Drop Zone",
+      "endPt": "Touchdown",
+      "itin": [
+        "Safety briefing",
+        "Gear up and board",
+        "Climb to altitude",
+        "Tandem freefall at 200km/h",
+        "Parachute descent"
+      ],
+      "pills": [
+        {
+          "i": "i-clock",
+          "t": "Half Day"
+        },
+        {
+          "i": "i-award",
+          "t": "No experience needed"
+        },
+        {
+          "i": "i-camera",
+          "t": "Photos & video"
+        }
+      ],
+      "prices": [
+        {
+          "l": "Price",
+          "v": "On Request"
+        }
+      ],
+      "notes": "Contact your Bliss Holiday representative. Minimum age and weight restrictions apply.",
+      "bg": "bg-air",
+      "media": []
+    }
+  ]
+}
