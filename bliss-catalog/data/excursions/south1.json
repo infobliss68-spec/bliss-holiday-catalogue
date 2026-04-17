@@ -1,0 +1,58 @@
+{
+  "id": "south1",
+  "cat": "land",
+  "icon": "i-mountain",
+  "tag": "Full Day · Iconic",
+  "name": "South Tour with La Rhumerie",
+  "sub": "Chamarel, Grand Bassin & Rum Tasting",
+  "desc": "Discover the highlights of southern Mauritius on this iconic full day tour. Visit the volcanic crater lake of Trou aux Cerfs, the sacred Hindu lake of Grand Bassin, and the world-famous seven-coloured earth at Chamarel. End with a rum tasting and gourmet lunch at La Rhumerie de Chamarel.",
+  "startPt": "Your Hotel",
+  "endPt": "Chamarel Coloured Earth",
+  "itin": [
+    "Pride of the Islands — miniature ship models",
+    "Trou aux Cerfs volcanic crater",
+    "Grand Bassin sacred Hindu lake",
+    "Black River Gorges viewpoint",
+    "Lunch at La Rhumerie de Chamarel"
+  ],
+  "pills": [
+    {
+      "i": "i-clock",
+      "t": "Full Day"
+    },
+    {
+      "i": "i-users",
+      "t": "Min 6 pax"
+    },
+    {
+      "i": "i-utensils",
+      "t": "Lunch included"
+    },
+    {
+      "i": "i-ticket",
+      "t": "Entrance included"
+    }
+  ],
+  "prices": [
+    {
+      "l": "Adult",
+      "v": "€133"
+    },
+    {
+      "l": "Child 3–10",
+      "v": "€80"
+    },
+    {
+      "l": "Under 3",
+      "v": "Free"
+    }
+  ],
+  "notes": "Seat in air-conditioned coach. Entrance to Chamarel Coloured Earth included. Lunch at La Rhumerie de Chamarel included. Minimum 6 pax.",
+  "bg": "bg-land",
+  "media": [
+    {
+      "type": "image",
+      "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776386252/uj6odyxypchsn5mvpcmk.jpg"
+    }
+  ]
+}
