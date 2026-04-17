@@ -28,6 +28,23 @@ img,video{max-width:100%;display:block}
 .header-search input:focus{border-color:var(--orange);background:var(--white)}
 .header-search .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
 .header-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.pdf-btn{background:var(--orange);color:white;border:none;padding:9px 16px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .15s;white-space:nowrap}
+.pdf-btn:hover{background:var(--orange-deep);transform:translateY(-1px);box-shadow:0 4px 12px rgba(242,106,33,.25)}
+.pdf-btn:active{transform:translateY(0)}
+.pdf-btn .ic{width:16px;height:16px}
+.pdf-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+@media(max-width:640px){.pdf-btn-text{display:none}.pdf-btn{padding:9px 11px}}
+
+.pdf-overlay{position:fixed;inset:0;background:rgba(10,10,10,.92);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.pdf-overlay.show{display:flex}
+.pdf-overlay-inner{text-align:center;color:white;max-width:400px;padding:30px}
+.pdf-overlay .spinner{width:64px;height:64px;margin:0 auto 22px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pdf-overlay h3{font-size:1.3rem;font-weight:700;margin-bottom:8px;letter-spacing:-.3px}
+.pdf-overlay p{font-size:13.5px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:18px}
+.pdf-overlay .progress-bar{width:100%;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:10px}
+.pdf-overlay .progress-fill{height:100%;background:var(--orange);width:0;transition:width .3s;border-radius:2px}
+.pdf-overlay .status{font-size:12px;color:rgba(255,255,255,.5);margin-top:8px;letter-spacing:.5px;text-transform:uppercase}
 .menu-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--ink);flex-direction:column;gap:4px}
 .menu-btn span{display:block;width:20px;height:2px;background:currentColor;border-radius:1px}
 
@@ -240,7 +257,23 @@ img,video{max-width:100%;display:block}
     <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" id="srch" placeholder="Search excursion, destination..." oninput="filterList()">
   </div>
+  <div class="header-right">
+    <button class="pdf-btn" onclick="downloadCatalogPDF()" title="Download catalogue as PDF">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span class="pdf-btn-text">Download PDF</span>
+    </button>
+  </div>
 </header>
+
+<div class="pdf-overlay" id="pdfOverlay">
+  <div class="pdf-overlay-inner">
+    <div class="spinner"></div>
+    <h3>Generating your catalogue</h3>
+    <p>Creating a beautiful PDF with all excursions and photos. This takes 30-60 seconds depending on the number of photos.</p>
+    <div class="progress-bar"><div class="progress-fill" id="pdfProgressFill"></div></div>
+    <div class="status" id="pdfStatus">Preparing...</div>
+  </div>
+</div>
 
 <div class="body">
 
@@ -303,6 +336,8 @@ img,video{max-width:100%;display:block}
   </defs>
 </svg>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 let D=[];
 let activeId=null;
@@ -669,6 +704,537 @@ function closeLB(){
   document.getElementById('lb-content').innerHTML='';
 }
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeLB();});
+
+// ============================================
+// PDF CATALOG GENERATION (HTML → Canvas → PDF)
+// ============================================
+const BLISS_CONTACT = {
+  name: 'Bliss Holiday',
+  tagline: 'Mauritius Excursions & Experiences',
+  email: 'info@blissholiday.mu',
+  phone: '+230 5257 2922',
+  website: 'blissholiday.mu',
+  season: '2025-2026'
+};
+
+const BLISS_LOGO_DATAURL = 'data:image/png;base64,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';
+
+function updatePdfProgress(percent, status){
+  const fill = document.getElementById('pdfProgressFill');
+  const st = document.getElementById('pdfStatus');
+  if(fill) fill.style.width = percent + '%';
+  if(st) st.textContent = status;
+}
+
+function showPdfOverlay(){
+  document.getElementById('pdfOverlay').classList.add('show');
+  updatePdfProgress(0, 'Preparing...');
+}
+
+function hidePdfOverlay(){
+  setTimeout(()=>{
+    document.getElementById('pdfOverlay').classList.remove('show');
+    updatePdfProgress(0, 'Preparing...');
+  }, 500);
+}
+
+// Load the Google Fonts needed for PDF style
+function ensurePdfFontsLoaded(){
+  if(document.getElementById('pdf-google-fonts')) return Promise.resolve();
+  return new Promise((resolve)=>{
+    const link = document.createElement('link');
+    link.id = 'pdf-google-fonts';
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300;400;500;600;700;800&display=swap';
+    link.onload = ()=> {
+      // Wait an extra moment for fonts to actually be ready
+      if(document.fonts && document.fonts.ready){
+        document.fonts.ready.then(()=>setTimeout(resolve, 200));
+      } else {
+        setTimeout(resolve, 600);
+      }
+    };
+    link.onerror = ()=> setTimeout(resolve, 600);
+    document.head.appendChild(link);
+  });
+}
+
+// Inject the PDF stylesheet (only once)
+function ensurePdfStylesInjected(){
+  if(document.getElementById('pdf-styles')) return;
+  const css = document.createElement('style');
+  css.id = 'pdf-styles';
+  css.textContent = `
+    .pdf-page-render-host {
+      position: fixed;
+      left: -10000px;
+      top: 0;
+      width: 595px;
+      height: 842px;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .pdf-page {
+      width: 595px;
+      height: 842px;
+      background: #fff8f0;
+      overflow: hidden;
+      position: relative;
+      color: #2a1f1a;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+    .pdf-page * { box-sizing: border-box; }
+
+    /* COVER */
+    .pdf-cover {
+      background: linear-gradient(135deg, #1a0d0a 0%, #2d1810 50%, #1a0d0a 100%);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .pdf-cover-blob1 {
+      position: absolute; top: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #f26a21 0%, transparent 60%);
+      opacity: 0.5; filter: blur(60px);
+    }
+    .pdf-cover-blob2 {
+      position: absolute; bottom: -200px; left: -100px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #06a6a4 0%, transparent 60%);
+      opacity: 0.35; filter: blur(80px);
+    }
+    .pdf-cover-content {
+      position: relative; z-index: 2;
+      height: 100%; padding: 50px;
+      display: flex; flex-direction: column;
+    }
+    .pdf-cover-top { display: flex; justify-content: space-between; align-items: center; }
+    .pdf-cover-logo { background: white; padding: 10px 14px; border-radius: 4px; height: 48px; box-shadow: 0 8px 24px rgba(242,106,33,0.3); }
+    .pdf-cover-tag { color: #ffaa6e; font-size: 10px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; border: 1.5px solid #f26a21; padding: 7px 14px; border-radius: 30px; }
+    .pdf-cover-middle { flex: 1; display: flex; flex-direction: column; justify-content: center; margin-top: 40px; }
+    .pdf-cover-year { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 300; color: #ffaa6e; letter-spacing: 12px; margin-bottom: 16px; }
+    .pdf-cover-title { font-family: 'Fraunces', serif; font-size: 100px; font-weight: 300; line-height: 0.92; letter-spacing: -4px; margin: 0 0 8px; }
+    .pdf-cover-title .accent { font-style: italic; background: linear-gradient(135deg, #f26a21 0%, #ff7e5f 50%, #feb47b 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 400; }
+    .pdf-cover-subtitle { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.85); margin-top: 28px; max-width: 420px; line-height: 1.7; }
+    .pdf-cover-divider { width: 60px; height: 3px; background: linear-gradient(90deg, #f26a21, #ff7e5f); margin: 30px 0; border-radius: 2px; }
+    .pdf-cover-stats { display: flex; gap: 50px; margin-top: 24px; }
+    .pdf-cover-stat-num { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 500; color: white; line-height: 1; background: linear-gradient(135deg, white, #ffaa6e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .pdf-cover-stat-lbl { font-size: 9px; color: rgba(255,255,255,0.6); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 6px; font-weight: 600; }
+    .pdf-cover-bottom { border-top: 1px solid rgba(255,255,255,0.15); padding-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .pdf-cover-contact .label { color: #f26a21; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
+    .pdf-cover-contact .val { font-size: 14px; font-weight: 600; color: white; margin-bottom: 4px; }
+
+    /* TOC PAGE */
+    .pdf-toc { padding: 50px; background: #fff8f0; }
+    .pdf-toc-header-stripe { position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #4a7c2a 0%, #06a6a4 50%, #f26a21 100%); }
+    .pdf-toc-tag { color: #f26a21; font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; }
+    .pdf-toc-title { font-family: 'Fraunces', serif; font-size: 64px; font-weight: 400; color: #1a0d0a; line-height: 1; margin: 0; letter-spacing: -2px; }
+    .pdf-toc-title .italic { font-style: italic; color: #f26a21; }
+    .pdf-toc-divider { width: 60px; height: 3px; background: #f26a21; margin: 24px 0 32px; border-radius: 2px; }
+    .pdf-toc-section { margin-bottom: 24px; }
+    .pdf-toc-section-title { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: linear-gradient(135deg, #fff5ee, #ffe4d1); border-left: 4px solid #f26a21; border-radius: 4px; margin-bottom: 12px; }
+    .pdf-toc-section-title .label { font-size: 11px; font-weight: 700; color: #d84f0a; letter-spacing: 2px; text-transform: uppercase; }
+    .pdf-toc-section-title .count { font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: #8a7e74; margin-left: auto; }
+    .pdf-toc-item { display: flex; align-items: baseline; padding: 6px 14px; border-bottom: 0.5px dashed #d8d2c8; }
+    .pdf-toc-item .num { font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: #f26a21; font-weight: 500; min-width: 28px; }
+    .pdf-toc-item .name { font-size: 12px; color: #2a1f1a; flex: 1; font-weight: 500; }
+    .pdf-toc-item .pageno { font-family: 'Fraunces', serif; font-size: 13px; color: #8a7e74; font-weight: 500; }
+
+    /* EXCURSION PAGE */
+    .pdf-cat-stripe { height: 5px; background: linear-gradient(90deg, #4a7c2a 0%, #6ba840 50%, #f26a21 100%); }
+    .pdf-cat-stripe.sea { background: linear-gradient(90deg, #06a6a4 0%, #2580a8 50%, #f26a21 100%); }
+    .pdf-cat-stripe.air { background: linear-gradient(90deg, #5a3a8c 0%, #8a5fb8 50%, #f26a21 100%); }
+
+    .pdf-hero { height: 45%; position: relative; display: flex; gap: 4px; overflow: hidden; }
+    .pdf-hero-image { flex: 2; position: relative; overflow: hidden; background-size: cover; background-position: center; }
+    .pdf-hero-image.fallback-land { background: linear-gradient(135deg, #4a7c2a 0%, #6ba840 60%, #8fc468 100%); }
+    .pdf-hero-image.fallback-sea { background: linear-gradient(135deg, #06a6a4 0%, #1e5a8c 60%, #2580a8 100%); }
+    .pdf-hero-image.fallback-air { background: linear-gradient(135deg, #5a3a8c 0%, #8a5fb8 60%, #b18ed4 100%); }
+    .pdf-hero-image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 35%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.85) 100%); }
+    .pdf-hero-thumbs { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .pdf-hero-thumb { flex: 1; background-size: cover; background-position: center; }
+    .pdf-hero-thumb.fallback-1 { background: linear-gradient(135deg, #ffaa6e, #d9a441); }
+    .pdf-hero-thumb.fallback-2 { background: linear-gradient(135deg, #06a6a4, #1b5e4b); }
+
+    .pdf-hero-topbar { position: absolute; top: 0; left: 0; right: 0; z-index: 10; padding: 16px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .pdf-hero-logo { background: white; padding: 6px 10px; border-radius: 4px; height: 36px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+    .pdf-hero-cattag { color: white; padding: 7px 16px; border-radius: 30px; font-size: 10px; font-weight: 700; letter-spacing: 2.5px; }
+    .pdf-hero-cattag.land { background: linear-gradient(135deg, #4a7c2a, #6ba840); box-shadow: 0 4px 12px rgba(74,124,42,0.35); }
+    .pdf-hero-cattag.sea { background: linear-gradient(135deg, #06a6a4, #1e5a8c); box-shadow: 0 4px 12px rgba(6,166,164,0.35); }
+    .pdf-hero-cattag.air { background: linear-gradient(135deg, #5a3a8c, #8a5fb8); box-shadow: 0 4px 12px rgba(90,58,140,0.35); }
+
+    .pdf-hero-titlearea { position: absolute; bottom: 22px; left: 0; right: 0; padding: 0 24px; z-index: 10; display: flex; align-items: flex-end; gap: 16px; }
+    .pdf-hero-numblock { flex-shrink: 0; border-left: 3px solid #f26a21; padding-left: 12px; }
+    .pdf-hero-numprefix { font-weight: 700; font-size: 9px; letter-spacing: 3px; color: #ffaa6e; display: block; margin-bottom: 2px; }
+    .pdf-hero-num { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: 38px; line-height: 1; color: white; text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
+    .pdf-hero-titleblk { flex: 1; min-width: 0; }
+    .pdf-hero-title { font-family: 'Fraunces', serif; font-weight: 400; font-size: 28px; line-height: 1.1; letter-spacing: -1px; color: white; margin: 0 0 4px; text-shadow: 0 2px 20px rgba(0,0,0,0.4); }
+    .pdf-hero-title .italic { font-style: italic; font-weight: 300; color: #feb47b; }
+    .pdf-hero-sub { font-size: 11px; color: rgba(255,255,255,0.95); font-weight: 500; letter-spacing: 0.3px; }
+
+    .pdf-wave { position: relative; height: 28px; margin-top: -1px; z-index: 5; }
+    .pdf-wave svg { display: block; width: 100%; height: 100%; }
+
+    .pdf-content { flex: 1; padding: 24px 32px 16px; display: flex; flex-direction: column; background: #fff8f0; }
+    .pdf-section-label { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .pdf-section-label .num { font-family: 'Fraunces', serif; font-style: italic; font-size: 16px; color: #f26a21; font-weight: 500; }
+    .pdf-section-label .title { font-size: 10px; font-weight: 700; color: #1a0d0a; letter-spacing: 3px; text-transform: uppercase; }
+    .pdf-section-label .line { flex: 1; height: 2px; background: linear-gradient(to right, #f26a21, transparent); border-radius: 1px; }
+
+    .pdf-desc { font-family: 'Fraunces', serif; font-size: 13px; line-height: 1.55; color: #2a1f1a; margin-bottom: 18px; font-weight: 400; }
+    .pdf-desc::first-letter { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 600; color: #f26a21; margin-right: 3px; line-height: 1; float: left; padding-top: 2px; }
+
+    .pdf-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+    .pdf-pill { display: inline-flex; align-items: center; padding: 5px 12px; background: linear-gradient(135deg, #fff5ee, #ffe4d1); border: 1.5px solid #f26a21; border-radius: 20px; font-size: 10.5px; font-weight: 600; color: #d84f0a; }
+
+    .pdf-twocols { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; flex: 1; margin-bottom: 16px; }
+    .pdf-coltitle { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; }
+    .pdf-coltitle span { font-size: 10px; font-weight: 700; color: #1a0d0a; letter-spacing: 2.5px; text-transform: uppercase; }
+    .pdf-coltitle .dot { width: 10px; height: 10px; border-radius: 50%; background: #f26a21; flex-shrink: 0; }
+
+    .pdf-timeline { position: relative; padding-left: 18px; }
+    .pdf-timeline::before { content: ''; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(to bottom, #f26a21, #ff7e5f 60%, transparent); border-radius: 1px; }
+    .pdf-timeline-item { position: relative; padding: 4px 0; font-size: 11.5px; color: #2a1f1a; font-weight: 500; line-height: 1.4; }
+    .pdf-timeline-item::before { content: ''; position: absolute; left: -18px; top: 7px; width: 10px; height: 10px; background: white; border: 2px solid #f26a21; border-radius: 50%; }
+    .pdf-timeline-item.last::before { background: linear-gradient(135deg, #f26a21, #ff7e5f); border-color: #f26a21; box-shadow: 0 0 0 3px rgba(242,106,33,0.2); }
+
+    .pdf-notes { font-family: 'Fraunces', serif; font-size: 12px; line-height: 1.6; color: #2a1f1a; font-style: italic; padding: 4px 0 4px 14px; border-left: 3px solid #f26a21; }
+
+    .pdf-price-zone { background: linear-gradient(135deg, #fff, #fff5ee); margin: 0 -32px; padding: 18px 32px; border-top: 2px solid #ffe0c8; border-bottom: 2px solid #ffe0c8; display: flex; justify-content: space-between; align-items: center; position: relative; }
+    .pdf-price-zone::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: linear-gradient(to bottom, #f26a21, #ff7e5f); }
+    .pdf-price-main { display: flex; align-items: baseline; gap: 6px; }
+    .pdf-price-cur { font-family: 'Fraunces', serif; font-size: 22px; color: #f26a21; font-weight: 500; }
+    .pdf-price-amt { font-family: 'Fraunces', serif; font-size: 44px; font-weight: 500; color: #1a0d0a; line-height: 1; letter-spacing: -2px; }
+    .pdf-price-lbl { font-size: 11px; color: #8a7e74; margin-left: 4px; font-weight: 600; }
+    .pdf-price-others { text-align: right; font-size: 11px; }
+    .pdf-price-row { display: flex; gap: 10px; justify-content: flex-end; align-items: baseline; margin-bottom: 3px; }
+    .pdf-price-row .lbl { color: #8a7e74; font-weight: 600; }
+    .pdf-price-row .val { font-family: 'Fraunces', serif; font-weight: 600; color: #1a0d0a; font-size: 13px; }
+    .pdf-price-row .val.free { color: #06a6a4; font-style: italic; }
+
+    .pdf-footer { background: linear-gradient(135deg, #1a0d0a, #2d1810); color: white; padding: 20px 32px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px; }
+    .pdf-footer-contact { display: flex; flex-direction: column; gap: 6px; }
+    .pdf-footer-contact .item { font-size: 16px; font-weight: 800; color: white; letter-spacing: 0.3px; }
+    .pdf-footer-contact .item.email { font-size: 14px; font-weight: 700; }
+    .pdf-footer-contact .icon { color: #f26a21; font-weight: 800; margin-right: 6px; }
+    .pdf-footer-page { font-family: 'Fraunces', serif; font-size: 22px; color: white; display: flex; align-items: baseline; gap: 4px; background: linear-gradient(135deg, #f26a21, #ff7e5f); padding: 8px 16px; border-radius: 6px; box-shadow: 0 4px 12px rgba(242,106,33,0.4); }
+    .pdf-footer-page .num { font-weight: 700; color: white; }
+    .pdf-footer-page .total { font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; }
+  `;
+  document.head.appendChild(css);
+}
+
+function pdfRenderHost(){
+  let host = document.getElementById('pdf-render-host');
+  if(!host){
+    host = document.createElement('div');
+    host.id = 'pdf-render-host';
+    host.className = 'pdf-page-render-host';
+    document.body.appendChild(host);
+  }
+  return host;
+}
+
+function buildCoverHTML(){
+  return `
+    <div class="pdf-page pdf-cover">
+      <div class="pdf-cover-blob1"></div>
+      <div class="pdf-cover-blob2"></div>
+      <div class="pdf-cover-content">
+        <div class="pdf-cover-top">
+          <img src="${BLISS_LOGO_DATAURL}" alt="Bliss" class="pdf-cover-logo">
+          <div class="pdf-cover-tag">Catalogue · ${BLISS_CONTACT.season}</div>
+        </div>
+        <div class="pdf-cover-middle">
+          <div class="pdf-cover-year">M A U R I T I U S</div>
+          <h1 class="pdf-cover-title">A Tropical<br><span class="accent">Escape</span></h1>
+          <div class="pdf-cover-divider"></div>
+          <p class="pdf-cover-subtitle">${D.length} curated experiences across the most beautiful island in the Indian Ocean. From volcanic peaks to coral reefs.</p>
+          <div class="pdf-cover-stats">
+            <div><div class="pdf-cover-stat-num">${D.length}</div><div class="pdf-cover-stat-lbl">Excursions</div></div>
+            <div><div class="pdf-cover-stat-num">3</div><div class="pdf-cover-stat-lbl">Categories</div></div>
+            <div><div class="pdf-cover-stat-num">∞</div><div class="pdf-cover-stat-lbl">Memories</div></div>
+          </div>
+        </div>
+        <div class="pdf-cover-bottom">
+          <div class="pdf-cover-contact">
+            <div class="label">Get in touch</div>
+            <div class="val">${BLISS_CONTACT.email}</div>
+            <div class="val">${BLISS_CONTACT.phone}</div>
+          </div>
+          <div class="pdf-cover-contact" style="text-align: right;">
+            <div class="label">Online</div>
+            <div class="val">${BLISS_CONTACT.website}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildTOCHTML(excursions){
+  const cats = {
+    land: excursions.filter(e=>e.cat==='land'),
+    sea: excursions.filter(e=>e.cat==='sea'),
+    air: excursions.filter(e=>e.cat==='air')
+  };
+  let excNum = 0;
+  function renderSection(label, list){
+    if(!list.length) return '';
+    let html = `<div class="pdf-toc-section">
+      <div class="pdf-toc-section-title">
+        <span class="label">${label}</span>
+        <span class="count">${list.length} excursions</span>
+      </div>`;
+    list.forEach(e => {
+      excNum++;
+      const pageNum = 2 + excNum;
+      html += `<div class="pdf-toc-item">
+        <span class="num">${String(excNum).padStart(2,'0')}</span>
+        <span class="name">${e.name}</span>
+        <span class="pageno">${pageNum}</span>
+      </div>`;
+    });
+    html += '</div>';
+    return html;
+  }
+  return `
+    <div class="pdf-page">
+      <div class="pdf-toc-header-stripe"></div>
+      <div class="pdf-toc">
+        <div class="pdf-toc-tag">Index</div>
+        <h1 class="pdf-toc-title">Table of <span class="italic">contents</span></h1>
+        <div class="pdf-toc-divider"></div>
+        ${renderSection('Land excursions', cats.land)}
+        ${renderSection('Sea excursions', cats.sea)}
+        ${renderSection('Air excursions', cats.air)}
+      </div>
+    </div>
+  `;
+}
+
+function buildExcursionHTML(exc, index, totalPages){
+  const cat = exc.cat || 'land';
+  const media = (exc.media || []).filter(m => m && m.src && m.type !== 'video').slice(0, 3);
+  const heroImg = media[0];
+  const thumbs = media.slice(1, 3);
+
+  const heroBgStyle = heroImg ? `style="background-image: url('${heroImg.src}')"` : '';
+  const heroFallbackClass = heroImg ? '' : ('fallback-' + cat);
+
+  let thumbsHtml = '';
+  if(thumbs.length === 1){
+    const t = thumbs[0];
+    thumbsHtml = `<div class="pdf-hero-thumb" style="flex:1; background-image:url('${t.src}')"></div>`;
+  } else if(thumbs.length === 2){
+    thumbsHtml = thumbs.map(t => `<div class="pdf-hero-thumb" style="background-image:url('${t.src}')"></div>`).join('');
+  }
+
+  // Adjust hero/thumbs ratio when fewer images
+  let heroFlex = '2', thumbsFlex = '1', thumbsDisplay = 'flex';
+  if(media.length === 0 || media.length === 1){
+    thumbsDisplay = 'none';
+    heroFlex = '1';
+  } else if(media.length === 2){
+    heroFlex = '1.5';
+  }
+
+  const pillsHtml = (exc.pills || []).slice(0, 5).map(p =>
+    `<span class="pdf-pill">${p.t || ''}</span>`
+  ).join('');
+
+  const itinHtml = (exc.itin || []).slice(0, 6).map((step, i, arr) =>
+    `<div class="pdf-timeline-item${i === arr.length - 1 ? ' last' : ''}">${step}</div>`
+  ).join('');
+
+  const notes = exc.notes || exc.goodToKnow || 'Please contact us for additional details and customization options.';
+
+  const prices = exc.prices || [];
+  const mainPrice = prices[0];
+  const otherPrices = prices.slice(1, 3);
+
+  let mainPriceHtml = '';
+  if(mainPrice){
+    const cleanVal = (mainPrice.v || '—').replace(/[€$£]/g, '').trim();
+    const isOnRequest = (mainPrice.v || '').toLowerCase().includes('request');
+    if(isOnRequest){
+      mainPriceHtml = `
+        <div class="pdf-price-main">
+          <span class="pdf-price-amt" style="font-size:28px;">On request</span>
+        </div>`;
+    } else {
+      mainPriceHtml = `
+        <div class="pdf-price-main">
+          <span class="pdf-price-cur">€</span>
+          <span class="pdf-price-amt">${cleanVal}</span>
+          <span class="pdf-price-lbl">/ ${mainPrice.l || 'adult'}</span>
+        </div>`;
+    }
+  }
+
+  const otherPricesHtml = otherPrices.map(p => {
+    const isFree = (p.v || '').toLowerCase().includes('free');
+    return `<div class="pdf-price-row">
+      <span class="lbl">${p.l}</span>
+      <span class="val${isFree ? ' free' : ''}">${p.v}</span>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="pdf-page">
+      <div class="pdf-cat-stripe ${cat}"></div>
+      <div class="pdf-hero">
+        <div class="pdf-hero-image ${heroFallbackClass}" ${heroBgStyle} style="flex: ${heroFlex}; ${heroBgStyle ? heroBgStyle.replace('style="', '').replace('"', '') : ''}">
+          <div class="pdf-hero-topbar">
+            <img src="${BLISS_LOGO_DATAURL}" alt="Bliss" class="pdf-hero-logo">
+            <div class="pdf-hero-cattag ${cat}">${cat.toUpperCase()}</div>
+          </div>
+          <div class="pdf-hero-titlearea">
+            <div class="pdf-hero-numblock">
+              <span class="pdf-hero-numprefix">N°</span>
+              <span class="pdf-hero-num">${String(index).padStart(2,'0')}</span>
+            </div>
+            <div class="pdf-hero-titleblk">
+              <h2 class="pdf-hero-title">${exc.name}</h2>
+              ${exc.sub ? `<div class="pdf-hero-sub">${exc.sub}</div>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="pdf-hero-thumbs" style="display: ${thumbsDisplay}; flex: ${thumbsFlex};">
+          ${thumbsHtml}
+        </div>
+      </div>
+      <div class="pdf-wave">
+        <svg viewBox="0 0 595 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,28 L0,14 Q148,0 297,14 T595,14 L595,28 Z" fill="#fff8f0"/>
+          <path d="M0,20 Q148,8 297,20 T595,20" stroke="#f26a21" stroke-width="1" fill="none" opacity="0.6"/>
+          <path d="M0,24 Q148,14 297,24 T595,24" stroke="#ff7e5f" stroke-width="0.5" fill="none" opacity="0.4"/>
+        </svg>
+      </div>
+      <div class="pdf-content">
+        <div class="pdf-section-label">
+          <span class="num">${String(index).padStart(2,'0')}</span>
+          <span class="title">Highlights</span>
+          <span class="line"></span>
+        </div>
+        <p class="pdf-desc">${exc.desc || ''}</p>
+        ${pillsHtml ? `<div class="pdf-pills">${pillsHtml}</div>` : ''}
+        <div class="pdf-twocols">
+          ${itinHtml ? `
+            <div>
+              <div class="pdf-coltitle"><span class="dot"></span><span>Itinerary</span></div>
+              <div class="pdf-timeline">${itinHtml}</div>
+            </div>
+          ` : '<div></div>'}
+          <div>
+            <div class="pdf-coltitle"><span class="dot"></span><span>Good to know</span></div>
+            <div class="pdf-notes">${notes}</div>
+          </div>
+        </div>
+        <div class="pdf-price-zone">
+          ${mainPriceHtml}
+          <div class="pdf-price-others">${otherPricesHtml}</div>
+        </div>
+      </div>
+      <div class="pdf-footer">
+        <div class="pdf-footer-contact">
+          <div class="item"><span class="icon">☎</span>${BLISS_CONTACT.phone}</div>
+          <div class="item email"><span class="icon">✉</span>${BLISS_CONTACT.email}</div>
+        </div>
+        <div class="pdf-footer-page">
+          <span class="num">${index + 2}</span>
+          <span class="total">/ ${totalPages}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Render an HTML string into a canvas via html2canvas
+async function htmlToCanvas(html){
+  const host = pdfRenderHost();
+  host.innerHTML = html;
+  // Give the browser a moment to layout & load images
+  await new Promise(r => setTimeout(r, 150));
+  const pageEl = host.querySelector('.pdf-page');
+  const canvas = await html2canvas(pageEl, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    logging: false,
+    backgroundColor: '#fff8f0',
+    width: 595,
+    height: 842
+  });
+  host.innerHTML = '';
+  return canvas;
+}
+
+async function downloadCatalogPDF(){
+  if(!D || !D.length){
+    alert('No excursions loaded yet. Please wait and try again.');
+    return;
+  }
+  if(!window.jspdf){
+    alert('PDF library not loaded. Please refresh the page.');
+    return;
+  }
+  if(!window.html2canvas){
+    alert('html2canvas library not loaded. Please refresh the page.');
+    return;
+  }
+
+  showPdfOverlay();
+  updatePdfProgress(2, 'Loading fonts...');
+
+  try {
+    ensurePdfStylesInjected();
+    await ensurePdfFontsLoaded();
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const totalPages = D.length + 2;
+
+    // PAGE 1: Cover
+    updatePdfProgress(8, 'Creating cover page...');
+    const coverCanvas = await htmlToCanvas(buildCoverHTML());
+    doc.addImage(coverCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pageW, pageH);
+
+    // PAGE 2: TOC
+    doc.addPage();
+    updatePdfProgress(15, 'Building table of contents...');
+    const tocCanvas = await htmlToCanvas(buildTOCHTML(D));
+    doc.addImage(tocCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pageW, pageH);
+
+    // PAGES 3+: Excursions
+    for(let i = 0; i < D.length; i++){
+      doc.addPage();
+      const percent = 20 + Math.round(((i + 1) / D.length) * 75);
+      updatePdfProgress(percent, `Page ${i + 1} of ${D.length}: ${D[i].name}`);
+      const excCanvas = await htmlToCanvas(buildExcursionHTML(D[i], i + 1, totalPages));
+      doc.addImage(excCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pageW, pageH);
+    }
+
+    updatePdfProgress(98, 'Finalizing...');
+    await new Promise(r => setTimeout(r, 200));
+
+    const filename = `Bliss-Holiday-Catalogue-${BLISS_CONTACT.season}.pdf`;
+    doc.save(filename);
+
+    updatePdfProgress(100, 'Done! Downloading...');
+  } catch(e){
+    console.error('PDF generation failed:', e);
+    alert('Failed to generate PDF: ' + e.message);
+  } finally {
+    hidePdfOverlay();
+  }
+}
 
 // INIT
 loadData();
