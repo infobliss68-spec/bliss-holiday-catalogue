@@ -824,6 +824,33 @@
       "notes": "Contact your Bliss Holiday representative. Minimum age and weight restrictions apply.",
       "bg": "bg-air",
       "media": []
+    },
+    {
+      "id": "new-exc-1776411561696",
+      "cat": "land",
+      "icon": "i-mountain",
+      "tag": "Full Day",
+      "name": "New Excursion test",
+      "sub": "",
+      "desc": "",
+      "startPt": "Your Hotel",
+      "endPt": "",
+      "itin": [],
+      "pills": [],
+      "prices": [
+        {
+          "l": "Adult",
+          "v": "€100"
+        }
+      ],
+      "notes": "",
+      "bg": "bg-land",
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776411588/aqvuckqbjni0devodshk.jpg"
+        }
+      ]
     }
   ]
 }
