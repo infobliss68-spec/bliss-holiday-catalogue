@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bliss Holiday — Admin</title>
+<link rel="icon" href="/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --orange:#f26a21;--orange-light:#fef0e6;--orange-deep:#d84f0a;
+  --ink:#1a1a1a;--text:#2a2a2a;--muted:#7a7a7a;--border:#e8e8e8;--bg:#fafafa;
+}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.ic{width:18px;height:18px;stroke-width:1.8}
+
+/* LOGIN SCREEN */
+.login-box{background:white;border-radius:16px;box-shadow:0 20px 48px rgba(0,0,0,.08);padding:40px;max-width:420px;width:100%;border:1px solid var(--border)}
+.login-box img{height:48px;display:block;margin:0 auto 24px}
+.login-title{font-size:1.2rem;font-weight:700;color:var(--ink);text-align:center;margin-bottom:6px;letter-spacing:-.3px}
+.login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+.lock-icon{width:60px;height:60px;border-radius:50%;background:var(--orange-light);color:var(--orange);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.lock-icon svg{width:28px;height:28px}
+.pw-field{margin-bottom:14px}
+.pw-field label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;display:block;margin-bottom:7px}
+.pw-field input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;background:var(--bg);outline:none;transition:all .15s;color:var(--ink)}
+.pw-field input:focus{border-color:var(--orange);background:white}
+.pw-btn{width:100%;background:var(--orange);color:white;border:none;padding:13px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.pw-btn:hover{background:var(--orange-deep)}
+.pw-btn .ic{width:14px;height:14px}
+.pw-error{display:none;background:#fee;border-left:3px solid #c00;padding:10px 13px;border-radius:6px;margin-top:14px;font-size:12px;color:#c00;font-weight:500;align-items:center;gap:7px}
+.pw-error.show{display:flex}
+.pw-error svg{width:14px;height:14px;flex-shrink:0}
+.pw-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.6}
+
+/* ADMIN PANEL */
+.admin-wrap{display:none;width:100%;max-width:900px}
+.admin-wrap.show{display:block}
+.admin-header{background:white;border-radius:14px 14px 0 0;padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.admin-header img{height:32px}
+.admin-header h1{font-size:1.1rem;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.admin-header .spacer{flex:1}
+.btn-ghost{background:transparent;border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;text-decoration:none}
+.btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
+.btn-primary{background:var(--orange);color:white;border:none;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-primary:hover{background:var(--orange-deep)}
+
+.admin-body{background:white;border-radius:0 0 14px 14px;padding:30px 24px;box-shadow:0 20px 48px rgba(0,0,0,.06)}
+
+.notice{background:var(--orange-light);border-left:3px solid var(--orange);padding:14px 18px;border-radius:10px;margin-bottom:24px;font-size:12.5px;color:var(--orange-deep);line-height:1.6}
+.notice strong{font-weight:600}
+
+.section-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.section-title svg{width:13px;height:13px}
+
+.exc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:30px}
+.exc-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+.exc-item:hover{border-color:var(--orange);background:white}
+.exc-icon{width:36px;height:36px;border-radius:8px;background:var(--orange-light);color:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.exc-icon svg{width:18px;height:18px}
+.exc-meta{flex:1;min-width:0}
+.exc-cat{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600}
+.exc-name{font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exc-price{font-size:11px;color:var(--orange);font-weight:600;margin-top:2px}
+
+.steps-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+.steps-card h3{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.steps-card h3 svg{width:18px;height:18px;color:var(--orange)}
+.step-list{list-style:none;counter-reset:step}
+.step-list li{counter-increment:step;font-size:13px;color:var(--text);padding:10px 0 10px 42px;position:relative;line-height:1.55;border-bottom:1px solid var(--border)}
+.step-list li:last-child{border-bottom:none}
+.step-list li::before{content:counter(step);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;background:var(--orange);color:white;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+.step-list li strong{color:var(--ink);font-weight:600}
+.step-list li code{background:white;padding:2px 8px;border-radius:4px;font-family:'Monaco','Menlo',monospace;font-size:11.5px;border:1px solid var(--border);color:var(--orange-deep)}
+
+.pw-change-section{background:#fff8ef;border:1px solid #f5d4b5;border-radius:12px;padding:20px;margin-top:20px}
+.pw-change-section h3{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.pw-change-section p{font-size:12px;color:var(--text);line-height:1.6;margin-bottom:10px}
+.pw-change-section code{background:white;padding:3px 9px;border-radius:4px;font-family:'Monaco','Menlo',monospace;font-size:11.5px;border:1px solid var(--border);color:var(--orange-deep)}
+
+@media(max-width:600px){
+  .admin-header{padding:14px 16px}
+  .admin-body{padding:20px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-box" id="loginBox">
+  <img src="/logo.png" alt="Bliss Holiday">
+  <div class="lock-icon">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  </div>
+  <h1 class="login-title">Admin Access</h1>
+  <p class="login-sub">This area is restricted to Bliss Holiday staff only</p>
+  <div class="pw-field">
+    <label>Password</label>
+    <input type="password" id="pwInput" placeholder="Enter password" autofocus onkeydown="if(event.key==='Enter')tryLogin()">
+  </div>
+  <button class="pw-btn" onclick="tryLogin()">
+    <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+    Log in
+  </button>
+  <div class="pw-error" id="pwError">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Incorrect password. Please try again.
+  </div>
+  <p class="pw-hint">Forgot password? Contact your Bliss Holiday representative.</p>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-wrap" id="adminWrap">
+  <div class="admin-header">
+    <img src="/logo.png" alt="Bliss">
+    <h1>Admin Panel</h1>
+    <div class="spacer"></div>
+    <a href="/" class="btn-ghost">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      View site
+    </a>
+    <button class="btn-ghost" onclick="logout()">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
+  </div>
+
+  <div class="admin-body">
+    <div class="notice">
+      <strong>📝 Note:</strong> This admin panel shows you all your excursions. To <strong>edit content</strong> (prices, photos, descriptions), you need to modify the JSON files on GitHub. Follow the steps below.
+    </div>
+
+    <div class="section-title">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      Your Excursions
+    </div>
+    <div class="exc-list" id="excList">Loading...</div>
+
+    <div class="steps-card">
+      <h3>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        How to edit prices, descriptions, or add photos
+      </h3>
+      <ol class="step-list">
+        <li>Go to your <strong>GitHub repository</strong> (bliss-holiday-catalogue)</li>
+        <li>Navigate to the folder <code>data/excursions/</code></li>
+        <li>Click on the JSON file you want to edit (e.g., <code>south1.json</code> for South Tour)</li>
+        <li>Click the <strong>pencil icon (Edit)</strong> at the top right</li>
+        <li>Modify the fields you want (prices, description, etc.)</li>
+        <li>For <strong>photos/videos</strong>: upload to <code>assets/excursions/</code> folder, then reference the path in the media field like: <code>"/assets/excursions/photo1.jpg"</code></li>
+        <li>Click <strong>Commit changes</strong> → Netlify rebuilds automatically in 1 minute ✨</li>
+      </ol>
+    </div>
+
+    <div class="pw-change-section">
+      <h3>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" style="color:var(--orange)"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Change your password
+      </h3>
+      <p>Enter a new password below. A secure SHA-256 hash will be generated that you can copy into the admin file.</p>
+      <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">
+        <input type="text" id="newPwInput" placeholder="Enter new password" style="flex:1;min-width:180px;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+        <button class="btn-primary" onclick="generateHash()" style="padding:10px 16px">
+          <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Generate hash
+        </button>
+      </div>
+      <div id="hashResult" style="display:none;background:white;border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:10px">
+        <p style="font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Your new hash</p>
+        <code id="hashValue" style="font-size:11px;word-break:break-all;display:block;background:var(--bg);padding:10px;border-radius:6px;border:1px solid var(--border);color:var(--orange-deep);margin-bottom:10px"></code>
+        <button class="btn-ghost" onclick="copyHash()" style="font-size:11px">
+          <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copyLabel">Copy hash</span>
+        </button>
+      </div>
+      <p style="margin-top:14px">Then edit <code>admin/index.html</code> on GitHub, find this line near the top of the script:</p>
+      <p><code>const ADMIN_PASSWORD_HASH = '...';</code></p>
+      <p>Paste your new hash between the quotes and commit. The new password will be active in 1 minute.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// HASHED PASSWORD (SHA-256)
+// Current password: Bliss2026!
+// To change: generate a new SHA-256 hash of your password
+// and replace the value below. See the instructions in the admin panel.
+const ADMIN_PASSWORD_HASH = '7bed90e9cbd3118685109ffc5c8b3d927b5271b64e6dbd72d5bdc2ad22f2875a';
+// ============================================
+
+const EXCURSION_IDS = ["south1","south2","northhalf","northfull","tea","vallee","casela","cata","cata-east","5islands","gabriel","whale","dolphin","fishing","aigrettes","heli","sky"];
+
+// SHA-256 hash function using Web Crypto API (browser native)
+async function sha256(text){
+  const buf = new TextEncoder().encode(text);
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+async function tryLogin(){
+  const input = document.getElementById('pwInput');
+  const err = document.getElementById('pwError');
+  const hash = await sha256(input.value);
+  if(hash === ADMIN_PASSWORD_HASH){
+    sessionStorage.setItem('bliss_admin', '1');
+    showAdmin();
+  } else {
+    err.classList.add('show');
+    input.value = '';
+    input.focus();
+    setTimeout(()=>err.classList.remove('show'), 3000);
+  }
+}
+
+function logout(){
+  sessionStorage.removeItem('bliss_admin');
+  location.reload();
+}
+
+function showAdmin(){
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('adminWrap').classList.add('show');
+  loadExcursions();
+}
+
+async function loadExcursions(){
+  const list = document.getElementById('excList');
+  const items = [];
+  for(const id of EXCURSION_IDS){
+    try {
+      const r = await fetch(`/data/excursions/${id}.json`);
+      if(r.ok) items.push(await r.json());
+    } catch(e){}
+  }
+
+  const icons = {
+    'i-mountain':'<path d="M8 3l4 8 5-5 5 15H2L8 3z"/>',
+    'i-wave':'<path d="M2 12c2.5-2.5 5-2.5 7.5 0s5 2.5 7.5 0 5-2.5 7.5 0"/>',
+    'i-plane':'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5L3 7.4c-.2.4-.1.9.2 1.2l4.8 4.4-1.4 3.4-2.1.8c-.3.1-.5.4-.4.7l.3.7c.1.3.4.5.7.4l3.4-1.4 4.4 4.8c.3.3.8.4 1.2.2l.7-.3c.4-.2.6-.6.5-1.1l-1.8-8.2 2.6 2.6z"/>',
+    'i-map':'<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>',
+    'i-compass':'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88"/>',
+    'i-anchor':'<circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/>',
+    'i-award':'<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>',
+    'i-sun':'<circle cx="12" cy="12" r="5"/>',
+    'i-fish':'<path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6z"/>',
+    'i-heart':'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+    'i-sparkles':'<path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z"/>'
+  };
+
+  list.innerHTML = items.map(e => `
+    <div class="exc-item" onclick="window.open('https://github.com/', '_blank')">
+      <div class="exc-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${icons[e.icon]||icons['i-mountain']}</svg>
+      </div>
+      <div class="exc-meta">
+        <div class="exc-cat">${e.cat}</div>
+        <div class="exc-name">${e.name}</div>
+        <div class="exc-price">${e.prices&&e.prices[0]?e.prices[0].v:''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Auto-login if session exists
+if(sessionStorage.getItem('bliss_admin') === '1'){
+  showAdmin();
+}
+
+// Hash generator for changing password
+async function generateHash(){
+  const input = document.getElementById('newPwInput');
+  const val = input.value.trim();
+  if(!val){
+    alert('Please enter a password first');
+    return;
+  }
+  if(val.length < 6){
+    alert('Password should be at least 6 characters');
+    return;
+  }
+  const hash = await sha256(val);
+  document.getElementById('hashValue').textContent = hash;
+  document.getElementById('hashResult').style.display = 'block';
+  input.value = '';
+}
+
+function copyHash(){
+  const hash = document.getElementById('hashValue').textContent;
+  navigator.clipboard.writeText(hash).then(()=>{
+    const lbl = document.getElementById('copyLabel');
+    lbl.textContent = '✓ Copied!';
+    setTimeout(()=>{ lbl.textContent = 'Copy hash'; }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
