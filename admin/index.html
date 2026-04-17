@@ -622,13 +622,15 @@ function renderDangerCard(e){
 }
 
 function attachEditorEvents(){
-  ['f-id','f-name','f-sub','f-tag','f-cat','f-icon','f-bg','f-startpt','f-endpt'].forEach(id=>{
+  const allFields = ['f-id','f-name','f-sub','f-tag','f-cat','f-icon','f-bg','f-startpt','f-endpt'];
+  const keyMap = {'id':'id','name':'name','sub':'sub','tag':'tag','cat':'cat','icon':'icon','bg':'bg','startpt':'startPt','endpt':'endPt'};
+  allFields.forEach(id=>{
     const el=document.getElementById(id);
-    if(el)el.addEventListener('input',()=>{
-      const key=id.replace('f-','').replace('id','id').replace('cat','cat').replace('startpt','startPt').replace('endpt','endPt');
-      const actualKey = {'id':'id','name':'name','sub':'sub','tag':'tag','cat':'cat','icon':'icon','bg':'bg','startpt':'startPt','endpt':'endPt'}[id.replace('f-','')];
-      currentExc[actualKey] = el.value;
-    });
+    if(!el) return;
+    const actualKey = keyMap[id.replace('f-','')];
+    const handler = ()=>{ currentExc[actualKey] = el.value; };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
   });
   const desc=document.getElementById('f-desc');
   if(desc)desc.addEventListener('input',()=>currentExc.desc=desc.value);
@@ -729,12 +731,34 @@ function removeMedia(i){
 }
 
 // ========== GITHUB SAVE ==========
+function syncFieldsToCurrentExc(){
+  // Safety: read all form fields directly before save
+  const fields = {
+    'f-id':'id','f-name':'name','f-sub':'sub','f-tag':'tag',
+    'f-cat':'cat','f-icon':'icon','f-bg':'bg',
+    'f-startpt':'startPt','f-endpt':'endPt',
+    'f-desc':'desc','f-notes':'notes'
+  };
+  for(const [fid, key] of Object.entries(fields)){
+    const el = document.getElementById(fid);
+    if(el) currentExc[key] = el.value;
+  }
+  console.log('[Bliss Admin] Synced fields to currentExc:', {
+    id: currentExc.id,
+    name: currentExc.name,
+    desc: currentExc.desc?.substring(0,50)+'...'
+  });
+}
+
 async function saveExcursion(){
   if(!githubToken || !githubRepo){
     toast('Configure GitHub token & repo in Settings first','error');
     showPanel('settings');
     return;
   }
+
+  // CRITICAL: sync form values to currentExc before save
+  syncFieldsToCurrentExc();
   const badge = document.getElementById('savingBadge');
   badge.classList.add('show');
   try {
@@ -795,6 +819,20 @@ async function saveExcursion(){
     if(!r.ok){
       throw new Error(`GitHub rejected save (${r.status}): ${respData.message||'Unknown error'}`);
     }
+
+    // VERIFICATION: re-read the file from GitHub to confirm the save worked
+    console.log('[Bliss Admin] Verifying save by re-reading file...');
+    try {
+      const verifyUrl = `https://raw.githubusercontent.com/${githubRepo}/${respData.content.path ? 'main' : 'main'}/${path}?t=${Date.now()}`;
+      const vr = await fetch(verifyUrl);
+      if(vr.ok){
+        const savedData = await vr.json();
+        console.log('[Bliss Admin] ✓ Verified — GitHub now has:', {name: savedData.name, id: savedData.id});
+        if(savedData.name !== data.name || savedData.id !== data.id){
+          console.warn('[Bliss Admin] ⚠️ Saved data mismatch!');
+        }
+      }
+    } catch(e){ console.log('[Bliss Admin] Verification skipped:', e.message); }
 
     toast('Saved! Site rebuilding (~1 min)...');
     await loadExcursions();
