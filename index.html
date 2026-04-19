@@ -131,11 +131,11 @@ img,video{max-width:100%;display:block}
 .px-video-badge{position:absolute;top:20px;right:20px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);color:white;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:6px;z-index:3}
 .px-video-badge .ic{width:12px;height:12px;fill:var(--orange);stroke:var(--orange)}
 
-.price-float{position:absolute;right:40px;bottom:32px;background:white;border-radius:14px;padding:16px 22px;box-shadow:0 12px 32px rgba(0,0,0,.25);z-index:3;border:1px solid rgba(255,255,255,.2);min-width:170px}
+.price-float{position:absolute;right:40px;bottom:32px;background:white;border-radius:14px;padding:16px 22px;box-shadow:0 12px 32px rgba(0,0,0,.25);z-index:3;border:1px solid rgba(255,255,255,.2);min-width:170px;display:flex;flex-direction:column;align-items:center;text-align:center}
 .pf-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px}
-.pf-main{font-size:1.9rem;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.5px;display:flex;align-items:baseline;gap:2px}
+.pf-main{font-size:1.9rem;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.5px;display:flex;align-items:baseline;justify-content:center;gap:2px}
 .pf-main .cur{color:var(--orange);font-size:1.15rem;font-weight:600}
-.pf-child{font-size:11.5px;color:var(--muted);margin-top:6px;font-weight:500;white-space:nowrap}
+.pf-child{font-size:11.5px;color:var(--muted);margin-top:6px;font-weight:500;white-space:nowrap;text-align:center}
 
 .exc-content{padding:40px 50px 40px;max-width:1280px;margin:0 auto}
 
@@ -147,31 +147,27 @@ img,video{max-width:100%;display:block}
 .sec-title{font-size:1.2rem;font-weight:700;color:var(--ink);letter-spacing:-.3px;line-height:1.2}
 .sec-count{font-size:11px;color:var(--muted);font-weight:500}
 
-/* CAROUSEL */
-.carousel{position:relative;border-radius:14px;overflow:hidden;background:#0d0d0d;user-select:none}
-.carousel-track{display:flex;transition:transform .7s cubic-bezier(.7,0,.3,1);will-change:transform}
-.carousel-slide{flex:0 0 100%;aspect-ratio:16/9;position:relative;background:#0d0d0d;cursor:pointer}
-.carousel-slide img,.carousel-slide video{width:100%;height:100%;object-fit:cover;display:block}
-.carousel-slide-caption{position:absolute;bottom:18px;left:22px;right:22px;color:white;font-size:13px;font-weight:500;text-shadow:0 2px 12px rgba(0,0,0,.7);display:flex;align-items:center;gap:8px;z-index:2}
-.carousel-slide-caption .ic{width:14px;height:14px;color:var(--orange)}
-.carousel-slide-gradient{position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.6) 100%);pointer-events:none}
-.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;background:rgba(255,255,255,.95);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,.25);color:var(--ink);padding:0;outline:none}
-.carousel-arrow:hover{background:var(--orange);color:white;transform:translateY(-50%) scale(1.1);box-shadow:0 6px 20px rgba(242,106,33,.4)}
-.carousel-arrow:active{transform:translateY(-50%) scale(.95)}
-.carousel-arrow.prev{left:18px}
-.carousel-arrow.next{right:18px}
-.carousel-arrow svg{width:20px;height:20px;stroke-width:2.5;display:block}
-.carousel-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:4;background:rgba(0,0,0,.35);padding:7px 12px;border-radius:20px;backdrop-filter:blur(8px)}
-.carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45);border:none;cursor:pointer;padding:0;transition:all .25s}
-.carousel-dot.active{background:var(--orange);width:22px;border-radius:4px}
-.carousel-progress{position:absolute;top:0;left:0;height:3px;background:var(--orange);z-index:4;transition:width .15s linear;box-shadow:0 0 8px rgba(242,106,33,.5)}
-.carousel-counter{position:absolute;top:16px;left:16px;background:rgba(0,0,0,.55);color:white;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1px;backdrop-filter:blur(8px);z-index:4;display:flex;align-items:center;gap:6px}
-.carousel-counter .ic{width:12px;height:12px;color:var(--orange);fill:var(--orange)}
-.carousel-play-video{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;backdrop-filter:blur(6px);pointer-events:none;z-index:3;border:2px solid rgba(255,255,255,.3)}
-.carousel-play-video .ic{width:24px;height:24px;fill:white;stroke:white;margin-left:3px}
-.carousel-empty{aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.9)}
-.carousel-empty .ic{width:48px;height:48px;stroke-width:1.5;margin-bottom:10px}
-.carousel-empty-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.7}
+/* MASONRY GALLERY — CSS columns preserve natural image heights */
+.masonry{column-count:3;column-gap:12px}
+.masonry-item{break-inside:avoid;margin-bottom:12px;position:relative;border-radius:12px;overflow:hidden;cursor:pointer;background:#0d0d0d;display:block;transition:transform .25s,box-shadow .25s}
+.masonry-item:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.18)}
+.masonry-item img,.masonry-item video{width:100%;height:auto;display:block}
+.masonry-item.hidden{display:none}
+.masonry-caption{position:absolute;left:10px;right:10px;bottom:10px;color:white;font-size:12px;font-weight:500;text-shadow:0 2px 10px rgba(0,0,0,.7);display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:2}
+.masonry-caption .ic{width:13px;height:13px;color:var(--orange)}
+.masonry-item:hover .masonry-caption{opacity:1}
+.masonry-gradient{position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.55) 100%);pointer-events:none;opacity:0;transition:opacity .2s}
+.masonry-item:hover .masonry-gradient{opacity:1}
+.masonry-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;backdrop-filter:blur(6px);pointer-events:none;z-index:3;border:2px solid rgba(255,255,255,.3)}
+.masonry-play .ic{width:22px;height:22px;fill:white;stroke:white;margin-left:3px}
+.gallery-toggle{display:flex;justify-content:center;margin-top:14px}
+.gallery-toggle-btn{background:white;color:var(--orange);border:1.5px solid var(--orange);padding:9px 20px;border-radius:22px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .15s}
+.gallery-toggle-btn:hover{background:var(--orange);color:white;transform:translateY(-1px);box-shadow:0 6px 16px rgba(242,106,33,.3)}
+.gallery-toggle-btn .ic{width:14px;height:14px;transition:transform .2s}
+.gallery-toggle-btn.expanded .ic{transform:rotate(180deg)}
+.gallery-empty-box{aspect-ratio:16/9;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.9);overflow:hidden}
+.gallery-empty-box .ic{width:48px;height:48px;stroke-width:1.5;margin-bottom:10px}
+.gallery-empty-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.7}
 .bg-land{background:linear-gradient(135deg,#2d5a3a,#4a8055)}
 .bg-sea{background:linear-gradient(135deg,#1d3f5e,#2a7a95)}
 .bg-air{background:linear-gradient(135deg,#3a2a5a,#6a4a95)}
@@ -248,6 +244,9 @@ img,video{max-width:100%;display:block}
 .loading p{font-size:12px;color:var(--muted)}
 
 /* MOBILE */
+@media(max-width:1000px){
+  .masonry{column-count:2}
+}
 @media(max-width:900px){
   .exc-body{grid-template-columns:1fr}
   .exc-aside{position:static}
@@ -268,9 +267,8 @@ img,video{max-width:100%;display:block}
   .px-hero{height:320px}
   .px-content{padding:24px 20px 24px}
   .price-float{right:12px;bottom:12px;padding:10px 14px;min-width:110px}
-  .carousel-arrow{width:38px;height:38px}
-  .carousel-arrow.prev{left:10px}
-  .carousel-arrow.next{right:10px}
+  .masonry{column-count:1;column-gap:10px}
+  .masonry-item{margin-bottom:10px}
   .remarks-section{padding:22px;flex-direction:column;gap:14px}
   .remarks-icon{width:44px;height:44px}
   .remarks-icon svg{width:22px;height:22px}
@@ -1889,25 +1887,28 @@ function renderExcursion(id){
     </div>`;
   }
 
-  // GALLERY CAROUSEL
+  // GALLERY — Masonry grid with hidden overflow after GALLERY_INITIAL_LIMIT items
+  const GALLERY_INITIAL_LIMIT = 9;
   let galleryHTML='';
   if(galleryItems.length>0){
-    const slides=galleryItems.map((m,i)=>{
+    const items=galleryItems.map((m,i)=>{
       const caption=m.caption||(m.type==='video'?'Video':`Photo ${i+1}`);
-      const mediaEl=m.type==='video'
-        ?`<video src="${m.src}" muted preload="metadata"></video><div class="carousel-play-video">${ico('i-play')}</div>`
-        :`<img src="${m.src}" alt="${caption}">`;
+      const isVid=m.type==='video';
+      const mediaEl=isVid
+        ?`<video src="${m.src}" muted preload="metadata" playsinline></video><div class="masonry-play">${ico('i-play')}</div>`
+        :`<img src="${m.src}" alt="${caption}" loading="lazy">`;
       const realIdx=images.indexOf(m);
-      return `<div class="carousel-slide" onclick="openLB('${e.id}',${realIdx})">
+      const hiddenClass = i >= GALLERY_INITIAL_LIMIT ? ' hidden gallery-extra' : '';
+      return `<div class="masonry-item${hiddenClass}" onclick="openLB('${e.id}',${realIdx})">
         ${mediaEl}
-        <div class="carousel-slide-gradient"></div>
-        <div class="carousel-slide-caption">${ico('i-camera')} ${caption}</div>
+        <div class="masonry-gradient"></div>
+        <div class="masonry-caption">${ico('i-camera')} ${caption}</div>
       </div>`;
     }).join('');
 
-    const dots=galleryItems.map((_,i)=>`<button class="carousel-dot ${i===0?'active':''}" onclick="event.stopPropagation();carouselGoTo(${i})"></button>`).join('');
-    const arrowLeft='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
-    const arrowRight='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+    const hasOverflow = galleryItems.length > GALLERY_INITIAL_LIMIT;
+    const extraCount = galleryItems.length - GALLERY_INITIAL_LIMIT;
+    const chevronDown = '<svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg>';
 
     galleryHTML=`<div class="gallery-section">
       <div class="sec-header">
@@ -1917,16 +1918,14 @@ function renderExcursion(id){
         </div>
         <div class="sec-count">${galleryItems.length} ${galleryItems.length===1?'item':'items'}</div>
       </div>
-      <div class="carousel" id="carousel" onmouseenter="carouselPause()" onmouseleave="carouselResume()">
-        <div class="carousel-progress" id="carouselProgress" style="width:0%"></div>
-        <div class="carousel-counter">${ico('i-camera')} <span id="carouselCount">1 / ${galleryItems.length}</span></div>
-        <div class="carousel-track" id="carouselTrack">${slides}</div>
-        ${galleryItems.length>1?`
-          <button class="carousel-arrow prev" onclick="event.stopPropagation();carouselPrev()">${arrowLeft}</button>
-          <button class="carousel-arrow next" onclick="event.stopPropagation();carouselNext()">${arrowRight}</button>
-          <div class="carousel-dots">${dots}</div>
-        `:''}
-      </div>
+      <div class="masonry" id="galleryMasonry">${items}</div>
+      ${hasOverflow?`
+      <div class="gallery-toggle">
+        <button class="gallery-toggle-btn" id="galleryToggleBtn" onclick="toggleGalleryExtras(this)" data-more="Voir plus (+${extraCount})" data-less="Voir moins">
+          <span class="gallery-toggle-label">Voir plus (+${extraCount})</span>
+          ${chevronDown}
+        </button>
+      </div>`:''}
     </div>`;
   } else if(!heroImg){
     galleryHTML=`<div class="gallery-section">
@@ -1936,11 +1935,9 @@ function renderExcursion(id){
           <div class="sec-title">Experience in pictures</div>
         </div>
       </div>
-      <div class="carousel">
-        <div class="carousel-empty ${e.bg}" style="cursor:pointer" onclick="window.location.href='/admin/'">
-          ${ico(e.icon)}
-          <div class="carousel-empty-label">No photos yet — Click to add</div>
-        </div>
+      <div class="gallery-empty-box ${e.bg}" style="cursor:pointer" onclick="window.location.href='/admin/'">
+        ${ico(e.icon)}
+        <div class="gallery-empty-label">No photos yet — Click to add</div>
       </div>
     </div>`;
   }
@@ -2021,7 +2018,6 @@ function renderExcursion(id){
       </div>`:''}
     </div>`;
   document.getElementById('content').innerHTML=html;
-  setupCarousel();
 }
 
 // PARALLAX
@@ -2038,45 +2034,18 @@ function setupParallax(){
   main.addEventListener('scroll',onScroll,{passive:true});
 }
 
-// CAROUSEL
-let carouselState={idx:0,total:0,timer:null,progressTimer:null,paused:false,duration:4500};
-function setupCarousel(){
-  if(carouselState.timer){clearInterval(carouselState.timer);carouselState.timer=null;}
-  if(carouselState.progressTimer){clearInterval(carouselState.progressTimer);carouselState.progressTimer=null;}
-  const track=document.getElementById('carouselTrack');
-  if(!track)return;
-  const slides=track.querySelectorAll('.carousel-slide');
-  carouselState.idx=0;carouselState.total=slides.length;carouselState.paused=false;
-  if(carouselState.total<=1)return;
-  carouselStart();
+// GALLERY — toggle hidden masonry items (Voir plus / Voir moins)
+function toggleGalleryExtras(btn){
+  const grid = document.getElementById('galleryMasonry');
+  if(!grid) return;
+  const extras = grid.querySelectorAll('.gallery-extra');
+  const expanded = btn.classList.toggle('expanded');
+  const label = btn.querySelector('.gallery-toggle-label');
+  extras.forEach(el => el.classList.toggle('hidden', !expanded));
+  if(label){
+    label.textContent = expanded ? btn.dataset.less : btn.dataset.more;
+  }
 }
-function carouselStart(){
-  if(carouselState.progressTimer)clearInterval(carouselState.progressTimer);
-  let progress=0;const tick=50;
-  carouselState.progressTimer=setInterval(()=>{
-    if(carouselState.paused)return;
-    progress+=tick;
-    const pct=Math.min(100,(progress/carouselState.duration)*100);
-    const bar=document.getElementById('carouselProgress');
-    if(bar)bar.style.width=pct+'%';
-    if(progress>=carouselState.duration){progress=0;carouselNext();}
-  },tick);
-}
-function carouselGoTo(i){
-  const track=document.getElementById('carouselTrack');
-  if(!track)return;
-  carouselState.idx=i;
-  track.style.transform=`translateX(-${i*100}%)`;
-  document.querySelectorAll('.carousel-dot').forEach((d,di)=>d.classList.toggle('active',di===i));
-  const bar=document.getElementById('carouselProgress');if(bar)bar.style.width='0%';
-  const cnt=document.getElementById('carouselCount');if(cnt)cnt.textContent=`${i+1} / ${carouselState.total}`;
-  track.querySelectorAll('video').forEach((v,vi)=>{if(vi===i){v.play().catch(()=>{});}else{v.pause();v.currentTime=0;}});
-  carouselStart();
-}
-function carouselNext(){carouselGoTo((carouselState.idx+1)%carouselState.total);}
-function carouselPrev(){carouselGoTo((carouselState.idx-1+carouselState.total)%carouselState.total);}
-function carouselPause(){carouselState.paused=true;}
-function carouselResume(){carouselState.paused=false;}
 
 // INFO PAGES
 function selectInfo(type){
@@ -3183,6 +3152,5 @@ async function downloadCatalogPDF(){
 // INIT
 loadData();
 </script>
-
 
 </body></html>
