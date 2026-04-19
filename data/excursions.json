@@ -65,10 +65,6 @@
         {
           "type": "image",
           "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776593376/tosma0eyymj4l6bxgds5.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776593527/q6pvh3zdxmo8eygpgh6l.jpg"
         }
       ]
     },
@@ -364,20 +360,7 @@
       ],
       "notes": "Transport only. Entrance fees payable separately on site. Available Sundays. Minimum 4 pax.",
       "bg": "bg-land",
-      "media": [
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776600032/arn0hma5vwhrjmekdl5l.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776600030/ypjqtvcfeepxc3zw1hop.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776600029/lhpj3jcjn8rcvklatuqa.jpg"
-        }
-      ]
+      "media": []
     },
     {
       "id": "casela",
