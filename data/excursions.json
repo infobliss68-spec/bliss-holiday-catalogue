@@ -123,20 +123,7 @@
       ],
       "notes": "Seat in air-conditioned coach. Entrance to Chamarel included. Lunch at Chez Ruben. Minimum 6 pax.",
       "bg": "bg-land",
-      "media": [
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776594611/hdekqdb0ryv7afsrphuv.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776594615/jtqa212rvdik4qesdkcy.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776594618/oc5iw3rnm9jmzgfo1zj4.jpg"
-        }
-      ]
+      "media": []
     },
     {
       "id": "northhalf",
@@ -182,7 +169,20 @@
       ],
       "notes": "Seat in air-conditioned coach. Entrance to Botanical Garden included. Lunch not included.",
       "bg": "bg-land",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596081/hjklbom7dbml3onabkcj.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596087/wsypgapwutxmm95aqvpt.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596092/lqhkeho1hvqmixkxxjn6.jpg"
+        }
+      ]
     },
     {
       "id": "northfull",
