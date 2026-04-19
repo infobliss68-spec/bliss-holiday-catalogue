@@ -279,17 +279,18 @@ img,video{max-width:100%;display:block}
 </style>
 <style id="pdf-styles">
     .pdf-page-render-host {
-      position: absolute;
-      left: -9999px;
-      top: -9999px;
+      position: fixed;
+      left: -10000px;
+      top: 0;
       width: 595px;
       height: 842px;
-      z-index: 0;
+      z-index: -1;
       pointer-events: none;
-      opacity: 1 !important;
-      visibility: visible !important;
+      opacity: 1;
+      visibility: visible;
       overflow: visible;
       display: block;
+      background: #fff8f0;
     }
     .pdf-page {
       width: 595px;
@@ -511,7 +512,7 @@ img,video{max-width:100%;display:block}
     <input type="text" id="srch" placeholder="Search excursion, destination..." oninput="filterList()">
   </div>
   <div class="header-right">
-    <button class="pdf-btn pdf-btn-ghost" onclick="openPdfPreview()" title="Preview PDF catalogue">
+    <button class="pdf-btn pdf-btn-ghost" onclick="printCatalogPDF()" title="Generate PDF catalogue">
       <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
       <span class="pdf-btn-text">Download PDF</span>
     </button>
@@ -536,7 +537,7 @@ img,video{max-width:100%;display:block}
     </div>
     <div class="pdfprev-actions">
       <span class="pdfprev-counter" id="pdfPreviewCounter">23 pages</span>
-      <button class="pdfprev-btn primary" onclick="closePdfPreview(); downloadCatalogPDF();">
+      <button class="pdfprev-btn primary" onclick="closePdfPreview(); printCatalogPDF();">
         <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         <span class="pdfprev-btn-text-opt">Télécharger</span>
       </button>
@@ -550,6 +551,259 @@ img,video{max-width:100%;display:block}
     </div>
   </div>
 </div>
+
+<!-- ============================================================ -->
+<!-- PDF PAGE TEMPLATES                                            -->
+<!-- Edit the HTML of each PDF page here. Syntax:                  -->
+<!--   {{var}}        escaped text                                 -->
+<!--   {{{var}}}      raw HTML (no escape)                         -->
+<!--   {{#if cond}}…{{/if}}                                        -->
+<!--   {{#each list}}…{{@index}} {{this.field}}…{{/each}}          -->
+<!-- ============================================================ -->
+<script type="text/template" id="tpl-pdf-cover">
+<div class="pdf-page pdf-cover">
+  <div class="pdf-cover-bg"></div>
+  <div class="pdf-cover-rings"></div>
+  <div class="pdf-cover-grain"></div>
+  <div class="pdf-cover-content">
+    <div class="pdf-cover-top">
+      <img src="{{logo}}" alt="Bliss" class="pdf-cover-logo">
+      <div class="pdf-cover-issue">
+        <div class="volume">Volume 01</div>
+        <div class="edition">Edition {{season}}</div>
+      </div>
+    </div>
+    <div class="pdf-cover-kicker">
+      <span class="rule"></span>
+      <span class="txt">The Mauritius Catalogue</span>
+    </div>
+    <div class="pdf-cover-middle">
+      <div class="pdf-cover-overline">A field guide to</div>
+      <h1 class="pdf-cover-title">Tropical<span class="accent">Escapes.</span></h1>
+      <p class="pdf-cover-subtitle">{{count}} curated experiences &mdash; from volcanic peaks and sacred lakes to coral lagoons and soaring helicopter flights above the Indian Ocean.</p>
+      <div class="pdf-cover-stats">
+        <div><div class="pdf-cover-stat-num">{{count}}</div><div class="pdf-cover-stat-lbl">Excursions</div></div>
+        <div><div class="pdf-cover-stat-num">03</div><div class="pdf-cover-stat-lbl">Categories</div></div>
+        <div><div class="pdf-cover-stat-num">2026</div><div class="pdf-cover-stat-lbl">Season</div></div>
+      </div>
+    </div>
+    <div class="pdf-cover-bottom">
+      <div class="pdf-cover-contact">
+        <div class="label">Reservations</div>
+        <div class="val">{{email}}</div>
+        <div class="val">{{phone}}</div>
+      </div>
+      <div class="pdf-cover-contact" style="text-align: right;">
+        <div class="label">Online</div>
+        <div class="val">{{website}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</script>
+
+<script type="text/template" id="tpl-pdf-toc">
+<div class="pdf-page">
+  <div class="pdf-toc-header-stripe"></div>
+  <div class="pdf-toc">
+    <div class="pdf-toc-tag">Index</div>
+    <h1 class="pdf-toc-title">Table of <span class="italic">contents</span></h1>
+    <div class="pdf-toc-divider"></div>
+    {{#each sections}}
+      {{#if this.items.length}}
+      <div class="pdf-toc-section">
+        <div class="pdf-toc-section-title">
+          <span class="label">{{this.label}}</span>
+          <span class="count">{{this.items.length}} excursions</span>
+        </div>
+        {{#each this.items}}
+        <div class="pdf-toc-item">
+          <span class="num">{{this.num}}</span>
+          <span class="name">{{this.name}}</span>
+          <span class="pageno">{{this.pageNum}}</span>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+    {{/each}}
+    <div class="pdf-toc-section">
+      <div class="pdf-toc-section-title">
+        <span class="label">Information</span>
+        <span class="count">4 sections</span>
+      </div>
+      {{#each info}}
+      <div class="pdf-toc-item">
+        <span class="num">i</span>
+        <span class="name">{{{this.name}}}</span>
+        <span class="pageno">{{this.pageNum}}</span>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+</script>
+
+<script type="text/template" id="tpl-pdf-excursion">
+<div class="pdf-page">
+  <div class="pdf-cat-stripe {{cat}}"></div>
+  <div class="pdf-hero">
+    <div class="pdf-hero-image {{heroFallbackClass}}" style="flex: {{heroFlex}}; {{{heroBgImage}}}">
+      <div class="pdf-hero-topbar">
+        <img src="{{logo}}" alt="Bliss" class="pdf-hero-logo">
+        <div class="pdf-hero-cattag {{cat}}">{{catUpper}}</div>
+      </div>
+      <div class="pdf-hero-titlearea">
+        <div class="pdf-hero-numblock">
+          <span class="pdf-hero-numprefix">N°</span>
+          <span class="pdf-hero-num">{{indexPadded}}</span>
+        </div>
+        <div class="pdf-hero-titleblk">
+          <h2 class="pdf-hero-title">{{name}}</h2>
+          {{#if sub}}<div class="pdf-hero-sub">{{sub}}</div>{{/if}}
+        </div>
+      </div>
+    </div>
+    <div class="pdf-hero-thumbs" style="display: {{thumbsDisplay}}; flex: {{thumbsFlex}};">
+      {{{thumbsHtml}}}
+    </div>
+  </div>
+  <div class="pdf-content">
+    <div class="pdf-section-label">
+      <span class="title">Highlights</span>
+      <span class="line"></span>
+    </div>
+    <p class="pdf-desc">{{{descHtml}}}</p>
+    {{#if pillsHtml}}<div class="pdf-pills">{{{pillsHtml}}}</div>{{/if}}
+    <div class="pdf-twocols">
+      {{#if itinHtml}}
+      <div>
+        <div class="pdf-coltitle"><span class="dot"></span><span>Itinerary</span></div>
+        <div class="pdf-timeline">{{{itinHtml}}}</div>
+      </div>
+      {{/if}}
+      {{#if notItinHtml}}<div></div>{{/if}}
+      <div>
+        <div class="pdf-coltitle"><span class="dot"></span><span>Good to know</span></div>
+        <div class="pdf-notes">{{notes}}</div>
+      </div>
+    </div>
+    <div class="pdf-price-zone">
+      {{{mainPriceHtml}}}
+      <div class="pdf-price-others">{{{otherPricesHtml}}}</div>
+    </div>
+  </div>
+  <div class="pdf-footer">
+    <div class="pdf-footer-contact">
+      <div class="item"><span class="icon">☎</span>{{phone}}</div>
+      <div class="item email"><span class="icon">✉</span>{{email}}</div>
+    </div>
+    <div class="pdf-footer-page">
+      <span class="num">{{pageNum}}</span>
+      <span class="total">/ {{totalPages}}</span>
+    </div>
+  </div>
+</div>
+</script>
+
+<script type="text/template" id="tpl-pdf-info">
+<div class="pdf-page">
+  <div class="pdf-cat-stripe" style="background: linear-gradient(90deg, #f26a21 0%, #ff7e5f 50%, #feb47b 100%);"></div>
+  <div class="pdf-info-page">
+    <div class="pdf-info-header">
+      <div>
+        <div class="pdf-info-tag">Information</div>
+        <h1 class="pdf-info-title">{{title}}</h1>
+        <div class="pdf-info-sub">{{subtitle}}</div>
+      </div>
+      <div class="pdf-info-folio">No.&nbsp;{{pageNumPadded}}</div>
+    </div>
+    <div class="pdf-info-body">
+      {{{bodyHtml}}}
+    </div>
+  </div>
+  <div class="pdf-footer">
+    <div class="pdf-footer-contact">
+      <div class="item"><span class="icon">☎</span>{{phone}}</div>
+      <div class="item email"><span class="icon">✉</span>{{email}}</div>
+    </div>
+    <div class="pdf-footer-page">
+      <span class="num">{{pageNum}}</span>
+      <span class="total">/ {{totalPages}}</span>
+    </div>
+  </div>
+</div>
+</script>
+
+<!-- Info page bodies — one template per info type -->
+<script type="text/template" id="tpl-pdf-info-holidays">
+<table class="pdf-info-table">
+  <tr><td class="date">20 October 2025</td><td>Divali</td></tr>
+  <tr><td class="date">02 November 2025</td><td>Arrival of Indentured Labourers</td></tr>
+  <tr><td class="date">25 December 2025</td><td>Christmas Day</td></tr>
+  <tr><td class="date">01 January 2026</td><td>New Year's Day</td></tr>
+  <tr><td class="date">02 January 2026</td><td>New Year Holiday</td></tr>
+  <tr><td class="date">01 February 2026</td><td>Abolition of Slavery</td></tr>
+  <tr><td class="date">11 February 2026</td><td>Thaipoosam Cavadee</td></tr>
+  <tr><td class="date">15 February 2026</td><td>Mahashivratree</td></tr>
+  <tr><td class="date">17 February 2026</td><td>Chinese New Year</td></tr>
+  <tr><td class="date">12 March 2026</td><td>National Day</td></tr>
+  <tr><td class="date">21 March 2026</td><td>Eid-Al-Fitr</td></tr>
+  <tr><td class="date">01 May 2026</td><td>Labour Day</td></tr>
+  <tr><td class="date">15 September 2026</td><td>Ganesh Chaturthi</td></tr>
+  <tr><td class="date">08 November 2026</td><td>Divali</td></tr>
+</table>
+</script>
+
+<script type="text/template" id="tpl-pdf-info-cancel">
+<div class="pdf-info-block">
+  <div class="pdf-info-h">General Terms</div>
+  <ul class="pdf-info-list">
+    <li><span class="hl">No show</span> (confirmed client doesn't appear): <b>100% cancellation fee</b></li>
+    <li>Cancellation <span class="hl">less than 24 hours</span> before departure: <b>100% fee</b></li>
+    <li>Cancellation <span class="hl">less than 48 hours</span> before departure: <b>50% fee</b></li>
+    <li>Private tours: minimum <b>2 adults</b> required</li>
+  </ul>
+</div>
+<div class="pdf-info-block">
+  <div class="pdf-info-h">Île aux Aigrettes — Special Terms</div>
+  <ul class="pdf-info-list">
+    <li>Cancelled <span class="hl">1 day</span> before: <b>100%</b> (except cyclone / bad sea conditions)</li>
+    <li>Cancelled <span class="hl">1 week</span> before: <b>50% fee</b></li>
+    <li>Cancelled <span class="hl">2 weeks</span> before: <b>25% fee</b></li>
+  </ul>
+</div>
+</script>
+
+<script type="text/template" id="tpl-pdf-info-payment">
+<table class="pdf-info-table">
+  <tr><td>Visa / Mastercard</td><td class="amount">+4% surcharge</td></tr>
+  <tr><td>American Express</td><td class="amount">+6% surcharge</td></tr>
+  <tr><td>Diners Club</td><td class="amount">+4% surcharge</td></tr>
+  <tr><td>Maestro / Visa Electron</td><td class="amount free">Standard</td></tr>
+  <tr><td>PayPal</td><td class="amount">+4% surcharge</td></tr>
+</table>
+<div class="pdf-info-note">All surcharges are applied at the time of payment processing. Cash payments accepted in EUR, USD, GBP and MUR.</div>
+</script>
+
+<script type="text/template" id="tpl-pdf-info-contact">
+<div class="pdf-info-block">
+  <div class="pdf-info-h">Reservations</div>
+  <ul class="pdf-info-list">
+    <li>Phone: <b>{{phone}}</b></li>
+    <li>Email: <b>{{email}}</b></li>
+    <li>Website: <b>{{website}}</b></li>
+  </ul>
+</div>
+<div class="pdf-info-block">
+  <div class="pdf-info-h">Key Services</div>
+  <ul class="pdf-info-list">
+    <li>Car Rentals bookings: <b>(+230) 5942 7344</b></li>
+    <li>Credit Card Terminal: <b>202 6060</b></li>
+    <li>Airport &amp; Hotel delivery: <b>€45</b> each way</li>
+  </ul>
+</div>
+<div class="pdf-info-note">Our team is available to help you plan your perfect Mauritius experience. Bookings can be made up to 24 hours before your tour date.</div>
+</script>
 
 <div class="body">
 
@@ -2121,7 +2375,6 @@ function ensurePdfStylesInjected(){
 
     .pdf-content { flex: 1; padding: 22px 32px 16px; display: flex; flex-direction: column; background: #fff8f0; }
     .pdf-section-label { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .pdf-section-label .num { font-family: 'Poppins', sans-serif; font-style: italic; font-size: 16px; color: #f26a21; font-weight: 500; line-height: 1; flex: 0 0 auto; display: inline-block; }
     .pdf-section-label .title { font-size: 10px; font-weight: 700; color: #1a0d0a; letter-spacing: 3px; text-transform: uppercase; }
     .pdf-section-label .line { flex: 1; height: 2px; background: linear-gradient(to right, #f26a21, transparent); border-radius: 1px; }
 
@@ -2211,51 +2464,167 @@ function pdfRenderHost(){
     host.className = 'pdf-page-render-host';
     document.body.appendChild(host);
   }
+  // Let the .pdf-page-render-host class handle positioning (off-screen at left:-10000px).
+  // Do NOT override opacity — html2canvas captures computed layout, and opacity:0
+  // plus zero-pixel offsets caused fonts metrics to settle differently than in preview.
+  host.style.left = '-10000px';
+  host.style.top = '0';
+  host.style.opacity = '1';
+  host.style.zIndex = '-1';
+  host.style.pointerEvents = 'none';
+  host.style.visibility = 'visible';
   return host;
 }
 
+// ============================================================
+// MINI TEMPLATE ENGINE
+// Supports: {{var}} (escaped), {{{var}}} (raw HTML),
+//           {{#if x}}…{{/if}}, {{#each list}}…{{/each}},
+//           {{this.field}}, {{@index}}
+// ============================================================
+const TPL_CACHE = {};
+
+function _tplGet(id){
+  if(TPL_CACHE[id] !== undefined) return TPL_CACHE[id];
+  const el = document.getElementById(id);
+  if(!el){ console.warn('Template not found:', id); return (TPL_CACHE[id] = ''); }
+  return (TPL_CACHE[id] = el.textContent);
+}
+
+function _tplEscape(v){
+  if(v === null || v === undefined) return '';
+  return String(v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function _tplLookup(ctx, stack, path){
+  if(path === 'this') return ctx;
+  if(path === '@index') return (stack.length && stack[stack.length-1].index !== undefined) ? stack[stack.length-1].index : '';
+  const parts = path.split('.');
+  let v;
+  if(parts[0] === 'this'){ v = ctx; parts.shift(); }
+  else {
+    // Search current ctx first, then outer scopes
+    v = (ctx && ctx[parts[0]] !== undefined) ? ctx[parts[0]] : undefined;
+    if(v === undefined){
+      for(let i = stack.length - 1; i >= 0; i--){
+        const s = stack[i].ctx;
+        if(s && s[parts[0]] !== undefined){ v = s[parts[0]]; break; }
+      }
+    }
+    parts.shift();
+  }
+  for(const p of parts){
+    if(v === null || v === undefined) return undefined;
+    v = v[p];
+  }
+  return v;
+}
+
+// Token-based parser that correctly pairs {{#each}} / {{/each}} and
+// {{#if}} / {{/if}} even when blocks of the SAME type are nested.
+// A naive regex with backreference cannot handle nesting — it would pair
+// an outer {{#each}} with the first matching {{/each}}, which is the INNER
+// closer, leaving the real outer closer as orphan text in the output.
+function _tplRender(str, ctx, stack){
+  stack = stack || [];
+
+  // Tokenize: split the template into [text, tag, text, tag, ...]
+  // A "tag" is anything matching {{...}} (including {{{...}}}).
+  const tokenRe = /\{\{\{[\s\S]*?\}\}\}|\{\{[\s\S]*?\}\}/g;
+  const tokens = [];
+  let last = 0, m;
+  while((m = tokenRe.exec(str)) !== null){
+    if(m.index > last) tokens.push({ type: 'text', value: str.slice(last, m.index) });
+    const raw = m[0];
+    if(raw.startsWith('{{{')){
+      tokens.push({ type: 'var-raw', path: raw.slice(3, -3).trim() });
+    } else {
+      const inner = raw.slice(2, -2).trim();
+      if(inner.startsWith('#if '))        tokens.push({ type: 'if-open',   path: inner.slice(4).trim() });
+      else if(inner === '/if')            tokens.push({ type: 'if-close' });
+      else if(inner.startsWith('#each ')) tokens.push({ type: 'each-open', path: inner.slice(6).trim() });
+      else if(inner === '/each')          tokens.push({ type: 'each-close' });
+      else                                tokens.push({ type: 'var', path: inner });
+    }
+    last = tokenRe.lastIndex;
+  }
+  if(last < str.length) tokens.push({ type: 'text', value: str.slice(last) });
+
+  // Parse tokens into an AST of nodes: text, var, var-raw, if{body}, each{body}.
+  let pos = 0;
+  function parse(stopType){
+    const nodes = [];
+    while(pos < tokens.length){
+      const t = tokens[pos];
+      if(stopType && t.type === stopType){ pos++; return nodes; }
+      pos++;
+      if(t.type === 'text' || t.type === 'var' || t.type === 'var-raw'){
+        nodes.push(t);
+      } else if(t.type === 'if-open'){
+        const body = parse('if-close');
+        nodes.push({ type: 'if', path: t.path, body });
+      } else if(t.type === 'each-open'){
+        const body = parse('each-close');
+        nodes.push({ type: 'each', path: t.path, body });
+      } else {
+        // Orphan closer — skip.
+      }
+    }
+    return nodes;
+  }
+  const ast = parse(null);
+
+  // Render AST to string.
+  function renderNodes(nodes, curCtx, curStack){
+    let out = '';
+    for(const n of nodes){
+      if(n.type === 'text'){ out += n.value; continue; }
+      if(n.type === 'var'){ out += _tplEscape(_tplLookup(curCtx, curStack, n.path)); continue; }
+      if(n.type === 'var-raw'){
+        const v = _tplLookup(curCtx, curStack, n.path);
+        out += (v === null || v === undefined) ? '' : String(v);
+        continue;
+      }
+      if(n.type === 'if'){
+        const v = _tplLookup(curCtx, curStack, n.path);
+        const truthy = Array.isArray(v) ? v.length > 0 : !!v;
+        if(truthy) out += renderNodes(n.body, curCtx, curStack);
+        continue;
+      }
+      if(n.type === 'each'){
+        const v = _tplLookup(curCtx, curStack, n.path);
+        if(Array.isArray(v) && v.length){
+          v.forEach((item, i) => {
+            const newStack = curStack.concat([{ ctx: curCtx, index: i }]);
+            out += renderNodes(n.body, item, newStack);
+          });
+        }
+        continue;
+      }
+    }
+    return out;
+  }
+  return renderNodes(ast, ctx, stack);
+}
+
+function renderTpl(id, data){
+  return _tplRender(_tplGet(id), data || {});
+}
+
+// ============================================================
+// PDF PAGE BUILDERS (use templates above)
+// ============================================================
 function buildCoverHTML(){
-  return `
-    <div class="pdf-page pdf-cover">
-      <div class="pdf-cover-bg"></div>
-      <div class="pdf-cover-rings"></div>
-      <div class="pdf-cover-grain"></div>
-      <div class="pdf-cover-content">
-        <div class="pdf-cover-top">
-          <img src="${BLISS_LOGO_DATAURL}" alt="Bliss" class="pdf-cover-logo">
-          <div class="pdf-cover-issue">
-            <div class="volume">Volume 01</div>
-            <div class="edition">Edition ${BLISS_CONTACT.season}</div>
-          </div>
-        </div>
-        <div class="pdf-cover-kicker">
-          <span class="rule"></span>
-          <span class="txt">The Mauritius Catalogue</span>
-        </div>
-        <div class="pdf-cover-middle">
-          <div class="pdf-cover-overline">A field guide to</div>
-          <h1 class="pdf-cover-title">Tropical<span class="accent">Escapes.</span></h1>
-          <p class="pdf-cover-subtitle">${D.length} curated experiences &mdash; from volcanic peaks and sacred lakes to coral lagoons and soaring helicopter flights above the Indian Ocean.</p>
-          <div class="pdf-cover-stats">
-            <div><div class="pdf-cover-stat-num">${D.length}</div><div class="pdf-cover-stat-lbl">Excursions</div></div>
-            <div><div class="pdf-cover-stat-num">03</div><div class="pdf-cover-stat-lbl">Categories</div></div>
-            <div><div class="pdf-cover-stat-num">2026</div><div class="pdf-cover-stat-lbl">Season</div></div>
-          </div>
-        </div>
-        <div class="pdf-cover-bottom">
-          <div class="pdf-cover-contact">
-            <div class="label">Reservations</div>
-            <div class="val">${BLISS_CONTACT.email}</div>
-            <div class="val">${BLISS_CONTACT.phone}</div>
-          </div>
-          <div class="pdf-cover-contact" style="text-align: right;">
-            <div class="label">Online</div>
-            <div class="val">${BLISS_CONTACT.website}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+  return renderTpl('tpl-pdf-cover', {
+    logo: BLISS_LOGO_DATAURL,
+    season: BLISS_CONTACT.season,
+    count: D.length,
+    email: BLISS_CONTACT.email,
+    phone: BLISS_CONTACT.phone,
+    website: BLISS_CONTACT.website
+  });
 }
 
 function buildTOCHTML(excursions){
@@ -2265,64 +2634,25 @@ function buildTOCHTML(excursions){
     air: excursions.filter(e=>e.cat==='air')
   };
   let excNum = 0;
-  function renderSection(label, list){
-    if(!list.length) return '';
-    let html = `<div class="pdf-toc-section">
-      <div class="pdf-toc-section-title">
-        <span class="label">${label}</span>
-        <span class="count">${list.length} excursions</span>
-      </div>`;
-    list.forEach(e => {
+  function itemsOf(list){
+    return list.map(e => {
       excNum++;
-      const pageNum = 2 + excNum;
-      html += `<div class="pdf-toc-item">
-        <span class="num">${String(excNum).padStart(2,'0')}</span>
-        <span class="name">${e.name}</span>
-        <span class="pageno">${pageNum}</span>
-      </div>`;
+      return { num: String(excNum).padStart(2,'0'), name: e.name, pageNum: 2 + excNum };
     });
-    html += '</div>';
-    return html;
   }
-  return `
-    <div class="pdf-page">
-      <div class="pdf-toc-header-stripe"></div>
-      <div class="pdf-toc">
-        <div class="pdf-toc-tag">Index</div>
-        <h1 class="pdf-toc-title">Table of <span class="italic">contents</span></h1>
-        <div class="pdf-toc-divider"></div>
-        ${renderSection('Land excursions', cats.land)}
-        ${renderSection('Sea excursions', cats.sea)}
-        ${renderSection('Air excursions', cats.air)}
-        <div class="pdf-toc-section">
-          <div class="pdf-toc-section-title">
-            <span class="label">Information</span>
-            <span class="count">4 sections</span>
-          </div>
-          <div class="pdf-toc-item">
-            <span class="num">i</span>
-            <span class="name">Public Holidays 2025 / 2026</span>
-            <span class="pageno">${excursions.length + 3}</span>
-          </div>
-          <div class="pdf-toc-item">
-            <span class="num">i</span>
-            <span class="name">Cancellation Policy</span>
-            <span class="pageno">${excursions.length + 4}</span>
-          </div>
-          <div class="pdf-toc-item">
-            <span class="num">i</span>
-            <span class="name">Payment Methods</span>
-            <span class="pageno">${excursions.length + 5}</span>
-          </div>
-          <div class="pdf-toc-item">
-            <span class="num">i</span>
-            <span class="name">Contact &amp; Booking</span>
-            <span class="pageno">${excursions.length + 6}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+  return renderTpl('tpl-pdf-toc', {
+    sections: [
+      { label: 'Land excursions', items: itemsOf(cats.land) },
+      { label: 'Sea excursions',  items: itemsOf(cats.sea) },
+      { label: 'Air excursions',  items: itemsOf(cats.air) }
+    ],
+    info: [
+      { name: 'Public Holidays 2025 / 2026', pageNum: excursions.length + 3 },
+      { name: 'Cancellation Policy',          pageNum: excursions.length + 4 },
+      { name: 'Payment Methods',              pageNum: excursions.length + 5 },
+      { name: 'Contact &amp; Booking',        pageNum: excursions.length + 6 }
+    ]
+  });
 }
 
 function buildExcursionHTML(exc, index, totalPages){
@@ -2336,38 +2666,32 @@ function buildExcursionHTML(exc, index, totalPages){
 
   let thumbsHtml = '';
   if(thumbs.length === 1){
-    const t = thumbs[0];
-    thumbsHtml = `<div class="pdf-hero-thumb" style="flex:1; background-image:url('${t.src}')"></div>`;
+    thumbsHtml = `<div class="pdf-hero-thumb" style="flex:1; background-image:url('${thumbs[0].src}')"></div>`;
   } else if(thumbs.length === 2){
     thumbsHtml = thumbs.map(t => `<div class="pdf-hero-thumb" style="background-image:url('${t.src}')"></div>`).join('');
   }
 
-  // Adjust hero/thumbs ratio when fewer images
   let heroFlex = '2', thumbsFlex = '1', thumbsDisplay = 'flex';
-  if(media.length === 0 || media.length === 1){
-    thumbsDisplay = 'none';
-    heroFlex = '1';
-  } else if(media.length === 2){
-    heroFlex = '1.5';
-  }
+  if(media.length === 0 || media.length === 1){ thumbsDisplay = 'none'; heroFlex = '1'; }
+  else if(media.length === 2){ heroFlex = '1.5'; }
 
-  const pillsHtml = (exc.pills || []).slice(0, 5).map(p =>
-    `<span class="pdf-pill">${p.t || ''}</span>`
-  ).join('');
+  const pillsHtml = (exc.pills || []).slice(0, 5)
+    .map(p => `<span class="pdf-pill">${_tplEscape(p.t || '')}</span>`).join('');
 
-  // Filter out non-itinerary items (they belong in inclusions/pills, not the timeline)
   const itinSteps = (exc.itin || []).filter(step => {
     const s = String(step || '').toLowerCase().trim();
     if(!s) return false;
-    // Skip items that are inclusions/logistics rather than stops
     return !/^lunch\b|^breakfast\b|^dinner\b|^refreshments?\b|^snacks?\b|^meal\b/i.test(s)
         && !/\bincluded\b/i.test(s);
   }).slice(0, 6);
   const itinHtml = itinSteps.map((step, i, arr) =>
-    `<div class="pdf-timeline-item${i === arr.length - 1 ? ' last' : ''}">${step}</div>`
+    `<div class="pdf-timeline-item${i === arr.length - 1 ? ' last' : ''}">${_tplEscape(step)}</div>`
   ).join('');
 
   const notes = exc.notes || exc.goodToKnow || 'Please contact us for additional details and customization options.';
+
+  const d = (exc.desc || '').trim();
+  const descHtml = d ? ('<span class="pdf-drop">' + _tplEscape(d.charAt(0)) + '</span>' + _tplEscape(d.slice(1))) : '';
 
   const prices = exc.prices || [];
   const mainPrice = prices[0];
@@ -2377,238 +2701,116 @@ function buildExcursionHTML(exc, index, totalPages){
   if(mainPrice){
     const cleanVal = (mainPrice.v || '—').replace(/[€$£]/g, '').trim();
     const isOnRequest = (mainPrice.v || '').toLowerCase().includes('request');
-    if(isOnRequest){
-      mainPriceHtml = `
-        <div class="pdf-price-main">
-          <span class="pdf-price-amt" style="font-size:28px;">On request</span>
-        </div>`;
-    } else {
-      mainPriceHtml = `
-        <div class="pdf-price-main">
-          <span class="pdf-price-cur">€</span>
-          <span class="pdf-price-amt">${cleanVal}</span>
-          <span class="pdf-price-lbl">/ ${mainPrice.l || 'adult'}</span>
-        </div>`;
-    }
+    mainPriceHtml = isOnRequest
+      ? `<div class="pdf-price-main"><span class="pdf-price-amt" style="font-size:28px;">On request</span></div>`
+      : `<div class="pdf-price-main"><span class="pdf-price-cur">€</span><span class="pdf-price-amt">${_tplEscape(cleanVal)}</span><span class="pdf-price-lbl">/ ${_tplEscape(mainPrice.l || 'adult')}</span></div>`;
   }
 
   const otherPricesHtml = otherPrices.map(p => {
     const isFree = (p.v || '').toLowerCase().includes('free');
-    return `<div class="pdf-price-row">
-      <span class="lbl">${p.l}</span>
-      <span class="val${isFree ? ' free' : ''}">${p.v}</span>
-    </div>`;
+    return `<div class="pdf-price-row"><span class="lbl">${_tplEscape(p.l)}</span><span class="val${isFree ? ' free' : ''}">${_tplEscape(p.v)}</span></div>`;
   }).join('');
 
-  return `
-    <div class="pdf-page">
-      <div class="pdf-cat-stripe ${cat}"></div>
-      <div class="pdf-hero">
-        <div class="pdf-hero-image ${heroFallbackClass}" style="flex: ${heroFlex}; ${heroBgImage}">
-          <div class="pdf-hero-topbar">
-            <img src="${BLISS_LOGO_DATAURL}" alt="Bliss" class="pdf-hero-logo">
-            <div class="pdf-hero-cattag ${cat}">${cat.toUpperCase()}</div>
-          </div>
-          <div class="pdf-hero-titlearea">
-            <div class="pdf-hero-numblock">
-              <span class="pdf-hero-numprefix">N°</span>
-              <span class="pdf-hero-num">${String(index).padStart(2,'0')}</span>
-            </div>
-            <div class="pdf-hero-titleblk">
-              <h2 class="pdf-hero-title">${exc.name}</h2>
-              ${exc.sub ? `<div class="pdf-hero-sub">${exc.sub}</div>` : ''}
-            </div>
-          </div>
-        </div>
-        <div class="pdf-hero-thumbs" style="display: ${thumbsDisplay}; flex: ${thumbsFlex};">
-          ${thumbsHtml}
-        </div>
-      </div>
-      <div class="pdf-content">
-        <div class="pdf-section-label">
-          <span class="num">${String(index).padStart(2,'0')}</span>
-          <span class="title">Highlights</span>
-          <span class="line"></span>
-        </div>
-        <p class="pdf-desc">${(()=>{ const d = (exc.desc || '').trim(); if(!d) return ''; return '<span class="pdf-drop">'+d.charAt(0)+'</span>'+d.slice(1); })()}</p>
-        ${pillsHtml ? `<div class="pdf-pills">${pillsHtml}</div>` : ''}
-        <div class="pdf-twocols">
-          ${itinHtml ? `
-            <div>
-              <div class="pdf-coltitle"><span class="dot"></span><span>Itinerary</span></div>
-              <div class="pdf-timeline">${itinHtml}</div>
-            </div>
-          ` : '<div></div>'}
-          <div>
-            <div class="pdf-coltitle"><span class="dot"></span><span>Good to know</span></div>
-            <div class="pdf-notes">${notes}</div>
-          </div>
-        </div>
-        <div class="pdf-price-zone">
-          ${mainPriceHtml}
-          <div class="pdf-price-others">${otherPricesHtml}</div>
-        </div>
-      </div>
-      <div class="pdf-footer">
-        <div class="pdf-footer-contact">
-          <div class="item"><span class="icon">☎</span>${BLISS_CONTACT.phone}</div>
-          <div class="item email"><span class="icon">✉</span>${BLISS_CONTACT.email}</div>
-        </div>
-        <div class="pdf-footer-page">
-          <span class="num">${index + 2}</span>
-          <span class="total">/ ${totalPages}</span>
-        </div>
-      </div>
-    </div>
-  `;
+  return renderTpl('tpl-pdf-excursion', {
+    cat: cat,
+    catUpper: cat.toUpperCase(),
+    logo: BLISS_LOGO_DATAURL,
+    heroFallbackClass: heroFallbackClass,
+    heroBgImage: heroBgImage,
+    heroFlex: heroFlex,
+    thumbsFlex: thumbsFlex,
+    thumbsDisplay: thumbsDisplay,
+    thumbsHtml: thumbsHtml,
+    indexPadded: String(index).padStart(2,'0'),
+    name: exc.name,
+    sub: exc.sub,
+    descHtml: descHtml,
+    pillsHtml: pillsHtml,
+    itinHtml: itinHtml,
+    notItinHtml: !itinHtml,
+    notes: notes,
+    mainPriceHtml: mainPriceHtml,
+    otherPricesHtml: otherPricesHtml,
+    phone: BLISS_CONTACT.phone,
+    email: BLISS_CONTACT.email,
+    pageNum: index + 2,
+    totalPages: totalPages
+  });
 }
 
-// Build an info page (Holidays, Cancellation, Payment, Contact)
+// Metadata for each info page type (title, subtitle, body template id)
+const PDF_INFO_META = {
+  holidays: { title: 'Public Holidays',     subtitle: 'Mauritius 2025 / 2026',          bodyTpl: 'tpl-pdf-info-holidays' },
+  cancel:   { title: 'Cancellation Policy', subtitle: 'Terms & Conditions',             bodyTpl: 'tpl-pdf-info-cancel'   },
+  payment:  { title: 'Payment Methods',     subtitle: 'Accepted Cards & Surcharges',    bodyTpl: 'tpl-pdf-info-payment'  },
+  contact:  { title: 'Contact & Booking',   subtitle: 'Get in touch with our team',     bodyTpl: 'tpl-pdf-info-contact'  }
+};
+
 function buildInfoPageHTML(infoType, pageNum, totalPages){
-  let title = '';
-  let subtitle = '';
-  let bodyHtml = '';
-
-  if(infoType === 'holidays'){
-    title = 'Public Holidays';
-    subtitle = 'Mauritius 2025 / 2026';
-    bodyHtml = `
-      <table class="pdf-info-table">
-        <tr><td class="date">20 October 2025</td><td>Divali</td></tr>
-        <tr><td class="date">02 November 2025</td><td>Arrival of Indentured Labourers</td></tr>
-        <tr><td class="date">25 December 2025</td><td>Christmas Day</td></tr>
-        <tr><td class="date">01 January 2026</td><td>New Year's Day</td></tr>
-        <tr><td class="date">02 January 2026</td><td>New Year Holiday</td></tr>
-        <tr><td class="date">01 February 2026</td><td>Abolition of Slavery</td></tr>
-        <tr><td class="date">11 February 2026</td><td>Thaipoosam Cavadee</td></tr>
-        <tr><td class="date">15 February 2026</td><td>Mahashivratree</td></tr>
-        <tr><td class="date">17 February 2026</td><td>Chinese New Year</td></tr>
-        <tr><td class="date">12 March 2026</td><td>National Day</td></tr>
-        <tr><td class="date">21 March 2026</td><td>Eid-Al-Fitr</td></tr>
-        <tr><td class="date">01 May 2026</td><td>Labour Day</td></tr>
-        <tr><td class="date">15 September 2026</td><td>Ganesh Chaturthi</td></tr>
-        <tr><td class="date">08 November 2026</td><td>Divali</td></tr>
-      </table>
-    `;
-  } else if(infoType === 'cancel'){
-    title = 'Cancellation Policy';
-    subtitle = 'Terms & Conditions';
-    bodyHtml = `
-      <div class="pdf-info-block">
-        <div class="pdf-info-h">General Terms</div>
-        <ul class="pdf-info-list">
-          <li><span class="hl">No show</span> (confirmed client doesn't appear): <b>100% cancellation fee</b></li>
-          <li>Cancellation <span class="hl">less than 24 hours</span> before departure: <b>100% fee</b></li>
-          <li>Cancellation <span class="hl">less than 48 hours</span> before departure: <b>50% fee</b></li>
-          <li>Private tours: minimum <b>2 adults</b> required</li>
-        </ul>
-      </div>
-      <div class="pdf-info-block">
-        <div class="pdf-info-h">Île aux Aigrettes — Special Terms</div>
-        <ul class="pdf-info-list">
-          <li>Cancelled <span class="hl">1 day</span> before: <b>100%</b> (except cyclone / bad sea conditions)</li>
-          <li>Cancelled <span class="hl">1 week</span> before: <b>50% fee</b></li>
-          <li>Cancelled <span class="hl">2 weeks</span> before: <b>25% fee</b></li>
-        </ul>
-      </div>
-    `;
-  } else if(infoType === 'payment'){
-    title = 'Payment Methods';
-    subtitle = 'Accepted Cards & Surcharges';
-    bodyHtml = `
-      <table class="pdf-info-table">
-        <tr><td>Visa / Mastercard</td><td class="amount">+4% surcharge</td></tr>
-        <tr><td>American Express</td><td class="amount">+6% surcharge</td></tr>
-        <tr><td>Diners Club</td><td class="amount">+4% surcharge</td></tr>
-        <tr><td>Maestro / Visa Electron</td><td class="amount free">Standard</td></tr>
-        <tr><td>PayPal</td><td class="amount">+4% surcharge</td></tr>
-      </table>
-      <div class="pdf-info-note">All surcharges are applied at the time of payment processing. Cash payments accepted in EUR, USD, GBP and MUR.</div>
-    `;
-  } else if(infoType === 'contact'){
-    title = 'Contact & Booking';
-    subtitle = 'Get in touch with our team';
-    bodyHtml = `
-      <div class="pdf-info-block">
-        <div class="pdf-info-h">Reservations</div>
-        <ul class="pdf-info-list">
-          <li>Phone: <b>${BLISS_CONTACT.phone}</b></li>
-          <li>Email: <b>${BLISS_CONTACT.email}</b></li>
-          <li>Website: <b>${BLISS_CONTACT.website}</b></li>
-        </ul>
-      </div>
-      <div class="pdf-info-block">
-        <div class="pdf-info-h">Key Services</div>
-        <ul class="pdf-info-list">
-          <li>Car Rentals bookings: <b>(+230) 5942 7344</b></li>
-          <li>Credit Card Terminal: <b>202 6060</b></li>
-          <li>Airport &amp; Hotel delivery: <b>€45</b> each way</li>
-        </ul>
-      </div>
-      <div class="pdf-info-note">Our team is available to help you plan your perfect Mauritius experience. Bookings can be made up to 24 hours before your tour date.</div>
-    `;
-  }
-
-  return `
-    <div class="pdf-page">
-      <div class="pdf-cat-stripe" style="background: linear-gradient(90deg, #f26a21 0%, #ff7e5f 50%, #feb47b 100%);"></div>
-      <div class="pdf-info-page">
-        <div class="pdf-info-header">
-          <div>
-            <div class="pdf-info-tag">Information</div>
-            <h1 class="pdf-info-title">${title}</h1>
-            <div class="pdf-info-sub">${subtitle}</div>
-          </div>
-          <div class="pdf-info-folio">No.&nbsp;${String(pageNum).padStart(2,'0')}</div>
-        </div>
-        <div class="pdf-info-body">
-          ${bodyHtml}
-        </div>
-      </div>
-      <div class="pdf-footer">
-        <div class="pdf-footer-contact">
-          <div class="item"><span class="icon">☎</span>${BLISS_CONTACT.phone}</div>
-          <div class="item email"><span class="icon">✉</span>${BLISS_CONTACT.email}</div>
-        </div>
-        <div class="pdf-footer-page">
-          <span class="num">${pageNum}</span>
-          <span class="total">/ ${totalPages}</span>
-        </div>
-      </div>
-    </div>
-  `;
+  const meta = PDF_INFO_META[infoType];
+  if(!meta) return '';
+  const bodyHtml = renderTpl(meta.bodyTpl, {
+    phone: BLISS_CONTACT.phone,
+    email: BLISS_CONTACT.email,
+    website: BLISS_CONTACT.website
+  });
+  return renderTpl('tpl-pdf-info', {
+    title: meta.title,
+    subtitle: meta.subtitle,
+    bodyHtml: bodyHtml,
+    pageNumPadded: String(pageNum).padStart(2,'0'),
+    pageNum: pageNum,
+    totalPages: totalPages,
+    phone: BLISS_CONTACT.phone,
+    email: BLISS_CONTACT.email
+  });
 }
-async function htmlToCanvas(html){
+async function renderHtmlPageToPdf(doc, html, addPage, pageW = 595, pageH = 842){
   const host = pdfRenderHost();
   host.innerHTML = html;
-  // Wait for images and fonts to be ready
-  await new Promise(r => setTimeout(r, 250));
+  if(addPage) doc.addPage();
+
+  // Target the .pdf-page element directly — same DOM the preview renders.
+  const pageEl = host.querySelector('.pdf-page') || host.firstElementChild;
+
+  // Wait for fonts + two animation frames so text metrics settle at 595px width.
   if(document.fonts && document.fonts.ready){
     try { await document.fonts.ready; } catch(e){}
   }
-  // Wait for all images to load
-  const imgs = host.querySelectorAll('img');
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  // Wait for all images in the page element to finish loading (or fail).
+  const imgs = pageEl.querySelectorAll('img');
   await Promise.all(Array.from(imgs).map(img => {
     if(img.complete && img.naturalWidth > 0) return Promise.resolve();
-    return new Promise(res => { img.onload = img.onerror = res; setTimeout(res, 2000); });
+    return new Promise(res => {
+      const done = () => res();
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+      setTimeout(done, 3000);
+    });
   }));
-  const pageEl = host.querySelector('.pdf-page');
+
+  // Capture the exact element the preview shows, at the same natural 595x842 size.
   const canvas = await html2canvas(pageEl, {
-    scale: 3,                     // 3x for crisp print quality (~300 DPI @ A4)
+    scale: 2,
     useCORS: true,
     allowTaint: true,
     logging: false,
     backgroundColor: '#fff8f0',
-    width: 595,
-    height: 842,
-    windowWidth: 595,
-    windowHeight: 842,
+    width: pageW,
+    height: pageH,
+    windowWidth: pageW,
+    windowHeight: pageH,
     scrollX: 0,
     scrollY: 0,
     imageTimeout: 8000
   });
+
+  const imgData = canvas.toDataURL('image/jpeg', 0.92);
+  doc.addImage(imgData, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+
   host.innerHTML = '';
-  return canvas;
 }
 
 async function openPdfPreview(){
@@ -2704,46 +2906,43 @@ async function printCatalogPDF(){
     ];
     const totalPages = Dsorted.length + 2 + INFO_PAGES.length;
 
+    // Build each page independently — if one throws, we log and continue
+    // so a single broken page doesn't silently drop all subsequent ones.
     const pagesHTML = [];
-    pagesHTML.push(buildCoverHTML());
-    pagesHTML.push(buildTOCHTML(Dsorted));
+    const tryBuild = (label, fn) => {
+      try {
+        const html = fn();
+        if(!html || typeof html !== 'string' || !html.trim()){
+          console.warn('[PDF] empty page:', label);
+          pagesHTML.push(`<div class="pdf-page" style="display:flex;align-items:center;justify-content:center;color:#b00;">⚠ Empty page: ${label}</div>`);
+          return;
+        }
+        pagesHTML.push(html);
+      } catch(err){
+        console.error('[PDF] build failed for', label, err);
+        pagesHTML.push(`<div class="pdf-page" style="display:flex;align-items:center;justify-content:center;color:#b00;font-family:monospace;padding:40px;">⚠ Error building "${label}": ${String(err.message || err)}</div>`);
+      }
+    };
+    tryBuild('Cover', () => buildCoverHTML());
+    tryBuild('Contents', () => buildTOCHTML(Dsorted));
     for(let i = 0; i < Dsorted.length; i++){
-      pagesHTML.push(buildExcursionHTML(Dsorted[i], i + 1, totalPages));
+      tryBuild(Dsorted[i].name || ('Excursion ' + (i+1)), () => buildExcursionHTML(Dsorted[i], i + 1, totalPages));
     }
     for(let i = 0; i < INFO_PAGES.length; i++){
-      pagesHTML.push(buildInfoPageHTML(INFO_PAGES[i], Dsorted.length + 3 + i, totalPages));
+      tryBuild('Info:' + INFO_PAGES[i], () => buildInfoPageHTML(INFO_PAGES[i], Dsorted.length + 3 + i, totalPages));
     }
 
-    updatePdfProgress(50, 'Collecting styles...');
-    let allStyles = '';
-    for(const style of document.querySelectorAll('style')){
-      allStyles += style.textContent + '\n';
-    }
+    console.log('[PDF] built', pagesHTML.length, 'pages');
+    updatePdfProgress(60, 'Collecting styles...');
+
+    // CRITICAL: only copy the PDF-specific stylesheet (#pdf-styles).
+    // The main app CSS contains `html,body{overflow:hidden;height:100%}` and
+    // other layout rules that would clip all pages beyond the first when
+    // replayed inside the print popup. We want ONLY the .pdf-* rules.
+    const pdfStylesEl = document.getElementById('pdf-styles');
+    const allStyles = pdfStylesEl ? pdfStylesEl.textContent : '';
 
     updatePdfProgress(80, 'Opening print window...');
-    const printDoc = `<!DOCTYPE html><html><head><meta charset="utf-8">
-<title>Bliss Holiday Catalogue ${BLISS_CONTACT.season || ''}</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>${allStyles}
-@page { size: 595px 842px; margin: 0; }
-html,body { margin:0; padding:0; background:#fff8f0; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-.pdf-page { page-break-after: always; break-after: page; page-break-inside: auto; break-inside: auto; margin: 0 auto; height: auto !important; overflow: visible !important; }
-.pdf-page:last-child { page-break-after: auto; break-after: auto; }
-@media screen { body { background:#222; padding:20px 0; } .pdf-page { margin:0 auto 20px !important; box-shadow:0 4px 24px rgba(0,0,0,.3); } }
-* { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-</style></head><body>
-${pagesHTML.join('\n')}
-<script>
-window.addEventListener('load', ()=>{
-  const waitFonts = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
-  const imgs = Array.from(document.querySelectorAll('img'));
-  const waitImgs = Promise.all(imgs.map(img=>{
-    if(img.complete && img.naturalWidth>0) return Promise.resolve();
-    return new Promise(r=>{ img.onload=img.onerror=r; setTimeout(r,3000); });
-  }));
-  Promise.all([waitFonts, waitImgs]).then(()=>setTimeout(()=>{ window.focus(); window.print(); }, 600));
-});
-<\/script></body></html>`;
 
     const printWin = window.open('', '_blank', 'width=900,height=1100');
     if(!printWin){
@@ -2751,13 +2950,164 @@ window.addEventListener('load', ()=>{
       hidePdfOverlay();
       return;
     }
-    printWin.document.open();
-    printWin.document.write(printDoc);
-    printWin.document.close();
-    updatePdfProgress(100, 'Use "Save as PDF" in the dialog.');
-    await new Promise(r => setTimeout(r, 800));
+
+    // Build DOM programmatically — no document.write, no HTML-in-string parsing.
+    // This avoids any issue with end-of-script tags, special characters, or
+    // template-string escapes causing only the first page to render.
+    const pwDoc = printWin.document;
+    pwDoc.open();
+    pwDoc.write('<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>');
+    pwDoc.close();
+
+    // Title
+    pwDoc.title = `Bliss Holiday Catalogue ${BLISS_CONTACT.season || ''}`;
+
+    // Google Fonts link
+    const fontLink = pwDoc.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700;800&display=swap';
+    pwDoc.head.appendChild(fontLink);
+
+    // Copy all existing styles from parent (pdf-styles block, etc.)
+    const parentStyles = pwDoc.createElement('style');
+    parentStyles.textContent = allStyles;
+    pwDoc.head.appendChild(parentStyles);
+
+    // Print-specific CSS (A4 layout + onscreen stacking + banner)
+    const printStyles = pwDoc.createElement('style');
+    printStyles.textContent = `
+/* ===== PAGE SIZE — must match .pdf-page exactly so no overflow bleeds to page 2 ===== */
+@page { size: 595px 842px; margin: 0; }
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff8f0 !important;
+  /* CRITICAL: parent page's CSS sets overflow:hidden + height:100% on html/body
+     — that would clip all pages beyond the first. Force visible + auto. */
+  overflow: visible !important;
+  height: auto !important;
+  width: auto !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  color-adjust: exact !important;
+}
+* {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+/* ===== BASE PAGE (applies to both screen and print) ===== */
+.pdf-page {
+  width: 595px !important;
+  height: 842px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  transform: none !important;
+  position: relative;
+}
+
+/* ===== ON-SCREEN VIEW: stack pages with gutters so user can scroll ===== */
+@media screen {
+  body { background: #2a2a2a; padding: 90px 0 30px; }
+  .pdf-page {
+    margin: 0 auto 24px !important;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+  }
+  .print-banner {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: #f26a21; color: white; padding: 14px 20px;
+    font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 500;
+    text-align: center; z-index: 9999; letter-spacing: 0.3px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .print-banner .hint { opacity: 0.85; font-size: 11.5px; display: block; margin-top: 3px; }
+  .print-banner button {
+    background: white; color: #f26a21; border: none;
+    padding: 7px 16px; border-radius: 4px; font-weight: 600;
+    cursor: pointer; margin-left: 14px; font-family: inherit; font-size: 12px;
+    vertical-align: middle;
+  }
+  .print-banner button:hover { background: #fff5ee; }
+}
+
+/* ===== PRINT VIEW: strip all screen decorations, force one page per .pdf-page ===== */
+@media print {
+  html, body {
+    background: #fff8f0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 595px !important;
+    height: auto !important;
+  }
+  .print-banner { display: none !important; }
+
+  .pdf-page {
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    width: 595px !important;
+    height: 842px !important;
+    max-height: 842px !important;
+    overflow: hidden !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-before: auto;
+  }
+  .pdf-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+  /* Kill any stray flex/grid parent that might collapse pages */
+  body > * { display: block; }
+  body > .pdf-page { display: flex !important; }
+}
+`;
+    pwDoc.head.appendChild(printStyles);
+
+    // Banner
+    const banner = pwDoc.createElement('div');
+    banner.className = 'print-banner';
+    banner.innerHTML = `<strong>${pagesHTML.length} pages ready</strong>
+      <button type="button">Save as PDF</button>
+      <span class="hint">In the dialog: Destination = Save as PDF · Margins = None · Paper = A4</span>`;
+    banner.querySelector('button').addEventListener('click', () => printWin.print());
+    pwDoc.body.appendChild(banner);
+
+    // Inject each page via innerHTML of its own container — preserves HTML parsing
+    // integrity per-page and avoids the whole-document-write pitfalls.
+    pagesHTML.forEach((html, idx) => {
+      const wrap = pwDoc.createElement('div');
+      wrap.setAttribute('data-page-index', String(idx));
+      wrap.innerHTML = html;
+      // Move the actual .pdf-page out of the wrapper (so it becomes a direct body child)
+      while(wrap.firstChild) pwDoc.body.appendChild(wrap.firstChild);
+    });
+
+    console.log('[PDF] pages in popup DOM:', pwDoc.querySelectorAll('.pdf-page').length);
+
+    // Wait for fonts + images inside the popup before marking ready.
+    const waitFonts = (pwDoc.fonts && pwDoc.fonts.ready) ? pwDoc.fonts.ready : Promise.resolve();
+    const imgs = Array.from(pwDoc.querySelectorAll('img'));
+    const waitImgs = Promise.all(imgs.map(img => {
+      if(img.complete && img.naturalWidth > 0) return Promise.resolve();
+      return new Promise(r => {
+        img.addEventListener('load', r, { once: true });
+        img.addEventListener('error', r, { once: true });
+        setTimeout(r, 3000);
+      });
+    }));
+    await Promise.all([waitFonts, waitImgs]);
+
+    updatePdfProgress(100, `${pagesHTML.length} pages ready · click "Save as PDF"`);
+    await new Promise(r => setTimeout(r, 600));
   } catch(e){
-    console.error(e);
+    console.error('[PDF] printCatalogPDF failed:', e);
     alert('Print failed: ' + e.message);
   } finally {
     hidePdfOverlay();
@@ -2794,7 +3144,6 @@ async function downloadCatalogPDF(){
     ];
     const totalPages = Dsorted.length + 2 + INFO_PAGES.length;
 
-    // Build the full list of pages (same source as the preview)
     const allPages = [];
     allPages.push({ label: 'Cover', html: buildCoverHTML() });
     allPages.push({ label: 'Contents', html: buildTOCHTML(Dsorted) });
@@ -2807,7 +3156,7 @@ async function downloadCatalogPDF(){
     }
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
 
@@ -2816,10 +3165,7 @@ async function downloadCatalogPDF(){
       const pct = 5 + Math.round(((i + 1) / allPages.length) * 92);
       updatePdfProgress(pct, `Page ${i + 1}/${allPages.length}: ${p.label}`);
 
-      const canvas = await htmlToCanvas(p.html);
-
-      if(i > 0) doc.addPage();
-      doc.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+      await renderHtmlPageToPdf(doc, p.html, i > 0, pageW, pageH);
     }
 
     updatePdfProgress(99, 'Finalizing...');
@@ -2837,5 +3183,6 @@ async function downloadCatalogPDF(){
 // INIT
 loadData();
 </script>
+
 
 </body></html>
