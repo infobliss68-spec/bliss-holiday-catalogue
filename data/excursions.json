@@ -740,7 +740,16 @@
       ],
       "notes": "Lunch & drinks NOT included. Wildlife sightings subject to nature & weather.",
       "bg": "bg-sea",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776602424/ecyjejvnwjaz7odkzypf.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776602434/rybxp0rykti7puxy2agy.jpg"
+        }
+      ]
     },
     {
       "id": "dolphin",
