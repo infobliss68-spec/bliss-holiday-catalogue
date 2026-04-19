@@ -1019,7 +1019,16 @@
       ],
       "notes": "Contact your Bliss Holiday representative. Minimum age and weight restrictions apply.",
       "bg": "bg-air",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776604162/mdxsqirx0mwfmferkiol.webp"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776604177/ibj5gf6hbswzrjyfh4hi.jpg"
+        }
+      ]
     }
   ]
 }
