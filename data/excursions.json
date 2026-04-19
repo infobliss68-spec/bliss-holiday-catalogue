@@ -65,6 +65,10 @@
         {
           "type": "image",
           "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776593376/tosma0eyymj4l6bxgds5.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776593527/q6pvh3zdxmo8eygpgh6l.jpg"
         }
       ]
     },
@@ -178,7 +182,20 @@
       ],
       "notes": "Seat in air-conditioned coach. Entrance to Botanical Garden included. Lunch not included.",
       "bg": "bg-land",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596351/zuqzjo9mivuiuol4aoed.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596356/snpj4euisu1lqmnlttwn.webp"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596361/actbnrgdncvl6no84zfc.jpg"
+        }
+      ]
     },
     {
       "id": "northfull",
@@ -221,7 +238,20 @@
       ],
       "notes": "Seat in air-conditioned coach. Lunch & drinks NOT included. Route varies by hotel location.",
       "bg": "bg-land",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596601/weanixmlbwhmvr75ugnc.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776598276/rp27jkq6pyxvocgulyna.webp"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776598359/chnufsulkhz3g9c3krae.jpg"
+        }
+      ]
     },
     {
       "id": "tea",
