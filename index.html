@@ -3295,61 +3295,137 @@ async function downloadCatalogPDF(){
 }
 
 // ============================================
-// IMAGE CACHE — On-demand
-// First visit to an excursion: images load + decode normally, then we record
-// their URLs as "warm". Re-visits reuse the same <img src>, which the browser
-// serves from its HTTP/memory cache instantly — no flash, no network round-trip.
+// IMAGE CACHE — Preload everything upfront (small catalogue strategy)
+// ~17 excursions × a handful of images = bounded set. Preloading them all at
+// boot (in background, with limited concurrency) means every subsequent click
+// is instant: browser serves from HTTP/memory cache, decoded bitmap is ready.
 // ============================================
 const IMG_CACHE = {
-  warm: new Set(),           // URLs that have been loaded + decoded at least once
-  decoded: new Map(),        // URL → HTMLImageElement (decoded, ready to clone)
-  isWarm(url){ return this.warm.has(url); },
-  markWarm(url){ this.warm.add(url); }
+  warm: new Set(),          // URLs we've finished preloading
+  decoded: new Map(),       // URL → HTMLImageElement (holds the decoded bitmap in memory)
+  total: 0,                 // Total URLs queued for preload
+  done: 0,                  // How many finished (success or failure)
 };
 
-// Pre-decode every image that appears in the DOM after a render.
-// Runs in the background: doesn't block the user, but ensures that by the
-// time they scroll or re-click the excursion, all images are decoded.
-function warmCacheForVisibleImages(){
-  const imgs = document.querySelectorAll('#content img, .masonry-item img, .px-bg img');
-  imgs.forEach(img => {
-    const url = img.currentSrc || img.src;
-    if(!url || IMG_CACHE.isWarm(url)) return;
-    // Decode in background; decoding a loaded image is a no-op for pixel data
-    // but preloads it into the browser's decoded-bitmap cache.
-    const preload = () => {
-      if(IMG_CACHE.isWarm(url)) return;
-      const warmImg = new Image();
-      warmImg.decoding = 'async';
-      warmImg.src = url;
-      if(typeof warmImg.decode === 'function'){
-        warmImg.decode()
-          .then(() => {
-            IMG_CACHE.markWarm(url);
-            IMG_CACHE.decoded.set(url, warmImg);
-          })
-          .catch(() => IMG_CACHE.markWarm(url)); // Still mark as attempted
-      } else {
-        warmImg.onload = () => {
-          IMG_CACHE.markWarm(url);
-          IMG_CACHE.decoded.set(url, warmImg);
-        };
+// Collect every image URL across every excursion — hero + gallery.
+function collectAllImageUrls(excursions){
+  const urls = new Set();
+  excursions.forEach(e => {
+    const media = e.media || e.images || [];
+    media.forEach(m => {
+      // Skip videos — they're too heavy to preload and the user's network
+      // probably can't take 17 videos in parallel. Videos load on demand.
+      if(m && m.src && m.type !== 'video'){
+        urls.add(m.src);
       }
+    });
+  });
+  return Array.from(urls);
+}
+
+// Show a discreet progress pill in the bottom-right while preloading.
+function ensurePreloadBadge(){
+  let el = document.getElementById('imgPreloadBadge');
+  if(el) return el;
+  el = document.createElement('div');
+  el.id = 'imgPreloadBadge';
+  el.style.cssText = [
+    'position:fixed', 'bottom:16px', 'right:16px',
+    'background:rgba(26,26,26,0.92)', 'color:white',
+    'padding:8px 14px', 'border-radius:20px',
+    'font-family:Poppins,sans-serif', 'font-size:12px', 'font-weight:500',
+    'letter-spacing:0.3px', 'box-shadow:0 4px 14px rgba(0,0,0,0.25)',
+    'z-index:500', 'display:flex', 'align-items:center', 'gap:8px',
+    'backdrop-filter:blur(8px)',
+    'transition:opacity .4s,transform .4s',
+    'pointer-events:none'
+  ].join(';');
+  el.innerHTML = `
+    <span style="width:10px;height:10px;border:2px solid rgba(255,255,255,0.3);border-top-color:#f26a21;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block"></span>
+    <span id="imgPreloadLabel">Loading images…</span>`;
+  document.body.appendChild(el);
+  return el;
+}
+
+function updatePreloadBadge(){
+  const badge = document.getElementById('imgPreloadBadge');
+  if(!badge) return;
+  const label = document.getElementById('imgPreloadLabel');
+  if(label) label.textContent = `Loading images… ${IMG_CACHE.done}/${IMG_CACHE.total}`;
+  if(IMG_CACHE.done >= IMG_CACHE.total){
+    // Done: fade out and remove
+    badge.style.opacity = '0';
+    badge.style.transform = 'translateY(10px)';
+    setTimeout(() => badge.remove(), 450);
+  }
+}
+
+// Preload one URL: fetch + decode + hold reference in memory.
+function preloadOneImage(url){
+  return new Promise(resolve => {
+    if(IMG_CACHE.warm.has(url)){ resolve(); return; }
+    const img = new Image();
+    // Browser hint: this is a background, non-urgent fetch.
+    img.fetchPriority = 'low';
+    img.decoding = 'async';
+    img.loading = 'eager';  // We explicitly want it loaded now, just with low priority.
+    img.src = url;
+    const finish = () => {
+      IMG_CACHE.warm.add(url);
+      IMG_CACHE.decoded.set(url, img);
+      IMG_CACHE.done++;
+      updatePreloadBadge();
+      resolve();
     };
-    if(img.complete && img.naturalWidth > 0){
-      preload();
+    if(typeof img.decode === 'function'){
+      img.decode().then(finish).catch(finish);
     } else {
-      img.addEventListener('load', preload, { once: true });
+      img.onload = finish;
+      img.onerror = finish;
     }
   });
 }
 
-// Hook into renderExcursion: warm cache for every image that shows up.
-const _origRenderExcursion = renderExcursion;
-renderExcursion = function(id){
-  _origRenderExcursion(id);
-  // Give the DOM a tick to attach, then kick off background decoding.
-  requestAnimationFrame(() => requestAnimationFrame(warmCacheForVisibleImages));
+// Preload all URLs with a capped concurrency so we don't flood the network.
+async function preloadAllImages(urls, concurrency = 4){
+  IMG_CACHE.total = urls.length;
+  IMG_CACHE.done = 0;
+  if(!urls.length) return;
+
+  ensurePreloadBadge();
+  updatePreloadBadge();
+
+  // Simple worker-pool: N parallel tasks each draining a shared queue.
+  const queue = urls.slice();
+  const workers = [];
+  for(let i = 0; i < Math.min(concurrency, queue.length); i++){
+    workers.push((async () => {
+      while(queue.length){
+        const url = queue.shift();
+        if(!url) break;
+        await preloadOneImage(url);
+      }
+    })());
+  }
+  await Promise.all(workers);
+}
+
+// Kick off preload AFTER the initial UI is up — we want the user to see the
+// welcome screen instantly, then decoding starts in the background.
+const _origLoadData = loadData;
+loadData = async function(){
+  await _origLoadData();
+  if(D && D.length){
+    const urls = collectAllImageUrls(D);
+    console.log(`[Cache] Preloading ${urls.length} images in background…`);
+    // Idle-schedule so we don't compete with any initial paint work.
+    const kickoff = () => preloadAllImages(urls, 4);
+    if('requestIdleCallback' in window){
+      requestIdleCallback(kickoff, { timeout: 500 });
+    } else {
+      setTimeout(kickoff, 100);
+    }
+  }
 };
 
 // INIT
