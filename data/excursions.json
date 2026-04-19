@@ -360,20 +360,7 @@
       ],
       "notes": "Transport only. Entrance fees payable separately on site. Available Sundays. Minimum 4 pax.",
       "bg": "bg-land",
-      "media": [
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776600247/jgqsvwbgpph1ryljthv4.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776600273/xbkknxzyl1b1juamsudy.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776600283/j06td8rcdi5aiqtookd4.jpg"
-        }
-      ]
+      "media": []
     },
     {
       "id": "casela",
@@ -485,7 +472,20 @@
       ],
       "notes": "Price includes transport & BBQ lunch with unlimited drinks. Sharing catamaran.",
       "bg": "bg-sea",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776600969/gfdxst0uvtvanl0bgjda.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776600974/efryprrkl6qhdnwjsmx8.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776600978/h6rvo1sr5cpdnygbqlz4.jpg"
+        }
+      ]
     },
     {
       "id": "cata-east",
@@ -533,20 +533,7 @@
       ],
       "notes": "East Coast departure only. Lunch & drinks included. Transport included.",
       "bg": "bg-sea",
-      "media": [
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601280/qzr768hodmzv0jwwexze.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601388/odmdfwbkk65iwqfjd3dq.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601392/o8gxmof9hid1dwcil2t4.jpg"
-        }
-      ]
+      "media": []
     },
     {
       "id": "5islands",
