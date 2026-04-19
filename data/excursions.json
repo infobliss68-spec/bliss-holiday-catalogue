@@ -853,7 +853,20 @@
       ],
       "notes": "Prices per boat, not per person. Season rates 15 Dec–15 Jan add 20%. Transport NOT included.",
       "bg": "bg-sea",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776603213/kvnb2oddb0etwvul0xlh.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776603217/woohjg9beucklzorawek.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776603222/srwqgeyj5z2fujr4uald.jpg"
+        }
+      ]
     },
     {
       "id": "aigrettes",
