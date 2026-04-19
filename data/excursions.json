@@ -123,7 +123,20 @@
       ],
       "notes": "Seat in air-conditioned coach. Entrance to Chamarel included. Lunch at Chez Ruben. Minimum 6 pax.",
       "bg": "bg-land",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776594611/hdekqdb0ryv7afsrphuv.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776594615/jtqa212rvdik4qesdkcy.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776594618/oc5iw3rnm9jmzgfo1zj4.jpg"
+        }
+      ]
     },
     {
       "id": "northhalf",
@@ -172,15 +185,15 @@
       "media": [
         {
           "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596081/hjklbom7dbml3onabkcj.jpg"
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596351/zuqzjo9mivuiuol4aoed.jpg"
         },
         {
           "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596087/wsypgapwutxmm95aqvpt.jpg"
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596356/snpj4euisu1lqmnlttwn.webp"
         },
         {
           "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596092/lqhkeho1hvqmixkxxjn6.jpg"
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776596361/actbnrgdncvl6no84zfc.jpg"
         }
       ]
     },
