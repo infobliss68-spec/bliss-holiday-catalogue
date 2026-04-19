@@ -147,9 +147,10 @@ img,video{max-width:100%;display:block}
 .sec-title{font-size:1.2rem;font-weight:700;color:var(--ink);letter-spacing:-.3px;line-height:1.2}
 .sec-count{font-size:11px;color:var(--muted);font-weight:500}
 
-/* MASONRY GALLERY — CSS columns preserve natural image heights */
-.masonry{column-count:3;column-gap:12px}
-.masonry-item{break-inside:avoid;margin-bottom:12px;position:relative;border-radius:12px;overflow:hidden;cursor:pointer;background:#0d0d0d;display:block;transition:transform .25s,box-shadow .25s}
+/* MASONRY GALLERY — JS-driven balanced columns (shortest-column-first) */
+.masonry{display:flex;gap:12px;align-items:flex-start}
+.masonry-col{flex:1 1 0;display:flex;flex-direction:column;gap:12px;min-width:0}
+.masonry-item{position:relative;border-radius:12px;overflow:hidden;cursor:pointer;background:#f0ebe3;display:block;transition:transform .25s,box-shadow .25s;width:100%}
 .masonry-item:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.18)}
 .masonry-item img,.masonry-item video{width:100%;height:auto;display:block}
 .masonry-item.hidden{display:none}
@@ -244,9 +245,6 @@ img,video{max-width:100%;display:block}
 .loading p{font-size:12px;color:var(--muted)}
 
 /* MOBILE */
-@media(max-width:1000px){
-  .masonry{column-count:2}
-}
 @media(max-width:900px){
   .exc-body{grid-template-columns:1fr}
   .exc-aside{position:static}
@@ -267,8 +265,8 @@ img,video{max-width:100%;display:block}
   .px-hero{height:320px}
   .px-content{padding:24px 20px 24px}
   .price-float{right:12px;bottom:12px;padding:10px 14px;min-width:110px}
-  .masonry{column-count:1;column-gap:10px}
-  .masonry-item{margin-bottom:10px}
+  .masonry{gap:10px}
+  .masonry-col{gap:10px}
   .remarks-section{padding:22px;flex-direction:column;gap:14px}
   .remarks-icon{width:44px;height:44px}
   .remarks-icon svg{width:22px;height:22px}
@@ -1887,7 +1885,7 @@ function renderExcursion(id){
     </div>`;
   }
 
-  // GALLERY — Masonry grid with hidden overflow after GALLERY_INITIAL_LIMIT items
+  // GALLERY — JS-balanced masonry (items placed into the shortest column after load)
   const GALLERY_INITIAL_LIMIT = 9;
   let galleryHTML='';
   if(galleryItems.length>0){
@@ -1898,8 +1896,8 @@ function renderExcursion(id){
         ?`<video src="${m.src}" muted preload="metadata" playsinline></video><div class="masonry-play">${ico('i-play')}</div>`
         :`<img src="${m.src}" alt="${caption}" loading="lazy">`;
       const realIdx=images.indexOf(m);
-      const hiddenClass = i >= GALLERY_INITIAL_LIMIT ? ' hidden gallery-extra' : '';
-      return `<div class="masonry-item${hiddenClass}" onclick="openLB('${e.id}',${realIdx})">
+      const hiddenAttr = i >= GALLERY_INITIAL_LIMIT ? ' data-extra="1"' : '';
+      return `<div class="masonry-item"${hiddenAttr} onclick="openLB('${e.id}',${realIdx})">
         ${mediaEl}
         <div class="masonry-gradient"></div>
         <div class="masonry-caption">${ico('i-camera')} ${caption}</div>
@@ -1910,6 +1908,7 @@ function renderExcursion(id){
     const extraCount = galleryItems.length - GALLERY_INITIAL_LIMIT;
     const chevronDown = '<svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg>';
 
+    // Items live in a hidden pool; layoutMasonry() moves them into balanced columns.
     galleryHTML=`<div class="gallery-section">
       <div class="sec-header">
         <div>
@@ -1918,7 +1917,8 @@ function renderExcursion(id){
         </div>
         <div class="sec-count">${galleryItems.length} ${galleryItems.length===1?'item':'items'}</div>
       </div>
-      <div class="masonry" id="galleryMasonry">${items}</div>
+      <div class="masonry" id="galleryMasonry" data-expanded="0"></div>
+      <div id="galleryPool" style="display:none">${items}</div>
       ${hasOverflow?`
       <div class="gallery-toggle">
         <button class="gallery-toggle-btn" id="galleryToggleBtn" onclick="toggleGalleryExtras(this)" data-more="Voir plus (+${extraCount})" data-less="Voir moins">
@@ -2018,6 +2018,8 @@ function renderExcursion(id){
       </div>`:''}
     </div>`;
   document.getElementById('content').innerHTML=html;
+  // Build balanced masonry after the DOM is in place
+  layoutMasonry();
 }
 
 // PARALLAX
@@ -2034,18 +2036,123 @@ function setupParallax(){
   main.addEventListener('scroll',onScroll,{passive:true});
 }
 
-// GALLERY — toggle hidden masonry items (Voir plus / Voir moins)
+// GALLERY — JS masonry layout
+// Places each item into the currently shortest column, producing a balanced grid
+// that doesn't leave empty vertical gaps the way CSS `column-count` does.
+function getMasonryColCount(){
+  const w = window.innerWidth;
+  if(w <= 768) return 1;
+  if(w <= 1000) return 2;
+  return 3;
+}
+
+function layoutMasonry(){
+  const grid = document.getElementById('galleryMasonry');
+  const pool = document.getElementById('galleryPool');
+  if(!grid || !pool) return;
+
+  const expanded = grid.getAttribute('data-expanded') === '1';
+  const allItems = Array.from(pool.children);
+  const visibleItems = expanded
+    ? allItems
+    : allItems.filter(el => el.getAttribute('data-extra') !== '1');
+
+  const colCount = getMasonryColCount();
+
+  // Rebuild columns
+  grid.innerHTML = '';
+  const cols = [];
+  for(let i = 0; i < colCount; i++){
+    const c = document.createElement('div');
+    c.className = 'masonry-col';
+    grid.appendChild(c);
+    cols.push(c);
+  }
+
+  // Place each item in the shortest column (measured after DOM insertion).
+  // For images without known height, we rely on offsetHeight post-insert — this is
+  // approximate on first paint but re-runs on image load to stabilise.
+  visibleItems.forEach(src => {
+    const clone = src.cloneNode(true);
+    // Find the column with the smallest current height
+    let shortest = 0;
+    let minH = cols[0].offsetHeight;
+    for(let i = 1; i < cols.length; i++){
+      if(cols[i].offsetHeight < minH){ minH = cols[i].offsetHeight; shortest = i; }
+    }
+    cols[shortest].appendChild(clone);
+  });
+
+  // Re-balance once images finish loading (their height jumps from 0 → natural)
+  const imgs = grid.querySelectorAll('img');
+  let pending = imgs.length;
+  if(!pending) return;
+  let scheduled = false;
+  const relayoutOnce = () => {
+    if(scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      rebalanceMasonry();
+    });
+  };
+  imgs.forEach(img => {
+    if(img.complete && img.naturalWidth > 0){
+      pending--;
+      if(pending === 0) relayoutOnce();
+    } else {
+      img.addEventListener('load', () => { pending--; relayoutOnce(); }, { once: true });
+      img.addEventListener('error', () => { pending--; relayoutOnce(); }, { once: true });
+    }
+  });
+}
+
+// Re-run the shortest-column placement once real image heights are known.
+function rebalanceMasonry(){
+  const grid = document.getElementById('galleryMasonry');
+  if(!grid) return;
+  const allItems = Array.from(grid.querySelectorAll('.masonry-item'));
+  const colCount = getMasonryColCount();
+  grid.innerHTML = '';
+  const cols = [];
+  for(let i = 0; i < colCount; i++){
+    const c = document.createElement('div');
+    c.className = 'masonry-col';
+    grid.appendChild(c);
+    cols.push(c);
+  }
+  // Use known natural heights (image aspect * column width) for better placement
+  const colHeights = new Array(colCount).fill(0);
+  allItems.forEach(item => {
+    let shortest = 0;
+    for(let i = 1; i < colCount; i++){
+      if(colHeights[i] < colHeights[shortest]) shortest = i;
+    }
+    cols[shortest].appendChild(item);
+    // Estimate added height from the item's actual rendered height
+    colHeights[shortest] += item.offsetHeight || 200;
+  });
+}
+
 function toggleGalleryExtras(btn){
   const grid = document.getElementById('galleryMasonry');
   if(!grid) return;
-  const extras = grid.querySelectorAll('.gallery-extra');
-  const expanded = btn.classList.toggle('expanded');
+  const nowExpanded = grid.getAttribute('data-expanded') !== '1';
+  grid.setAttribute('data-expanded', nowExpanded ? '1' : '0');
+  btn.classList.toggle('expanded', nowExpanded);
   const label = btn.querySelector('.gallery-toggle-label');
-  extras.forEach(el => el.classList.toggle('hidden', !expanded));
-  if(label){
-    label.textContent = expanded ? btn.dataset.less : btn.dataset.more;
-  }
+  if(label) label.textContent = nowExpanded ? btn.dataset.less : btn.dataset.more;
+  layoutMasonry();
 }
+
+// Re-layout on resize (column count can change between breakpoints)
+let _masonryResizeTO;
+window.addEventListener('resize', () => {
+  clearTimeout(_masonryResizeTO);
+  _masonryResizeTO = setTimeout(() => {
+    if(document.getElementById('galleryMasonry')) layoutMasonry();
+  }, 150);
+});
 
 // INFO PAGES
 function selectInfo(type){
@@ -3152,5 +3259,6 @@ async function downloadCatalogPDF(){
 // INIT
 loadData();
 </script>
+
 
 </body></html>
