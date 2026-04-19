@@ -671,13 +671,53 @@ function escHTML(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function iconSvg(id){return `<svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">${ICON_SVGS[id]||''}</svg>`}
 
 // ========== MEDIA ==========
+
+// Cloudinary defaults — unsigned uploads have a hard 10MB limit for images
+// and 100MB for videos. We warn the user before attempting upload so they
+// don't wait for a progress bar that will end in a 400.
+const CLOUDINARY_MAX_IMAGE_BYTES = 10 * 1024 * 1024;     // 10 MB
+const CLOUDINARY_MAX_VIDEO_BYTES = 100 * 1024 * 1024;    // 100 MB
+const CLOUDINARY_ALLOWED_IMAGE_TYPES = ['image/jpeg','image/png','image/webp','image/gif','image/avif'];
+const CLOUDINARY_ALLOWED_VIDEO_TYPES = ['video/mp4','video/webm','video/quicktime'];
+
+function humanFileSize(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(1) + ' MB';
+}
+
+// Validate a file BEFORE sending it to Cloudinary. Returns null if OK,
+// or a user-friendly error message string explaining what's wrong.
+function validateFileForUpload(file){
+  if(!file || file.size === 0){
+    return 'File is empty or unreadable.';
+  }
+  const isVid = (file.type || '').startsWith('video');
+  const isImg = (file.type || '').startsWith('image');
+  if(!isVid && !isImg){
+    return `Unsupported file type "${file.type || 'unknown'}". Use JPG, PNG, WebP, GIF or MP4.`;
+  }
+  if(isImg && !CLOUDINARY_ALLOWED_IMAGE_TYPES.includes(file.type)){
+    return `Image format not supported by Cloudinary free plan: ${file.type}. Convert to JPG/PNG/WebP.`;
+  }
+  if(isVid && !CLOUDINARY_ALLOWED_VIDEO_TYPES.includes(file.type)){
+    return `Video format not supported: ${file.type}. Use MP4 or WebM.`;
+  }
+  const max = isVid ? CLOUDINARY_MAX_VIDEO_BYTES : CLOUDINARY_MAX_IMAGE_BYTES;
+  if(file.size > max){
+    return `File too large: ${humanFileSize(file.size)}. Max ${humanFileSize(max)} for ${isVid ? 'videos' : 'images'} on Cloudinary free plan.`;
+  }
+  return null;
+}
+
 async function handleFileUpload(ev){
   if(!cloudinaryCloud || !cloudinaryPreset){
-    toast('Configure Cloudinary in Settings first','error');
+    toast('Configure Cloudinary in Settings first', 'error');
     return;
   }
+
   const files = Array.from(ev.target.files);
-  if(!files.length)return;
+  if(!files.length) return;
 
   const zone = document.getElementById('uploadZone');
   const progress = document.getElementById('uploadProgress');
@@ -686,55 +726,144 @@ async function handleFileUpload(ev){
   progress.classList.add('show');
 
   let done = 0;
+  const failures = [];
+
   for(const f of files){
+    // Pre-flight validation — catch obvious problems before hitting the network.
+    const validationError = validateFileForUpload(f);
+    if(validationError){
+      failures.push({ name: f.name, reason: validationError });
+      console.warn(`[Upload] Skipped "${f.name}":`, validationError);
+      continue;
+    }
+
     try {
-      const url = await uploadToCloudinary(f, p=>{
+      const url = await uploadToCloudinary(f, p => {
         const tot = (done + p/100) / files.length * 100;
         bar.style.width = tot + '%';
       });
       if(!currentExc.media) currentExc.media = [];
-      const isVid = f.type.startsWith('video');
-      currentExc.media.push({type:isVid?'video':'image', src:url});
+      currentExc.media.push({
+        type: f.type.startsWith('video') ? 'video' : 'image',
+        src: url
+      });
       done++;
-    } catch(e){
-      console.error(e);
-      toast('Upload failed: '+e.message,'error');
+    } catch(err){
+      console.error(`[Upload] Failed for "${f.name}":`, err);
+      failures.push({ name: f.name, reason: err.message || String(err) });
     }
   }
 
   bar.style.width = '100%';
-  setTimeout(()=>{
+  setTimeout(() => {
     zone.classList.remove('uploading');
     progress.classList.remove('show');
     bar.style.width = '0';
     renderEditor();
-    toast(`${done} file${done!==1?'s':''} uploaded`);
+
+    // Report results clearly: successes and failures separately.
+    if(done > 0){
+      toast(`${done} file${done !== 1 ? 's' : ''} uploaded${failures.length ? `, ${failures.length} failed` : ''}`);
+    }
+    if(failures.length){
+      // Show the first failure reason in the toast (most informative).
+      // All failures logged to console with file names for further diagnosis.
+      const first = failures[0];
+      const extra = failures.length > 1 ? ` (+${failures.length - 1} more — see console)` : '';
+      toast(`${first.name}: ${first.reason}${extra}`, 'error');
+    }
   }, 300);
   ev.target.value = '';
 }
 
 function uploadToCloudinary(file, onProgress){
-  return new Promise((resolve,reject)=>{
+  return new Promise((resolve, reject) => {
     const fd = new FormData();
     fd.append('file', file);
     fd.append('upload_preset', cloudinaryPreset);
 
     const xhr = new XMLHttpRequest();
-    xhr.upload.onprogress = e=>{
-      if(e.lengthComputable && onProgress) onProgress(e.loaded/e.total*100);
-    };
-    xhr.onload = ()=>{
-      if(xhr.status===200){
-        const data = JSON.parse(xhr.responseText);
-        resolve(data.secure_url);
-      } else {
-        reject(new Error('Upload failed: '+xhr.status));
-      }
-    };
-    xhr.onerror = ()=>reject(new Error('Network error'));
     const isVid = file.type.startsWith('video');
-    xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloudinaryCloud}/${isVid?'video':'image'}/upload`);
-    xhr.send(fd);
+    const endpoint = `https://api.cloudinary.com/v1_1/${cloudinaryCloud}/${isVid ? 'video' : 'image'}/upload`;
+
+    // Upload timeout — Cloudinary sometimes hangs on malformed files
+    // instead of responding. 2 min is generous for a 100MB video.
+    xhr.timeout = 120000;
+
+    xhr.upload.onprogress = e => {
+      if(e.lengthComputable && onProgress) onProgress(e.loaded / e.total * 100);
+    };
+
+    xhr.onload = () => {
+      // Try to parse the response body — Cloudinary always sends JSON,
+      // even for errors (with an { error: { message: "…" } } shape).
+      let body = null;
+      try { body = xhr.responseText ? JSON.parse(xhr.responseText) : null; } catch(_){}
+
+      if(xhr.status >= 200 && xhr.status < 300){
+        if(!body || !body.secure_url){
+          reject(new Error('Cloudinary returned an unexpected response (no secure_url).'));
+          return;
+        }
+        resolve(body.secure_url);
+        return;
+      }
+
+      // Non-2xx: extract the real Cloudinary error message.
+      const cloudinaryMsg = body && body.error && body.error.message
+        ? body.error.message
+        : (xhr.responseText ? xhr.responseText.slice(0, 200) : 'No response body');
+
+      // Enrich with a hint for the most common 400 causes.
+      let hint = '';
+      if(xhr.status === 400){
+        if(/upload preset/i.test(cloudinaryMsg)){
+          hint = ' (Check that the preset exists and is set to Unsigned in Cloudinary settings.)';
+        } else if(/cloud name/i.test(cloudinaryMsg) || /unknown api/i.test(cloudinaryMsg)){
+          hint = ' (Verify your Cloud Name in Settings matches your Cloudinary dashboard.)';
+        } else if(/file size/i.test(cloudinaryMsg) || /too large/i.test(cloudinaryMsg)){
+          hint = ' (Reduce file size or upgrade Cloudinary plan.)';
+        } else if(/format/i.test(cloudinaryMsg) || /invalid image file/i.test(cloudinaryMsg)){
+          hint = ' (File may be corrupted or in an unsupported format.)';
+        }
+      } else if(xhr.status === 401){
+        hint = ' (Preset requires signed uploads — switch preset to Unsigned mode.)';
+      } else if(xhr.status === 404){
+        hint = ' (Cloud Name not found — check your Cloudinary configuration.)';
+      } else if(xhr.status === 420 || xhr.status === 429){
+        hint = ' (Rate limit reached — wait a few minutes and retry.)';
+      }
+
+      console.error('[Cloudinary] Upload rejected:', {
+        status: xhr.status,
+        statusText: xhr.statusText,
+        endpoint: endpoint,
+        response: body || xhr.responseText,
+        file: { name: file.name, size: file.size, type: file.type }
+      });
+
+      reject(new Error(`${cloudinaryMsg}${hint}`));
+    };
+
+    xhr.onerror = () => {
+      // Network failure: usually CORS, DNS, or offline.
+      console.error('[Cloudinary] Network error. Check connection or CORS.');
+      reject(new Error('Network error — check your internet connection.'));
+    };
+
+    xhr.ontimeout = () => {
+      console.error('[Cloudinary] Request timed out after 2 minutes.');
+      reject(new Error('Upload timed out. Try a smaller file or check your connection.'));
+    };
+
+    xhr.onabort = () => reject(new Error('Upload cancelled.'));
+
+    try {
+      xhr.open('POST', endpoint);
+      xhr.send(fd);
+    } catch(err){
+      reject(new Error('Failed to start upload: ' + err.message));
+    }
   });
 }
 
