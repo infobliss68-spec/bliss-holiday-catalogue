@@ -65,10 +65,6 @@
         {
           "type": "image",
           "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776593376/tosma0eyymj4l6bxgds5.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776593527/q6pvh3zdxmo8eygpgh6l.jpg"
         }
       ]
     },
@@ -304,20 +300,7 @@
       ],
       "notes": "Private guided tour in air-conditioned vehicle. All entrances and lunch included. Minimum 2 pax.",
       "bg": "bg-land",
-      "media": [
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776599101/e7om4bsrdror72qqsszp.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776599130/w1gstmccm9brwrqdh848.jpg"
-        },
-        {
-          "type": "image",
-          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776599192/k0dfksg3d4ac5v66swie.jpg"
-        }
-      ]
+      "media": []
     },
     {
       "id": "vallee",
@@ -364,7 +347,20 @@
       ],
       "notes": "Transport only. Entrance fees payable separately on site. Available Sundays. Minimum 4 pax.",
       "bg": "bg-land",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776599356/gamrkqm1cm36q038h8yw.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776599346/qbepjb4lzbtnxig4twlx.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776599352/ahacfuwk62lifcsprrds.jpg"
+        }
+      ]
     },
     {
       "id": "casela",
