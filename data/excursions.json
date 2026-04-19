@@ -485,7 +485,20 @@
       ],
       "notes": "Price includes transport & BBQ lunch with unlimited drinks. Sharing catamaran.",
       "bg": "bg-sea",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601596/znh8qx6kbxnfn7jcttjh.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601600/qpruqz3h0j64ygxrrld5.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601606/y65wndeliu31jipnaigb.jpg"
+        }
+      ]
     },
     {
       "id": "cata-east",
@@ -534,6 +547,10 @@
       "notes": "East Coast departure only. Lunch & drinks included. Transport included.",
       "bg": "bg-sea",
       "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601280/qzr768hodmzv0jwwexze.jpg"
+        },
         {
           "type": "image",
           "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601388/odmdfwbkk65iwqfjd3dq.jpg"
