@@ -614,7 +614,20 @@
       ],
       "notes": "Price includes transport & lunch. Sharing speedboat. Departs 9am, returns 4pm.",
       "bg": "bg-sea",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601852/nzuusqeqxazkschbgzzc.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601867/yezmxilm295klpsmvodc.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776601917/fgncdxf65j03ccg3a3lw.jpg"
+        }
+      ]
     },
     {
       "id": "gabriel",
