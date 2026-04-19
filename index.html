@@ -141,10 +141,10 @@ img,video{max-width:100%;display:block}
 
 /* GALLERY */
 .gallery-section{margin-bottom:48px}
-.sec-label{font-size:1.25rem;letter-spacing:2px;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:10px;line-height:1.1}
-.sec-label .ic{width:18px;height:18px}
-.sec-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}
-.sec-title{font-size:1.2rem;font-weight:700;color:var(--ink);letter-spacing:-.3px;line-height:1.2}
+.sec-label{font-size:17px;letter-spacing:2.2px;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;line-height:1.1}
+.sec-label .ic{width:16px;height:16px}
+.sec-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px}
+.sec-title{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.1px;line-height:1.3}
 .sec-count{font-size:11px;color:var(--muted);font-weight:500}
 
 /* JUSTIFIED GALLERY — Uniform row height, flexible widths (Google Photos style) */
@@ -203,14 +203,22 @@ img,video{max-width:100%;display:block}
 .pr-row span{color:var(--muted);font-weight:400}
 .pr-row strong{font-size:14px;font-weight:700;color:var(--ink)}
 
-/* BIG REMARKS */
-.remarks-section{background:linear-gradient(135deg,var(--orange-light) 0%,#fff5ea 100%);border:1px solid #f5d4b5;border-radius:16px;padding:32px 36px;margin-top:32px;display:flex;gap:22px;align-items:flex-start;position:relative;overflow:hidden}
-.remarks-section::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--orange),var(--orange-deep))}
-.remarks-icon{width:52px;height:52px;border-radius:50%;background:var(--orange);color:white;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(242,106,33,.35)}
-.remarks-icon svg{width:26px;height:26px;stroke-width:2}
-.remarks-content{flex:1}
-.remarks-label{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--orange-deep);font-weight:700;margin-bottom:10px}
-.remarks-text{font-size:15.5px;line-height:1.75;color:var(--ink);font-weight:500}
+/* IMPORTANT INFORMATION — Standard section title, with subtle card framing */
+.remarks-section{
+  margin-top:36px;
+  background:#fff6ec;
+  border:1px solid #f5d9ba;
+  border-radius:10px;
+  padding:24px 28px;
+}
+.remarks-text{
+  font-size:15px;
+  line-height:1.75;
+  color:var(--ink);
+  font-weight:400;
+  letter-spacing:0.1px;
+  margin-top:14px;
+}
 
 /* INFO */
 .info-wrap{padding:40px 50px;max-width:1280px;margin:0 auto}
@@ -266,10 +274,8 @@ img,video{max-width:100%;display:block}
   .px-content{padding:24px 20px 24px}
   .price-float{right:12px;bottom:12px;padding:10px 14px;min-width:110px}
   .masonry,.masonry-row{gap:8px}
-  .remarks-section{padding:22px;flex-direction:column;gap:14px}
-  .remarks-icon{width:44px;height:44px}
-  .remarks-icon svg{width:22px;height:22px}
-  .remarks-text{font-size:14px}
+  .remarks-section{margin-top:28px;padding:20px 22px}
+  .remarks-text{font-size:14px;line-height:1.7;margin-top:12px}
 }
 </style>
 <style id="pdf-styles">
@@ -2009,11 +2015,8 @@ function renderExcursion(id){
 
       ${e.notes?`
       <div class="remarks-section">
-        <div class="remarks-icon">${ico('i-info')}</div>
-        <div class="remarks-content">
-          <div class="remarks-label">Important Information</div>
-          <div class="remarks-text">${e.notes}</div>
-        </div>
+        <div class="sec-label">${ico('i-info')} Important Information</div>
+        <div class="remarks-text">${e.notes}</div>
       </div>`:''}
     </div>`;
   document.getElementById('content').innerHTML=html;
