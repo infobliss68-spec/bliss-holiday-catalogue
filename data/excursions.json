@@ -53,7 +53,12 @@
       ],
       "notes": "Seat in air-conditioned coach. Entrance to Chamarel Coloured Earth included. Lunch at La Rhumerie de Chamarel included. Minimum 6 pax.",
       "bg": "bg-land",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776591996/b4960op0ykekeydcp4xd.jpg"
+        }
+      ]
     },
     {
       "id": "south2",
