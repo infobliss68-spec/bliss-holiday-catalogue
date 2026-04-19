@@ -907,7 +907,20 @@
       ],
       "notes": "Transport & lunch NOT included. 100% cancellation fee if cancelled less than 1 day before (except cyclone).",
       "bg": "bg-sea",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776603564/rpcbwmhcb5bfgswyhjqr.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776603570/a0rzsoor1ykxpvmpnory.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776603574/jhly1sd4urgy9nsdxm18.jpg"
+        }
+      ]
     },
     {
       "id": "heli",
