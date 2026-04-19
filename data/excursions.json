@@ -969,7 +969,16 @@
       ],
       "notes": "Rates include 15% VAT. Valid Nov 2025 – Oct 2026. All services subject to weather.",
       "bg": "bg-air",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776603911/uludhyerpmcdyrv8ob6m.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776603924/up6sotedbkug6rb7c4dj.jpg"
+        }
+      ]
     },
     {
       "id": "sky",
