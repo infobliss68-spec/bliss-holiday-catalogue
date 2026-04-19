@@ -797,7 +797,16 @@
       ],
       "notes": "Lunch & drinks included. Transport included. Wild dolphin encounters subject to nature.",
       "bg": "bg-sea",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776602801/iinpml32rdsgfdtgdyht.avif"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776602806/vsx8gmbpfyqrp4xazjo1.avif"
+        }
+      ]
     },
     {
       "id": "fishing",
