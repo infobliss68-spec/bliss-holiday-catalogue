@@ -679,7 +679,20 @@
       ],
       "notes": "Lunch & drinks included. Transport included. Premium cruise.",
       "bg": "bg-sea",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776602181/wy35dvga6nridljnhsqh.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776602189/sxv2fcjlxhwno9sce9sl.png"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776602192/oin2mtk0lsygoefd76sh.jpg"
+        }
+      ]
     },
     {
       "id": "whale",
