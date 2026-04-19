@@ -147,12 +147,12 @@ img,video{max-width:100%;display:block}
 .sec-title{font-size:1.2rem;font-weight:700;color:var(--ink);letter-spacing:-.3px;line-height:1.2}
 .sec-count{font-size:11px;color:var(--muted);font-weight:500}
 
-/* MASONRY GALLERY — JS-driven balanced columns (shortest-column-first) */
-.masonry{display:flex;gap:12px;align-items:flex-start}
-.masonry-col{flex:1 1 0;display:flex;flex-direction:column;gap:12px;min-width:0}
-.masonry-item{position:relative;border-radius:12px;overflow:hidden;cursor:pointer;background:#f0ebe3;display:block;transition:transform .25s,box-shadow .25s;width:100%}
-.masonry-item:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.18)}
-.masonry-item img,.masonry-item video{width:100%;height:auto;display:block}
+/* JUSTIFIED GALLERY — Uniform row height, flexible widths (Google Photos style) */
+.masonry{display:flex;flex-direction:column;gap:10px}
+.masonry-row{display:flex;gap:10px;width:100%}
+.masonry-item{position:relative;border-radius:12px;overflow:hidden;cursor:pointer;background:#f0ebe3;display:block;transition:transform .25s,box-shadow .25s;flex-grow:0;flex-shrink:0}
+.masonry-item:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.18);z-index:2}
+.masonry-item img,.masonry-item video{width:100%;height:100%;object-fit:cover;display:block}
 .masonry-item.hidden{display:none}
 .masonry-caption{position:absolute;left:10px;right:10px;bottom:10px;color:white;font-size:12px;font-weight:500;text-shadow:0 2px 10px rgba(0,0,0,.7);display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:2}
 .masonry-caption .ic{width:13px;height:13px;color:var(--orange)}
@@ -265,8 +265,7 @@ img,video{max-width:100%;display:block}
   .px-hero{height:320px}
   .px-content{padding:24px 20px 24px}
   .price-float{right:12px;bottom:12px;padding:10px 14px;min-width:110px}
-  .masonry{gap:10px}
-  .masonry-col{gap:10px}
+  .masonry,.masonry-row{gap:8px}
   .remarks-section{padding:22px;flex-direction:column;gap:14px}
   .remarks-icon{width:44px;height:44px}
   .remarks-icon svg{width:22px;height:22px}
@@ -2036,14 +2035,24 @@ function setupParallax(){
   main.addEventListener('scroll',onScroll,{passive:true});
 }
 
-// GALLERY — JS masonry layout
-// Places each item into the currently shortest column, producing a balanced grid
-// that doesn't leave empty vertical gaps the way CSS `column-count` does.
-function getMasonryColCount(){
-  const w = window.innerWidth;
-  if(w <= 768) return 1;
-  if(w <= 1000) return 2;
-  return 3;
+// GALLERY — Justified-rows layout (Google Photos / Flickr style)
+// All images have the same row height; widths adapt to preserve aspect ratios.
+// Algorithm: greedy packing — keep adding images to a row until its natural
+// total width (at target height) exceeds the container, then scale the whole
+// row to fit exactly.
+const GALLERY_TARGET_ROW_HEIGHT = 220;  // px — desired height per row
+const GALLERY_MIN_ROW_HEIGHT    = 150;  // px — don't shrink rows below this
+const GALLERY_MAX_ROW_HEIGHT    = 300;  // px — don't grow last (incomplete) row beyond this
+const GALLERY_GAP               = 10;   // matches CSS .masonry-row gap
+
+function getItemAspectRatio(item){
+  // Prefer real image/video intrinsic size once loaded; else assume 4:3.
+  const media = item.querySelector('img, video');
+  if(!media) return 4/3;
+  const w = media.naturalWidth || media.videoWidth || 0;
+  const h = media.naturalHeight || media.videoHeight || 0;
+  if(w > 0 && h > 0) return w / h;
+  return 4/3;
 }
 
 function layoutMasonry(){
@@ -2057,81 +2066,110 @@ function layoutMasonry(){
     ? allItems
     : allItems.filter(el => el.getAttribute('data-extra') !== '1');
 
-  const colCount = getMasonryColCount();
+  if(!visibleItems.length){ grid.innerHTML = ''; return; }
 
-  // Rebuild columns
+  // Move all items into a flat workspace first so we can measure natural sizes
   grid.innerHTML = '';
-  const cols = [];
-  for(let i = 0; i < colCount; i++){
-    const c = document.createElement('div');
-    c.className = 'masonry-col';
-    grid.appendChild(c);
-    cols.push(c);
-  }
+  const workItems = visibleItems.map(src => src.cloneNode(true));
 
-  // Place each item in the shortest column (measured after DOM insertion).
-  // For images without known height, we rely on offsetHeight post-insert — this is
-  // approximate on first paint but re-runs on image load to stabilise.
-  visibleItems.forEach(src => {
-    const clone = src.cloneNode(true);
-    // Find the column with the smallest current height
-    let shortest = 0;
-    let minH = cols[0].offsetHeight;
-    for(let i = 1; i < cols.length; i++){
-      if(cols[i].offsetHeight < minH){ minH = cols[i].offsetHeight; shortest = i; }
-    }
-    cols[shortest].appendChild(clone);
-  });
+  // Wait for image loads to know real aspect ratios, then do the real layout.
+  // For the first paint (before loads), we assume 4:3 so the grid has shape
+  // instead of collapsing — then we redo once images resolve.
+  doJustifiedLayout(grid, workItems);
 
-  // Re-balance once images finish loading (their height jumps from 0 → natural)
   const imgs = grid.querySelectorAll('img');
   let pending = imgs.length;
   if(!pending) return;
+
   let scheduled = false;
   const relayoutOnce = () => {
     if(scheduled) return;
     scheduled = true;
     requestAnimationFrame(() => {
       scheduled = false;
-      rebalanceMasonry();
+      // Re-collect current items (they've been moved into rows by now)
+      const items = Array.from(grid.querySelectorAll('.masonry-item'));
+      doJustifiedLayout(grid, items);
     });
   };
+
   imgs.forEach(img => {
     if(img.complete && img.naturalWidth > 0){
       pending--;
       if(pending === 0) relayoutOnce();
     } else {
-      img.addEventListener('load', () => { pending--; relayoutOnce(); }, { once: true });
-      img.addEventListener('error', () => { pending--; relayoutOnce(); }, { once: true });
+      img.addEventListener('load', () => { pending--; if(pending <= 0) relayoutOnce(); }, { once: true });
+      img.addEventListener('error', () => { pending--; if(pending <= 0) relayoutOnce(); }, { once: true });
     }
   });
 }
 
-// Re-run the shortest-column placement once real image heights are known.
-function rebalanceMasonry(){
-  const grid = document.getElementById('galleryMasonry');
-  if(!grid) return;
-  const allItems = Array.from(grid.querySelectorAll('.masonry-item'));
-  const colCount = getMasonryColCount();
-  grid.innerHTML = '';
-  const cols = [];
-  for(let i = 0; i < colCount; i++){
-    const c = document.createElement('div');
-    c.className = 'masonry-col';
-    grid.appendChild(c);
-    cols.push(c);
+function doJustifiedLayout(grid, items){
+  const containerWidth = grid.clientWidth;
+  if(containerWidth <= 0){
+    // Grid not yet visible — fall back to simple flex wrap, will retry on resize.
+    grid.innerHTML = '';
+    items.forEach(it => grid.appendChild(it));
+    return;
   }
-  // Use known natural heights (image aspect * column width) for better placement
-  const colHeights = new Array(colCount).fill(0);
-  allItems.forEach(item => {
-    let shortest = 0;
-    for(let i = 1; i < colCount; i++){
-      if(colHeights[i] < colHeights[shortest]) shortest = i;
+
+  // Clear and rebuild
+  grid.innerHTML = '';
+
+  // Greedy: accumulate items into the current row. A row is "full" when
+  // summed natural widths (at target height) >= container width. Then we
+  // compute the actual row height that fits all items perfectly.
+  let rowBuffer = [];
+  let rowAspectSum = 0; // sum of aspect ratios (w/h). At height h, each item width = aspect * h.
+
+  const flushRow = (isLastRow) => {
+    if(!rowBuffer.length) return;
+    // Total gap space for N items is (N-1)*gap
+    const gapSpace = (rowBuffer.length - 1) * GALLERY_GAP;
+    const availableWidth = containerWidth - gapSpace;
+    // At row height h, total images width = rowAspectSum * h. Solve for h.
+    let rowH = availableWidth / rowAspectSum;
+
+    if(isLastRow){
+      // Don't stretch a half-empty last row to full width — clamp to a reasonable height
+      rowH = Math.min(rowH, GALLERY_MAX_ROW_HEIGHT);
+      rowH = Math.max(rowH, GALLERY_MIN_ROW_HEIGHT);
+    } else {
+      // For normal rows, still clamp absurdly tall rows if only 1 item with extreme aspect
+      rowH = Math.min(rowH, GALLERY_MAX_ROW_HEIGHT);
+      rowH = Math.max(rowH, GALLERY_MIN_ROW_HEIGHT);
     }
-    cols[shortest].appendChild(item);
-    // Estimate added height from the item's actual rendered height
-    colHeights[shortest] += item.offsetHeight || 200;
+
+    const rowEl = document.createElement('div');
+    rowEl.className = 'masonry-row';
+    rowBuffer.forEach(({el, aspect}) => {
+      const w = aspect * rowH;
+      el.style.width = w + 'px';
+      el.style.height = rowH + 'px';
+      el.style.flex = '0 0 ' + w + 'px';
+      rowEl.appendChild(el);
+    });
+    grid.appendChild(rowEl);
+
+    rowBuffer = [];
+    rowAspectSum = 0;
+  };
+
+  items.forEach((el, idx) => {
+    const aspect = getItemAspectRatio(el);
+    rowBuffer.push({ el, aspect });
+    rowAspectSum += aspect;
+
+    // Width of this row at target height (before fitting)
+    const naturalWidth = rowAspectSum * GALLERY_TARGET_ROW_HEIGHT + (rowBuffer.length - 1) * GALLERY_GAP;
+
+    if(naturalWidth >= containerWidth){
+      flushRow(false);
+    }
   });
+
+  // Flush whatever remains as the final row
+  flushRow(true);
 }
 
 function toggleGalleryExtras(btn){
@@ -2145,7 +2183,7 @@ function toggleGalleryExtras(btn){
   layoutMasonry();
 }
 
-// Re-layout on resize (column count can change between breakpoints)
+// Re-layout on resize (container width changes → row packing must recompute)
 let _masonryResizeTO;
 window.addEventListener('resize', () => {
   clearTimeout(_masonryResizeTO);
