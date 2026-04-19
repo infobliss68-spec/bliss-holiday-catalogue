@@ -123,7 +123,20 @@
       ],
       "notes": "Seat in air-conditioned coach. Entrance to Chamarel included. Lunch at Chez Ruben. Minimum 6 pax.",
       "bg": "bg-land",
-      "media": []
+      "media": [
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776594611/hdekqdb0ryv7afsrphuv.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776594615/jtqa212rvdik4qesdkcy.jpg"
+        },
+        {
+          "type": "image",
+          "src": "https://res.cloudinary.com/dlsjordd6/image/upload/v1776594618/oc5iw3rnm9jmzgfo1zj4.jpg"
+        }
+      ]
     },
     {
       "id": "northhalf",
