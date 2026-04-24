@@ -153,6 +153,38 @@ img,video{max-width:100%;display:block}
 .danger-zone h3{color:var(--danger);font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
 .danger-zone p{font-size:12px;color:#833;line-height:1.5;margin-bottom:12px}
 
+/* PUBLISH OVERLAY */
+.publish-overlay{display:none;position:fixed;inset:0;background:rgba(15,15,20,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:900;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease}
+.publish-overlay.open{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.publish-box{background:white;border-radius:16px;max-width:440px;width:100%;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.publish-icon{width:56px;height:56px;border-radius:50%;background:var(--orange-light);color:var(--orange);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.publish-icon svg{width:28px;height:28px;animation:spin 1.4s linear infinite}
+.publish-icon.done{background:#e8f7ee;color:var(--success)}
+.publish-icon.done svg{animation:none}
+.publish-icon.error{background:#fee;color:var(--danger)}
+.publish-icon.error svg{animation:none}
+.publish-title{font-size:1.15rem;font-weight:700;color:var(--ink);text-align:center;margin-bottom:6px;letter-spacing:-.2px}
+.publish-sub{font-size:12.5px;color:var(--muted);text-align:center;margin-bottom:22px}
+.publish-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:8px}
+.publish-bar-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-deep));border-radius:4px;transition:width .6s ease;width:0}
+.publish-bar-fill.done{background:var(--success)}
+.publish-bar-fill.error{background:var(--danger)}
+.publish-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:20px;font-variant-numeric:tabular-nums}
+.publish-steps{display:flex;flex-direction:column;gap:10px}
+.publish-step{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);transition:color .2s}
+.publish-step.active{color:var(--ink);font-weight:500}
+.publish-step.done{color:var(--success)}
+.publish-step.error{color:var(--danger)}
+.publish-step-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg);border:1.5px solid var(--border)}
+.publish-step.active .publish-step-icon{border-color:var(--orange);background:var(--orange-light)}
+.publish-step.active .publish-step-icon::before{content:'';width:8px;height:8px;border:2px solid var(--orange);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+.publish-step.done .publish-step-icon{background:var(--success);border-color:var(--success);color:white}
+.publish-step.done .publish-step-icon svg{width:11px;height:11px;stroke-width:3}
+.publish-step.error .publish-step-icon{background:var(--danger);border-color:var(--danger);color:white}
+.publish-step.error .publish-step-icon svg{width:11px;height:11px;stroke-width:3}
+.publish-actions{margin-top:20px;display:flex;gap:10px;justify-content:center}
+
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--success);color:white;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.15);display:flex;align-items:center;gap:8px;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s}
 .toast.show{transform:translateY(0);opacity:1}
@@ -260,6 +292,44 @@ img,video{max-width:100%;display:block}
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
       <button class="btn btn-danger" id="modalConfirmBtn" onclick="confirmAction()">Delete</button>
     </div>
+  </div>
+</div>
+
+<div class="publish-overlay" id="publishOverlay">
+  <div class="publish-box">
+    <div class="publish-icon" id="publishIcon">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg>
+    </div>
+    <h3 class="publish-title" id="publishTitle">Publishing changes...</h3>
+    <p class="publish-sub" id="publishSub">This usually takes about 1 minute. Please keep this tab open.</p>
+    <div class="publish-bar"><div class="publish-bar-fill" id="publishBarFill"></div></div>
+    <div class="publish-meta">
+      <span id="publishPct">0%</span>
+      <span id="publishElapsed">0:00</span>
+    </div>
+    <div class="publish-steps" id="publishSteps">
+      <div class="publish-step" data-step="commit">
+        <span class="publish-step-icon"></span>
+        <span>Saving to GitHub</span>
+      </div>
+      <div class="publish-step" data-step="trigger">
+        <span class="publish-step-icon"></span>
+        <span>Triggering site build</span>
+      </div>
+      <div class="publish-step" data-step="build">
+        <span class="publish-step-icon"></span>
+        <span>Building site</span>
+      </div>
+      <div class="publish-step" data-step="deploy">
+        <span class="publish-step-icon"></span>
+        <span>Deploying</span>
+      </div>
+      <div class="publish-step" data-step="verify">
+        <span class="publish-step-icon"></span>
+        <span>Verifying live site</span>
+      </div>
+    </div>
+    <div class="publish-actions" id="publishActions" style="display:none"></div>
   </div>
 </div>
 
@@ -906,6 +976,183 @@ function syncFieldsToCurrentExc(){
   });
 }
 
+// ========== PUBLISH OVERLAY ==========
+// Target duration for the simulated progress bar (before real verification kicks in).
+// Netlify rebuilds for this site typically land around 55-75s, so we animate to 90%
+// over 70s and leave the last 10% for the real live-site verification step.
+const PUBLISH_SIMULATED_DURATION_MS = 70000;
+const PUBLISH_VERIFY_TIMEOUT_MS = 180000; // hard timeout — bail after 3 min total
+const PUBLISH_POLL_INTERVAL_MS = 4000;
+
+// Relative weights of each phase on the 0-90% simulated bar.
+// (Real commit is near-instant; the rest is Netlify doing its thing.)
+const PUBLISH_PHASES = [
+  { step: 'commit',  endPct: 8  }, // set to done once GitHub PUT resolves
+  { step: 'trigger', endPct: 15 },
+  { step: 'build',   endPct: 65 },
+  { step: 'deploy',  endPct: 90 }
+];
+
+let publishTimer = null;
+let publishStartTs = 0;
+
+function publishOverlayOpen(){
+  document.getElementById('publishOverlay').classList.add('open');
+  document.getElementById('publishActions').style.display = 'none';
+  document.getElementById('publishActions').innerHTML = '';
+  document.getElementById('publishIcon').className = 'publish-icon';
+  document.getElementById('publishIcon').innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg>';
+  document.getElementById('publishTitle').textContent = 'Publishing changes...';
+  document.getElementById('publishSub').textContent = 'This usually takes about 1 minute. Please keep this tab open.';
+  document.getElementById('publishBarFill').className = 'publish-bar-fill';
+  document.querySelectorAll('.publish-step').forEach(s=>{
+    s.classList.remove('active','done','error');
+    s.querySelector('.publish-step-icon').innerHTML = '';
+  });
+  publishSetProgress(0);
+  publishStartTs = Date.now();
+}
+
+function publishOverlayClose(){
+  if(publishTimer){ clearInterval(publishTimer); publishTimer = null; }
+  document.getElementById('publishOverlay').classList.remove('open');
+}
+
+function publishSetProgress(pct){
+  pct = Math.max(0, Math.min(100, pct));
+  document.getElementById('publishBarFill').style.width = pct + '%';
+  document.getElementById('publishPct').textContent = Math.round(pct) + '%';
+}
+
+function publishSetStep(stepName, state){
+  // state: 'active' | 'done' | 'error'
+  const el = document.querySelector(`.publish-step[data-step="${stepName}"]`);
+  if(!el) return;
+  el.classList.remove('active','done','error');
+  el.classList.add(state);
+  const iconEl = el.querySelector('.publish-step-icon');
+  if(state === 'done'){
+    iconEl.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+  } else if(state === 'error'){
+    iconEl.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  } else {
+    iconEl.innerHTML = '';
+  }
+}
+
+function publishTick(){
+  const elapsed = Date.now() - publishStartTs;
+  const mm = Math.floor(elapsed / 60000);
+  const ss = Math.floor((elapsed % 60000) / 1000).toString().padStart(2,'0');
+  document.getElementById('publishElapsed').textContent = `${mm}:${ss}`;
+
+  // Simulated bar: ease toward 90% over PUBLISH_SIMULATED_DURATION_MS
+  const ratio = Math.min(1, elapsed / PUBLISH_SIMULATED_DURATION_MS);
+  // easeOutCubic for a natural feel — fast at start, slows near the end
+  const eased = 1 - Math.pow(1 - ratio, 3);
+  const pct = eased * 90;
+  publishSetProgress(pct);
+
+  // Move the active step based on current pct
+  for(let i = PUBLISH_PHASES.length - 1; i >= 0; i--){
+    const phase = PUBLISH_PHASES[i];
+    if(pct >= phase.endPct) continue;
+    // This phase is the current active one (unless already marked done)
+    const el = document.querySelector(`.publish-step[data-step="${phase.step}"]`);
+    if(el && !el.classList.contains('done') && !el.classList.contains('active')){
+      publishSetStep(phase.step, 'active');
+    }
+    // Mark earlier phases done if not already
+    for(let j = 0; j < i; j++){
+      const earlier = document.querySelector(`.publish-step[data-step="${PUBLISH_PHASES[j].step}"]`);
+      if(earlier && !earlier.classList.contains('done')){
+        publishSetStep(PUBLISH_PHASES[j].step, 'done');
+      }
+    }
+    return;
+  }
+  // Past all simulated phases — mark all 4 done, hand off to verify step
+  PUBLISH_PHASES.forEach(p => {
+    const el = document.querySelector(`.publish-step[data-step="${p.step}"]`);
+    if(el && !el.classList.contains('done')) publishSetStep(p.step, 'done');
+  });
+  const verify = document.querySelector('.publish-step[data-step="verify"]');
+  if(verify && !verify.classList.contains('active') && !verify.classList.contains('done')){
+    publishSetStep('verify', 'active');
+  }
+}
+
+async function publishVerifyLive(expectedIsoTimestamp, expectedExcursionId){
+  // Poll the live site until we see the new timestamp OR the new excursion content.
+  // Returns true on success, false on timeout.
+  const deadline = Date.now() + PUBLISH_VERIFY_TIMEOUT_MS;
+  while(Date.now() < deadline){
+    try {
+      const r = await fetch(`/data/excursions.json?t=${Date.now()}`, { cache: 'no-store' });
+      if(r.ok){
+        const data = await r.json();
+        // Prefer exact timestamp match; fall back to checking the excursion exists.
+        if(data.updatedAt && data.updatedAt === expectedIsoTimestamp){
+          return true;
+        }
+        // Also accept a later timestamp (in case another admin saved after us)
+        if(data.updatedAt && new Date(data.updatedAt).getTime() >= new Date(expectedIsoTimestamp).getTime()){
+          return true;
+        }
+      }
+    } catch(e){ /* network blip — retry */ }
+    await new Promise(r => setTimeout(r, PUBLISH_POLL_INTERVAL_MS));
+  }
+  return false;
+}
+
+function publishFinishSuccess(){
+  if(publishTimer){ clearInterval(publishTimer); publishTimer = null; }
+  PUBLISH_PHASES.forEach(p => publishSetStep(p.step, 'done'));
+  publishSetStep('verify', 'done');
+  publishSetProgress(100);
+  document.getElementById('publishBarFill').classList.add('done');
+  document.getElementById('publishIcon').className = 'publish-icon done';
+  document.getElementById('publishIcon').innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+  document.getElementById('publishTitle').textContent = 'Published!';
+  document.getElementById('publishSub').textContent = 'Your changes are now live on the site.';
+  const actions = document.getElementById('publishActions');
+  actions.style.display = 'flex';
+  actions.innerHTML = `
+    <a href="/" target="_blank" class="btn btn-ghost">
+      <svg class="ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      View site
+    </a>
+    <button class="btn btn-primary" onclick="publishOverlayClose();backToDashboard()">Done</button>`;
+}
+
+function publishFinishTimeout(){
+  if(publishTimer){ clearInterval(publishTimer); publishTimer = null; }
+  publishSetStep('verify', 'error');
+  document.getElementById('publishBarFill').classList.add('error');
+  document.getElementById('publishIcon').className = 'publish-icon error';
+  document.getElementById('publishIcon').innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+  document.getElementById('publishTitle').textContent = 'Still building...';
+  document.getElementById('publishSub').textContent = 'Your changes were saved, but the site is taking longer than usual to update. Check your Netlify dashboard if this persists.';
+  const actions = document.getElementById('publishActions');
+  actions.style.display = 'flex';
+  actions.innerHTML = `
+    <a href="https://app.netlify.com" target="_blank" class="btn btn-ghost">Open Netlify</a>
+    <button class="btn btn-primary" onclick="publishOverlayClose();backToDashboard()">Close</button>`;
+}
+
+function publishFinishError(msg){
+  if(publishTimer){ clearInterval(publishTimer); publishTimer = null; }
+  document.getElementById('publishBarFill').classList.add('error');
+  document.getElementById('publishIcon').className = 'publish-icon error';
+  document.getElementById('publishIcon').innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+  document.getElementById('publishTitle').textContent = 'Save failed';
+  document.getElementById('publishSub').textContent = msg || 'Something went wrong. Your changes were not published.';
+  const actions = document.getElementById('publishActions');
+  actions.style.display = 'flex';
+  actions.innerHTML = `<button class="btn btn-primary" onclick="publishOverlayClose()">Close</button>`;
+}
+
 async function saveExcursion(){
   if(!githubToken || !githubRepo){
     toast('Configure GitHub token & repo in Settings first','error');
@@ -917,6 +1164,12 @@ async function saveExcursion(){
   syncFieldsToCurrentExc();
   const badge = document.getElementById('savingBadge');
   badge.classList.add('show');
+
+  publishOverlayOpen();
+  publishSetStep('commit', 'active');
+  // Start the ticking clock + simulated bar
+  publishTimer = setInterval(publishTick, 250);
+
   try {
     const data = {...currentExc};
     delete data._originalId;
@@ -925,10 +1178,8 @@ async function saveExcursion(){
     // Build updated excursions array
     let updatedList = [...excursions];
     if(currentExc._isNew){
-      // Adding new excursion
       updatedList.push(data);
     } else {
-      // Update existing — find by original ID
       const originalId = currentExc._originalId || data.id;
       const idx = updatedList.findIndex(e => e.id === originalId);
       if(idx >= 0){
@@ -938,24 +1189,75 @@ async function saveExcursion(){
       }
     }
 
-    await saveExcursionsFile(updatedList, `Update excursion: ${data.name}`);
+    // Commit to GitHub — capture the exact timestamp we write so we can verify it live.
+    const savedAt = new Date().toISOString();
+    const fileContent = {
+      version: "2.0",
+      updated: savedAt.split('T')[0],
+      updatedAt: savedAt,
+      excursions: updatedList
+    };
+    await saveExcursionsFileRaw(fileContent, `Update excursion: ${data.name}`);
+    publishSetStep('commit', 'done');
+    publishSetStep('trigger', 'active');
 
-    toast('Saved! Site rebuilding (~1 min)...');
-    await loadExcursions();
-    setTimeout(()=>backToDashboard(),1200);
+    // Refresh local cache from GitHub so the dashboard reflects the new state
+    // once we return to it.
+    loadExcursions().catch(()=>{});
+
+    // Now wait for the live site to reflect the change.
+    const verified = await publishVerifyLive(savedAt, data.id);
+    if(verified){
+      publishFinishSuccess();
+    } else {
+      publishFinishTimeout();
+    }
   } catch(e){
     console.error('[Bliss Admin] Save error:', e);
-    toast('Save failed: '+e.message,'error');
+    publishFinishError(e.message);
   } finally {
     badge.classList.remove('show');
   }
 }
 
+// Raw variant used by saveExcursion — caller controls the file content (so we can
+// share the exact `updatedAt` value between the commit and the live verification).
+async function saveExcursionsFileRaw(fileContent, commitMessage){
+  const contentB64 = btoa(unescape(encodeURIComponent(JSON.stringify(fileContent, null, 2))));
+  let sha = null;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions.json?t=${Date.now()}`, {
+      headers: {'Authorization':'Bearer '+githubToken, 'Accept':'application/vnd.github+json'}
+    });
+    if(r.ok){
+      const existing = await r.json();
+      sha = existing.sha;
+    }
+  } catch(e){ console.warn('Could not fetch existing SHA:', e); }
+
+  const body = { message: commitMessage, content: contentB64 };
+  if(sha) body.sha = sha;
+
+  const r = await fetch(`https://api.github.com/repos/${githubRepo}/contents/data/excursions.json`, {
+    method: 'PUT',
+    headers: {'Authorization':'Bearer '+githubToken, 'Content-Type':'application/json', 'Accept':'application/vnd.github+json'},
+    body: JSON.stringify(body)
+  });
+  const respData = await r.json();
+  if(!r.ok){
+    throw new Error(`GitHub save failed (${r.status}): ${respData.message||'Unknown error'}`);
+  }
+  dataFileSha = respData.content.sha;
+  return respData;
+}
+
 async function saveExcursionsFile(excursionsArray, commitMessage){
   // Save the full excursions.json file to GitHub
+  const now = new Date();
   const fileContent = {
     version: "2.0",
-    updated: new Date().toISOString().split('T')[0],
+    updated: now.toISOString().split('T')[0],
+    updatedAt: now.toISOString(),
     excursions: excursionsArray
   };
   const contentB64 = btoa(unescape(encodeURIComponent(JSON.stringify(fileContent, null, 2))));
